@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.21.0
+
 - Fix openai skip streaming response corner cases.
 - Allow override payload of any LLM provider.
 
