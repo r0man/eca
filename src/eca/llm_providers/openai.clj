@@ -64,27 +64,28 @@
         past-messages))
 
 (defn completion! [{:keys [model user-messages instructions reason? temperature api-key api-url
-                           max-output-tokens past-messages tools web-search]}
+                           max-output-tokens past-messages tools web-search extra-payload]}
                    {:keys [on-message-received on-error on-prepare-tool-call on-tool-called on-reason on-usage-updated]}]
   (let [input (concat (normalize-messages past-messages)
                       (normalize-messages user-messages))
         tools (cond-> tools
                 web-search (conj {:type "web_search_preview"}))
-        body {:model model
-              :input input
-              :prompt_cache_key (str (System/getProperty "user.name") "@ECA")
-              ;; TODO support parallel
-              :parallel_tool_calls false
-              :instructions instructions
-              ;; TODO allow user specify custom temperature (default 1.0)
-              :temperature temperature
-              :tools tools
-              :reasoning (when reason?
-                           {:effort "medium"
-                            :summary "detailed"})
-              :stream true
-              ;; :verbosity "medium"
-              :max_output_tokens max-output-tokens}
+        body (merge {:model model
+                     :input input
+                     :prompt_cache_key (str (System/getProperty "user.name") "@ECA")
+                     ;; TODO support parallel
+                     :parallel_tool_calls false
+                     :instructions instructions
+                     ;; TODO allow user specify custom temperature (default 1.0)
+                     :temperature temperature
+                     :tools tools
+                     :reasoning (when reason?
+                                  {:effort "medium"
+                                   :summary "detailed"})
+                     :stream true
+                     ;; :verbosity "medium"
+                     :max_output_tokens max-output-tokens}
+                    extra-payload)
         tool-call-by-item-id* (atom {})
         on-response-fn
         (fn handle-response [event data]

@@ -26,6 +26,7 @@
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}
+   :models {}
    :ollama {:host "http://localhost"
             :port 11434
             :useTools true

@@ -156,6 +156,25 @@ Just add to your config the `commands` pointing to `.md` files that will be sear
 }
 ```
 
+## Overriding model payloads
+
+It's possible to override the payload sent to LLMs via `models <modelName> extraPayload` config, this way you can configure custom LLM settings like `temperature`, `reasoning_effort`, `verbosity` etc.
+This config will be merged with current default used by ECA.
+
+Example:
+
+```javascript
+{
+  "models": {
+    "gpt-5": {
+      "extraPayload": {
+        "verbosity": "high"
+      }
+    }
+  }
+}
+```
+
 ## All configs
 
 ### Schema
@@ -190,6 +209,9 @@ interface Config {
         urlEnv?: string;
         key?: string;
         keyEnv?: string;
+    }};
+    models: {[key: string]: {
+      extraPayload: {[key: string]: any}
     }};
     ollama?: {
         host: string;
@@ -226,6 +248,7 @@ interface Config {
   "mcpTimeoutSeconds" : 10,
   "mcpServers" : [],
   "customProviders": {},
+  "models": {},
   "ollama" : {
     "host" : "http://localhost",
     "port" : 11434,

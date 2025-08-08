@@ -110,6 +110,7 @@
         custom-models (set (mapcat (fn [[k v]]
                                      (map #(str (name k) "/" %) (:models v)))
                                    custom-providers))
+        extra-payload (get-in config [:models (keyword model) :extraPayload])
         callbacks {:on-message-received on-message-received-wrapper
                    :on-error on-error-wrapper
                    :on-prepare-tool-call on-prepare-tool-call-wrapper
@@ -133,6 +134,7 @@
         :past-messages past-messages
         :tools tools
         :web-search web-search
+        :extra-payload extra-payload
         :api-url (openai-api-url)
         :api-key (openai-api-key config)}
        callbacks)
@@ -151,6 +153,7 @@
         :past-messages past-messages
         :tools tools
         :web-search web-search
+        :extra-payload extra-payload
         :api-url (anthropic-api-url)
         :api-key (anthropic-api-key config)}
        callbacks)
@@ -164,7 +167,8 @@
         :instructions instructions
         :user-messages user-messages
         :past-messages past-messages
-        :tools tools}
+        :tools tools
+        :extra-payload extra-payload}
        callbacks)
 
       (contains? custom-models model)
@@ -186,6 +190,7 @@
           :past-messages past-messages
           :web-search web-search
           :tools tools
+          :extra-payload extra-payload
           :api-url url
           :api-key key}
          callbacks))
