@@ -163,16 +163,19 @@
                               (assert-chat-not-stopped! chat-ctx)
                               (swap! tool-call-by-id* update-in [id :args] str arguments-text)
                               (send-content! chat-ctx :assistant
-                                             {:type :toolCallPrepare
-                                              :name name
-                                              :origin (tool-name->origin name all-tools)
-                                              :arguments-text (get-in @tool-call-by-id* [id :args])
-                                              :id id
-                                              :manual-approval manual-approval?}))
+                                             (assoc-some
+                                               {:type :toolCallPrepare
+                                                :name name
+                                                :origin (tool-name->origin name all-tools)
+                                                :arguments-text (get-in @tool-call-by-id* [id :args])
+                                                :id id
+                                                :manual-approval manual-approval?}
+                                               :summary (f.tools/tool-call-summary all-tools name nil))))
       :on-tool-called (fn [{:keys [id name arguments] :as tool-call}]
                         (assert-chat-not-stopped! chat-ctx)
                         (let [approved?* (promise)
-                              details (f.tools/get-tool-call-details name arguments)]
+                              details (f.tools/get-tool-call-details name arguments)
+                              summary (f.tools/tool-call-summary all-tools name arguments)]
                           (send-content! chat-ctx :assistant
                                          (assoc-some
                                           {:type :toolCallRun
@@ -181,7 +184,8 @@
                                            :arguments arguments
                                            :id id
                                            :manual-approval manual-approval?}
-                                          :details details))
+                                          :details details
+                                          :summary summary))
                           (swap! db* assoc-in [:chats chat-id :tool-calls id :approved?*] approved?*)
                           (when-not (string/blank? @received-msgs*)
                             (add-to-history! {:role "assistant" :content @received-msgs*})
@@ -206,7 +210,8 @@
                                                :error (:error result)
                                                :id id
                                                :outputs (:contents result)}
-                                              :details details)))
+                                              :details details
+                                              :summary summary)))
                             (do
                               (add-to-history! {:role "tool_call" :content tool-call})
                               (add-to-history! {:role "tool_call_output" :content (assoc tool-call :output {:error true
@@ -220,7 +225,8 @@
                                                :arguments arguments
                                                :reason :user
                                                :id id}
-                                              :details details))))
+                                              :details details
+                                              :summary summary))))
                           (swap! tool-call-by-id* dissoc id)
                           (send-content! chat-ctx :system {:type :progress :state :running :text "Generating"})
                           {:new-messages (get-in @db* [:chats chat-id :messages])}))

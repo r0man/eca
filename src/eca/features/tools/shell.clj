@@ -51,6 +51,13 @@
                                          [{:type :text
                                            :text (str "Stdout:\n" out)}])))})))))
 
+(defn shell-command-summary [args]
+  (if-let [command (get args "command")]
+    (if (> (count command) 20)
+      (format "Running '%s...'" (subs command 0 20))
+      (format "Running '%s'" command))
+    "Running shell command"))
+
 (def definitions
   {"eca_shell_command"
    {:description (multi-str "Execute an arbitrary shell command and return the output.
@@ -178,4 +185,5 @@ Important:
                               "working_directory" {:type "string"
                                                    :description "The directory to run the command in. Default to the first workspace root."}}
                  :required ["command"]}
-    :handler #'shell-command}})
+    :handler #'shell-command
+    :summary-fn #'shell-command-summary}})

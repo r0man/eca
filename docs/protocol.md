@@ -564,6 +564,12 @@ interface ToolCallPrepareContent {
     manualApproval: boolean;
     
     /**
+     * Summary text to present about this tool call, 
+     * ex: 'Reading file "foo"...'.
+     */
+    summary?: string;
+    
+    /**
      * Extra details about this call. 
      * Clients may use this to present different UX for this tool call.
      */
@@ -597,6 +603,12 @@ interface ToolCallRunContent {
      * Whether this call requires manual approval from the user.
      */
     manualApproval: boolean;
+     
+    /**
+     * Summary text to present about this tool call, 
+     * ex: 'Reading file "foo"...'.
+     */
+    summary?: string;
     
     /**
      * Extra details about this call. 
@@ -649,6 +661,12 @@ interface ToolCalledContent {
     }];
     
     /**
+     * Summary text to present about this tool call, 
+     * ex: 'Reading file "foo"...'.
+     */
+    summary?: string;
+    
+    /**
      * Extra details about this call. 
      * Clients may use this to present different UX for this tool call.
      */
@@ -679,6 +697,12 @@ interface ToolCallRejected {
      * The reason why this tool call was rejected
      */
     reason: 'user';
+    
+    /**
+     * Summary text to present about this tool call, 
+     * ex: 'Reading file "foo"...'.
+     */
+    summary?: string;
     
     /**
      * Extra details about this call. 

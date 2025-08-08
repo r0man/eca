@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Improve `eca_shell_command` to handle better error outputs.
+- Add summary for eca commands via `summary` field on tool calls.
 
 ## 0.21.1
 
