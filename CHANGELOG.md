@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Default to gpt-5 instead of o4-mini when openai-api-key found.
+
 ## 0.21.0
 
 - Fix openai skip streaming response corner cases.

@@ -68,7 +68,7 @@
             (when (anthropic-api-key config)
               [:api-key-found "claude-sonnet-4-0"])
             (when (openai-api-key config)
-              [:api-key-found "o4-mini"])
+              [:api-key-found "gpt-5"])
             (when-let [ollama-model (first (filter #(string/starts-with? % config/ollama-model-prefix) (keys (:models db))))]
               [:ollama-running ollama-model])
             [:default "claude-sonnet-4-0"])]
