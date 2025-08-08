@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix openai skip streaming response corner cases.
+
 ## 0.20.0
 
 - Support custom commands via md files in `~/.config/eca/commands/` or `.eca/commands/`.
