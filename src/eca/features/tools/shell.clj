@@ -27,10 +27,12 @@
                                    :uri
                                    shared/uri->filename)
                            (config/get-property "user.home"))
-              command-and-opts (concat ["bash -c"] command-args [:dir work-dir])
-              _ (logger/debug logger-tag "Running command:" command-and-opts)
+              _ (logger/debug logger-tag "Running command:" command-args)
               result (try
-                       (p/shell {:dir work-dir :out :string :err :string} "bash -c" command-args)
+                       (p/shell {:dir work-dir
+                                 :out :string
+                                 :err :string
+                                 :continue true} "bash -c" command-args)
                        (catch Exception e
                          {:exit 1 :err (.getMessage e)}))
               err (some-> (:err result) string/trim)

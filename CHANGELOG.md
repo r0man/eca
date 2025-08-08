@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Improve `eca_shell_command` to handle better error outputs.
+
 ## 0.21.1
 
 - Default to gpt-5 instead of o4-mini when openai-api-key found.
