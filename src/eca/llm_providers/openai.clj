@@ -63,9 +63,9 @@
                                               %) c))))))
         past-messages))
 
-(defn completion! [{:keys [model user-messages instructions reason? temperature api-key api-url
+(defn completion! [{:keys [model user-messages instructions reason? api-key api-url
                            max-output-tokens past-messages tools web-search extra-payload]}
-                   {:keys [on-message-received on-error on-prepare-tool-call on-tool-called on-reason on-usage-updated]}]
+                   {:keys [on-message-received on-error on-prepare-tool-call on-tools-called on-reason on-usage-updated]}]
   (let [input (concat (normalize-messages past-messages)
                       (normalize-messages user-messages))
         tools (cond-> tools
@@ -73,11 +73,8 @@
         body (merge {:model model
                      :input input
                      :prompt_cache_key (str (System/getProperty "user.name") "@ECA")
-                     ;; TODO support parallel
-                     :parallel_tool_calls false
+                     :parallel_tool_calls true
                      :instructions instructions
-                     ;; TODO allow user specify custom temperature (default 1.0)
-                     :temperature temperature
                      :tools tools
                      :reasoning (when reason?
                                   {:effort "medium"
@@ -138,39 +135,37 @@
 
             ;; done
             "response.completed"
-            (let [last-output (-> data :response :output last)]
-              (on-usage-updated {:input-tokens (-> data :response :usage :input_tokens)
-                                 :output-tokens (-> data :response :usage :output_tokens)})
-              (case (:type last-output)
-                "function_call"
-                (let [function-name (:name last-output)
-                      function-args (:arguments last-output)
-                      call-id (:call_id last-output)
-                      item-id (:id last-output)]
-                  ;; Fallback case when the tool call was not prepared before when
-                  ;; some models/apis respond only with response.completed (skipping streaming).
-                  (when-not (get @tool-call-by-item-id* item-id)
-                    (swap! tool-call-by-item-id* assoc item-id {:name function-name :id call-id})
-                    (on-prepare-tool-call {:id call-id
-                                           :name function-name
-                                           :arguments-text function-args}))
-                  (let [{:keys [new-messages]} (on-tool-called {:id call-id
-                                                                :name function-name
-                                                                :arguments (json/parse-string function-args)})
-                        input (normalize-messages new-messages)]
-                    (base-completion-request!
-                     {:rid (llm-util/gen-rid)
-                      :body (assoc body :input input)
-                      :api-url api-url
-                      :api-key api-key
-                      :on-error on-error
-                      :on-response handle-response})
-                    (swap! tool-call-by-item-id* dissoc item-id)))
-
-                ;; else
+            (let [response (:response data)
+                  tool-calls (keep (fn [{:keys [id call_id name arguments] :as output}]
+                                     (when (= "function_call" (:type output))
+                                       ;; Fallback case when the tool call was not prepared before when
+                                       ;; some models/apis respond only with response.completed (skipping streaming).
+                                       (when-not (get @tool-call-by-item-id* id)
+                                         (swap! tool-call-by-item-id* assoc id {:name name :id call_id})
+                                         (on-prepare-tool-call {:id call_id
+                                                                :name name
+                                                                :arguments-text arguments}))
+                                       {:id call_id
+                                        :item-id id
+                                        :name name
+                                        :arguments (json/parse-string arguments)}))
+                                   (:output response))]
+              (on-usage-updated {:input-tokens (-> response :usage :input_tokens)
+                                 :output-tokens (-> response :usage :output_tokens)})
+              (if (seq tool-calls)
+                (let [{:keys [new-messages]} (on-tools-called tool-calls)
+                      input (normalize-messages new-messages)]
+                  (base-completion-request!
+                   {:rid (llm-util/gen-rid)
+                    :body (assoc body :input input)
+                    :api-url api-url
+                    :api-key api-key
+                    :on-error on-error
+                    :on-response handle-response})
+                  (doseq [tool-call tool-calls]
+                    (swap! tool-call-by-item-id* dissoc (:item-id tool-call))))
                 (on-message-received {:type :finish
                                       :finish-reason (-> data :response :status)})))
-
             nil))]
     (base-completion-request!
      {:rid (llm-util/gen-rid)

@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Support parallel tool call.
+
 ## 0.22.0
 
 - Improve `eca_shell_command` to handle better error outputs.
