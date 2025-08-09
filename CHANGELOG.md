@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.23.0
+
 - Support parallel tool call.
 
 ## 0.22.0
