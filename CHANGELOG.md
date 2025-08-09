@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix openai reasoning not being included in messages.
+
 ## 0.23.0
 
 - Support parallel tool call.

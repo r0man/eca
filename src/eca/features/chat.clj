@@ -252,7 +252,8 @@
                                                  :id id
                                                  :text text}))
                      :finished (do
-                                 (add-to-history! {:role "reason" :content {:external-id external-id
+                                 (add-to-history! {:role "reason" :content {:id id
+                                                                            :external-id external-id
                                                                             :text @received-thinking*}})
                                  (send-content! chat-ctx :assistant
                                                 {:type :reasonFinished

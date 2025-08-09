@@ -2,6 +2,7 @@
   (:require
    [cheshire.core :as json]
    [clojure.java.io :as io]
+   [clojure.string :as string]
    [eca.llm-util :as llm-util]
    [eca.logger :as logger]
    [hato.client :as http]))
@@ -51,8 +52,13 @@
             {:type "function_call_output"
              :call_id (:id content)
              :output (llm-util/stringfy-tool-result content)}
-            ;; TODO include reason blocks
-            "reason" nil
+            "reason" {:type "reasoning"
+                      :id (:id content)
+                      :summary (if (string/blank? (:text content))
+                                 []
+                                 [{:type "summary_text"
+                                   :text (:text content)}])
+                      :encrypted_content (:external-id content)}
             (update msg :content (fn [c]
                                    (if (string? c)
                                      c
@@ -76,6 +82,9 @@
                      :parallel_tool_calls true
                      :instructions instructions
                      :tools tools
+                     :include (when reason?
+                                ["reasoning.encrypted_content"])
+                     :store false
                      :reasoning (when reason?
                                   {:effort "medium"
                                    :summary "detailed"})
@@ -101,7 +110,7 @@
             (case (:type (:item data))
               "reasoning" (on-reason {:status :finished
                                       :id (-> data :item :id)
-                                      :external-id (-> data :item :id)})
+                                      :external-id (-> data :item :encrypted_content)})
               nil)
 
             ;; URL mentioned
@@ -166,6 +175,12 @@
                     (swap! tool-call-by-item-id* dissoc (:item-id tool-call))))
                 (on-message-received {:type :finish
                                       :finish-reason (-> data :response :status)})))
+
+            "response.failed" (do
+                                (when-let [error (-> data :response :error)]
+                                  (on-error {:message (:message error)}))
+                                (on-message-received {:type :finish
+                                                      :finish-reason (-> data :response :status)}))
             nil))]
     (base-completion-request!
      {:rid (llm-util/gen-rid)
