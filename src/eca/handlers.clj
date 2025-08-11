@@ -11,46 +11,40 @@
 
 (set! *warn-on-reflection* true)
 
-;; (:models @eca.db/db*)
-
-(def a (models/all))
-
-
-
 (defn ^:private initialize-models! [db* config]
   (let [all-models (models/all)
         eca-models (filter
-                     (fn [[model _config]]
-                       (get-in config [:models model]))
-                     all-models)]
+                    (fn [[model _config]]
+                      (get-in config [:models model]))
+                    all-models)]
     (swap! db* update :models merge eca-models)
     (when-let [custom-providers (seq (:customProviders config))]
       (let [models (reduce
-                     (fn [models [provider {provider-models :models default-model :defaultModel}]]
-                       (reduce
-                         (fn [m model]
-                           (let [known-model (get all-models model)]
-                             (assoc m
-                                    (str (name provider) "/" model)
-                                    {:tools (or (:tools known-model) true)
-                                     :reason? (or (:reason? known-model) true)
-                                     :web-search (or (:web-search known-model) true)
-                                     :max-output-tokens (:max-output-tokens known-model)
-                                     :custom-provider? true
-                                     :default-model? (= model default-model)})))
-                         models
-                         provider-models))
-                     {}
-                     custom-providers)]
+                    (fn [models [provider {provider-models :models default-model :defaultModel}]]
+                      (reduce
+                       (fn [m model]
+                         (let [known-model (get all-models model)]
+                           (assoc m
+                                  (str (name provider) "/" model)
+                                  {:tools (or (:tools known-model) true)
+                                   :reason? (or (:reason? known-model) true)
+                                   :web-search (or (:web-search known-model) true)
+                                   :max-output-tokens (:max-output-tokens known-model)
+                                   :custom-provider? true
+                                   :default-model? (= model default-model)})))
+                       models
+                       provider-models))
+                    {}
+                    custom-providers)]
         (swap! db* update :models merge models))))
   (when-let [ollama-models (seq (llm-api/extra-models config))]
     (let [models (reduce
-                   (fn [models {:keys [model] :as ollama-model}]
-                     (assoc models
-                            (str config/ollama-model-prefix model)
-                            (select-keys ollama-model [:tools :reason?])))
-                   {}
-                   ollama-models)]
+                  (fn [models {:keys [model] :as ollama-model}]
+                    (assoc models
+                           (str config/ollama-model-prefix model)
+                           (select-keys ollama-model [:tools :reason?])))
+                  {}
+                  ollama-models)]
       (swap! db* update :models merge models))))
 
 (defn initialize [{:keys [db* config]} params]
