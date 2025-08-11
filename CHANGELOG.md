@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.24.1
+
 - Fix build
 
 ## 0.24.0
