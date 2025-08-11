@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.24.2
+
 - Fix some commands not working.
 
 ## 0.24.1
