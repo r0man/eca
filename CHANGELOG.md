@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Get models and configs from models.dev instead of hardcoding in eca.
+- Allow custom models addition via `models <modelName>` config.
+- Add `/resume` command to resume previous chats.
+
 ## 0.23.1
 
 - Fix openai reasoning not being included in messages.

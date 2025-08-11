@@ -26,7 +26,16 @@
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}
-   :models {}
+   :models {"gpt-5" {}
+            "gpt-5-mini" {}
+            "gpt-5-nano" {}
+            "gpt-4.1" {}
+            "o4-mini" {}
+            "o3" {}
+            "claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
    :ollama {:host "http://localhost"
             :port 11434
             :useTools true

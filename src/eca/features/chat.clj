@@ -14,6 +14,7 @@
    [eca.llm-api :as llm-api]
    [eca.logger :as logger]
    [eca.messenger :as messenger]
+   [eca.models :as models]
    [eca.shared :as shared :refer [assoc-some]]))
 
 (set! *warn-on-reflection* true)
@@ -107,6 +108,8 @@
                                      :text "Parsing given context"}))
   (let [db @db*
         manual-approval? (get-in config [:toolCall :manualApproval] false)
+        all-models (models/all)
+        provider (get-in all-models [model :provider])
         rules (f.rules/all config (:workspace-folders db))
         refined-contexts (f.context/raw-contexts->refined contexts db)
         repo-map* (delay (f.index/repo-map db {:as-string? true}))
@@ -124,6 +127,7 @@
                                      :text "Waiting model"})
     (llm-api/complete!
      {:model model
+      :provider provider
       :model-config (get-in db [:models model])
       :user-messages user-messages
       :instructions instructions
