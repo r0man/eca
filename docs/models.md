@@ -1,5 +1,7 @@
 # Models
 
+The models capabilities and configurations are retrieved from [models.dev](https://models.dev) API.
+
 ## Built-in providers and capabilities
 
 | model     | tools (MCP) | reasoning / thinking | prompt caching | web_search |
