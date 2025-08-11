@@ -5,6 +5,8 @@
 - Get models and configs from models.dev instead of hardcoding in eca.
 - Allow custom models addition via `models <modelName>` config.
 - Add `/resume` command to resume previous chats.
+- Support loading system prompts from a file.
+- Fix model name parsing.
 
 ## 0.23.1
 
@@ -163,7 +165,7 @@
 
 ## 0.10.2
 
-- Fix usage metrics for anthropic models. 
+- Fix usage metrics for anthropic models.
 
 ## 0.10.1
 
