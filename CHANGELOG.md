@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix build
+
 ## 0.24.0
 
 - Get models and configs from models.dev instead of hardcoding in eca.
