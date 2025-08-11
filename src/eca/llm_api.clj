@@ -116,72 +116,75 @@
                    :on-tools-called on-tools-called
                    :on-reason on-reason-wrapper
                    :on-usage-updated on-usage-updated}]
-    (cond
-      (= "openai" provider)
-      (llm-providers.openai/completion!
-       {:model model
-        :instructions instructions
-        :user-messages user-messages
-        :max-output-tokens max-output-tokens
-        :reason? (and reason? (:reason? model-config))
-        :past-messages past-messages
-        :tools tools
-        :web-search web-search
-        :extra-payload extra-payload
-        :api-url (openai-api-url)
-        :api-key (openai-api-key config)}
-       callbacks)
-
-      (= "anthropic" provider)
-      (llm-providers.anthropic/completion!
-       {:model model
-        :instructions instructions
-        :user-messages user-messages
-        :max-output-tokens max-output-tokens
-        :reason? (and reason? (:reason? model-config))
-        :past-messages past-messages
-        :tools tools
-        :web-search web-search
-        :extra-payload extra-payload
-        :api-url (anthropic-api-url)
-        :api-key (anthropic-api-key config)}
-       callbacks)
-
-      (string/starts-with? model config/ollama-model-prefix)
-      (llm-providers.ollama/completion!
-       {:host (-> config :ollama :host)
-        :port (-> config :ollama :port)
-        :reason? (and reason? (:reason? model-config))
-        :model (string/replace-first model config/ollama-model-prefix "")
-        :instructions instructions
-        :user-messages user-messages
-        :past-messages past-messages
-        :tools tools
-        :extra-payload extra-payload}
-       callbacks)
-
-      (contains? custom-models model)
-      (let [[provider model] (string/split model #"/" 2)
-            provider-config (get custom-providers (keyword provider))
-            provider-fn (case (:api provider-config)
-                          "openai" llm-providers.openai/completion!
-                          "anthropic" llm-providers.anthropic/completion!
-                          (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
-            url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))
-            key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))]
-        (provider-fn
+    (try
+      (cond
+        (= "openai" provider)
+        (llm-providers.openai/completion!
          {:model model
           :instructions instructions
           :user-messages user-messages
           :max-output-tokens max-output-tokens
           :reason? (and reason? (:reason? model-config))
           :past-messages past-messages
-          :web-search web-search
           :tools tools
+          :web-search web-search
           :extra-payload extra-payload
-          :api-url url
-          :api-key key}
-         callbacks))
+          :api-url (openai-api-url)
+          :api-key (openai-api-key config)}
+         callbacks)
 
-      :else
-      (on-error-wrapper {:message (str "ECA Unsupported model: " model)}))))
+        (= "anthropic" provider)
+        (llm-providers.anthropic/completion!
+         {:model model
+          :instructions instructions
+          :user-messages user-messages
+          :max-output-tokens max-output-tokens
+          :reason? (and reason? (:reason? model-config))
+          :past-messages past-messages
+          :tools tools
+          :web-search web-search
+          :extra-payload extra-payload
+          :api-url (anthropic-api-url)
+          :api-key (anthropic-api-key config)}
+         callbacks)
+
+        (string/starts-with? model config/ollama-model-prefix)
+        (llm-providers.ollama/completion!
+         {:host (-> config :ollama :host)
+          :port (-> config :ollama :port)
+          :reason? (and reason? (:reason? model-config))
+          :model (string/replace-first model config/ollama-model-prefix "")
+          :instructions instructions
+          :user-messages user-messages
+          :past-messages past-messages
+          :tools tools
+          :extra-payload extra-payload}
+         callbacks)
+
+        (contains? custom-models model)
+        (let [[provider model] (string/split model #"/" 2)
+              provider-config (get custom-providers (keyword provider))
+              provider-fn (case (:api provider-config)
+                            "openai" llm-providers.openai/completion!
+                            "anthropic" llm-providers.anthropic/completion!
+                            (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
+              url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))
+              key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))]
+          (provider-fn
+           {:model model
+            :instructions instructions
+            :user-messages user-messages
+            :max-output-tokens max-output-tokens
+            :reason? (and reason? (:reason? model-config))
+            :past-messages past-messages
+            :web-search web-search
+            :tools tools
+            :extra-payload extra-payload
+            :api-url url
+            :api-key key}
+           callbacks))
+
+        :else
+        (on-error-wrapper {:message (str "ECA Unsupported model: " model)}))
+      (catch Exception e
+        (on-error-wrapper {:exception e})))))
