@@ -28,6 +28,10 @@
 
 - [any local ollama model](https://ollama.com/search)
 
+### Custom models for built-in providers
+
+Just configure the model in your eca `models` config, for more details check its [configuration](./configuration.md#adding-models).
+
 ## Custom providers
 
 ECA support configure extra LLM providers via `customProviders` config, for more details check [configuration](./configuration.md#custom-llm-providers).

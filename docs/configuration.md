@@ -156,7 +156,7 @@ Just add to your config the `commands` pointing to `.md` files that will be sear
 }
 ```
 
-## Adding models / overriding model payloads
+## Adding models
 
 It's possible to add new models just adding `models <yourmodel>`, example:
 
@@ -167,6 +167,8 @@ It's possible to add new models just adding `models <yourmodel>`, example:
   }
 }
 ```
+
+### Overriding model payloads
 
 To override the payload sent to LLMs via `models <modelName> extraPayload` config, this way you can configure custom LLM settings like `temperature`, `reasoning_effort`, `verbosity` etc.
 This config will be merged with current default used by ECA.
