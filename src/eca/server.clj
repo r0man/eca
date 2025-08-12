@@ -7,6 +7,7 @@
    [eca.logger :as logger]
    [eca.messenger :as messenger]
    [eca.nrepl :as nrepl]
+   [eca.shared :as shared]
    [lsp4clj.io-server :as io-server]
    [lsp4clj.liveness-probe :as liveness-probe]
    [lsp4clj.server :as lsp.server]))
@@ -27,10 +28,10 @@
 (defn ^:private with-config [components]
   (assoc components :config (config/all @(:db* components))))
 
-(defmethod lsp.server/receive-request "initialize" [_ {:keys [server db*] :as components} params]
+(defmethod lsp.server/receive-request "initialize" [_ {:keys [server] :as components} params]
   (when-let [parent-process-id (:process-id params)]
     (liveness-probe/start! parent-process-id log-wrapper-fn #(exit server)))
-  (swap! db* assoc :pure-config? (-> params :initialization-options :pure-config boolean))
+  (reset! config/initialization-config* (shared/map->camel-cased-map (:initialization-options params)))
   (handlers/initialize (with-config components) params))
 
 (defmethod lsp.server/receive-notification "initialized" [_ components _params]

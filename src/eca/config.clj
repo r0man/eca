@@ -85,6 +85,8 @@
 
 (def ^:private config-from-local-file (memoize/ttl config-from-local-file* :ttl/threshold ttl-cache-config-ms))
 
+(def initialization-config* (atom {}))
+
 (defn ^:private deep-merge [& maps]
   (apply merge-with (fn [& args]
                       (if (every? #(or (map? %) (nil? %)) args)
@@ -100,8 +102,10 @@
 (def ollama-model-prefix "ollama/")
 
 (defn all [db]
-  (let [pure-config? (:pure-config? db)]
+  (let [initialization-config @initialization-config*
+        pure-config? (:pureConfig initialization-config)]
     (deep-merge initial-config
+                initialization-config
                 (when-not pure-config? (config-from-envvar))
                 (when-not pure-config? (config-from-global-file))
                 (when-not pure-config? (config-from-local-file (:workspace-folders db))))))

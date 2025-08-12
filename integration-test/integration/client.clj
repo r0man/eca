@@ -44,7 +44,6 @@
 
 (defn ^:private receive-message
   [client context message]
-  (println message)
   (let [message-type (coercer/input-message-type message)]
     (try
       (let [response

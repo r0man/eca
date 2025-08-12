@@ -24,8 +24,7 @@
    :chat-behaviors ["agent" "plan"]
    :chat-default-behavior "agent"
    :models {}
-   :mcp-clients {}
-   :pure-config? false})
+   :mcp-clients {}})
 
 (defonce db* (atom initial-db))
 

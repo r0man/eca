@@ -57,7 +57,7 @@
           :chat-default-behavior (or (-> params :initialization-options :chat-behavior) (:chat-default-behavior @db*)))
    (initialize-models! db* config)
    (db/load-db-from-cache! db*)
-   {:models (keys (:models @db*))
+   {:models (sort (keys (:models @db*)))
     :chat-default-model (f.chat/default-model @db* config)
     :chat-behaviors (:chat-behaviors @db*)
     :chat-default-behavior (:chat-default-behavior @db*)

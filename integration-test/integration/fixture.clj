@@ -15,3 +15,13 @@
    [:initialize
     (merge (if workspace-folders {:workspace-folders workspace-folders} {})
            params)]))
+
+(defn initialized-notification []
+  [:initialized {}])
+
+(defn shutdown-request
+  []
+  [:shutdown {}])
+
+(defn exit-notification []
+  [:exit {}])
