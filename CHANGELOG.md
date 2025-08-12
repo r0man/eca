@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix initializationOptions config merge.
+- Fix default claude model.
+
 ## 0.24.2
 
 - Fix some commands not working.
