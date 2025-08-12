@@ -1,6 +1,7 @@
 (ns entrypoint
   (:require
-   [clojure.test :as t]))
+   [clojure.test :as t]
+   [integration.eca :as eca]))
 
 (def namespaces
   '[integration.initialize-test])
@@ -27,11 +28,8 @@
      ~@body))
 
 #_{:clojure-lsp/ignore [:clojure-lsp/unused-public-var]}
-(defn run-all [& args]
-  (when-not (first args)
-    (println "First arg must be path to eca binary")
-    (System/exit 0))
-
+(defn run-all [binary]
+  (alter-var-root #'eca/*eca-binary-path* (constantly binary))
   (apply require namespaces)
 
   (let [timeout-minutes (if (re-find #"(?i)win|mac" (System/getProperty "os.name"))

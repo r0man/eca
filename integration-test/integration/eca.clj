@@ -6,6 +6,7 @@
    [clojure.test :refer [use-fixtures]]
    [integration.client :as client]))
 
+(def ^:dynamic *eca-binary-path* nil)
 (def ^:dynamic *eca-process* nil)
 (def ^:dynamic *mock-client* nil)
 
@@ -17,7 +18,7 @@
               {:dir "integration-test/sample-test/"})))
 
 (defn start-process! []
-  (let [server (start-server (first *command-line-args*))
+  (let [server (start-server *eca-binary-path*)
         client (client/client (:in server) (:out server))]
     (client/start client nil)
     (async/go-loop []
