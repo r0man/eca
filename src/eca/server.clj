@@ -27,9 +27,10 @@
 (defn ^:private with-config [components]
   (assoc components :config (config/all @(:db* components))))
 
-(defmethod lsp.server/receive-request "initialize" [_ {:keys [server] :as components} params]
+(defmethod lsp.server/receive-request "initialize" [_ {:keys [server db*] :as components} params]
   (when-let [parent-process-id (:process-id params)]
     (liveness-probe/start! parent-process-id log-wrapper-fn #(exit server)))
+  (swap! db* assoc :pure-config? (-> params :initialization-options :pure-config boolean))
   (handlers/initialize (with-config components) params))
 
 (defmethod lsp.server/receive-notification "initialized" [_ components _params]

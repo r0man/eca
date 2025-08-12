@@ -54,7 +54,7 @@
           :client-info (:client-info params)
           :workspace-folders (:workspace-folders params)
           :client-capabilities (:capabilities params)
-          :chat-behavior (or (-> params :initialization-options :chat-behavior) (:chat-behavior @db*)))
+          :chat-default-behavior (or (-> params :initialization-options :chat-behavior) (:chat-default-behavior @db*)))
    (initialize-models! db* config)
    (db/load-db-from-cache! db*)
    {:models (keys (:models @db*))

@@ -100,7 +100,8 @@
 (def ollama-model-prefix "ollama/")
 
 (defn all [db]
-  (deep-merge initial-config
-              (config-from-envvar)
-              (config-from-global-file)
-              (config-from-local-file (:workspace-folders db))))
+  (let [pure-config? (:pure-config? db)]
+    (deep-merge initial-config
+                (when-not pure-config? (config-from-envvar))
+                (when-not pure-config? (config-from-global-file))
+                (when-not pure-config? (config-from-local-file (:workspace-folders db))))))
