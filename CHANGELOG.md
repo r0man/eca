@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.24.3
+
 - Fix initializationOptions config merge.
 - Fix default claude model.
 
