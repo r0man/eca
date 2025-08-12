@@ -104,7 +104,6 @@ jobs:
 
       - name: Build static Linux native image
         env:
-          ECA_JAR: "eca.jar"
           ECA_XMX: "-J-Xmx6g"
           ECA_STATIC: true
           ECA_MUSL: true
