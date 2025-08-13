@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.25.0
+
 - Improve plan-mode to do file changes with diffs.
 
 ## 0.24.3
