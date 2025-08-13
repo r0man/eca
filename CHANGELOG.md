@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.26.0
+
 - Support manual approval for specific tools. #44
 
 ## 0.25.0
