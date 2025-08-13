@@ -201,6 +201,60 @@
         "allDeclaredMethods":true
     },
     {
+        "name":"io.modelcontextprotocol.spec.McpSchema$Result",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$Annotations",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$GetPromptResult",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$PromptMessage",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$ReadResourceResult",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$ResourceContents",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$TextResourceContents",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$BlobResourceContents",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
+        "name":"io.modelcontextprotocol.spec.McpSchema$Content",
+        "allDeclaredFields":true,
+        "allDeclaredConstructors":true,
+        "allDeclaredMethods":true
+    },
+    {
         "name":"io.modelcontextprotocol.spec.McpSchema$TextContent",
         "allDeclaredFields":true,
         "allDeclaredConstructors":true,
