@@ -107,7 +107,6 @@
                                      :state :running
                                      :text "Parsing given context"}))
   (let [db @db*
-        manual-approval? (get-in config [:toolCall :manualApproval] false)
         all-models (models/all)
         provider (get-in all-models [model :provider])
         rules (f.rules/all config (:workspace-folders db))
@@ -175,7 +174,7 @@
                                                :origin (tool-name->origin name all-tools)
                                                :arguments-text (get-in @tool-call-by-id* [id :args])
                                                :id id
-                                               :manual-approval manual-approval?}
+                                               :manual-approval (f.tools/manual-approval? name config)}
                                               :summary (f.tools/tool-call-summary all-tools name nil))))
       :on-tools-called (fn [tool-calls]
                          (assert-chat-not-stopped! chat-ctx)
@@ -188,7 +187,8 @@
                                         (let [approved?* (promise)
                                               details (f.tools/get-tool-call-details name arguments)
                                               summary (f.tools/tool-call-summary all-tools name arguments)
-                                              origin (tool-name->origin name all-tools)]
+                                              origin (tool-name->origin name all-tools)
+                                              manual-approval? (f.tools/manual-approval? name config)]
                                          ;; Inform UI the tool is about to run and store approval promise
                                           (send-content! chat-ctx :assistant
                                                          (assoc-some

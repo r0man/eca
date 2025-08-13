@@ -112,6 +112,15 @@
                                                                         (assoc :type :mcp)
                                                                         (update :tools #(mapv with-tool-status %)))))})))
 
+(defn manual-approval? [name config]
+  (let [manual-approval? (get-in config [:toolCall :manualApproval] nil)]
+    (logger/info manual-approval?
+                 (coll? manual-approval?)
+                 name)
+    (if (coll? manual-approval?)
+      (some #(= name (str %)) manual-approval?)
+      manual-approval?)))
+
 (defn tool-call-summary [all-tools name args]
   (when-let [summary-fn (:summary-fn (first (filter #(= name (:name %))
                                                     all-tools)))]

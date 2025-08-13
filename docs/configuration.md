@@ -205,7 +205,7 @@ interface Config {
     };
     disabledTools: string[],
     toolCall?: {
-      manualApproval?: boolean,
+      manualApproval?: boolean | string[], // manual approve all tools or the specified tools
     };
     mcpTimeoutSeconds: number;
     mcpServers: {[key: string]: {
@@ -255,7 +255,7 @@ interface Config {
                             "excludeCommands": []}},
   "disabledTools": [],
   "toolCall": {
-    "manualApproval": false,
+    "manualApproval": null,
   },
   "mcpTimeoutSeconds" : 10,
   "mcpServers" : [],

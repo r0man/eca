@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Support manual approval for specific tools. #44
+
 ## 0.25.0
 
 - Improve plan-mode to do file changes with diffs.
