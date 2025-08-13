@@ -44,6 +44,8 @@ Provides access to run shell commands, useful to run build tools, tests, and oth
 
 ### Contexts
 
+![](./images/contexts.png)
+
 User can include contexts to the chat (`@`), including MCP resources, which can help LLM generate output with better quality.
 Here are the current supported contexts types:
 
@@ -53,6 +55,8 @@ Here are the current supported contexts types:
 - `mcpResource`: resources provided by running MCPs servers.
 
 ### Commands
+
+![](./images/commands.png)
 
 Eca supports commands that usually are triggered via shash (`/`) in the chat, completing in the chat will show the known commands which include ECA commands, MCP prompts and resources.
 
