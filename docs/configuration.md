@@ -113,8 +113,9 @@ It's possible to configure ECA to be aware of custom LLM providers if they follo
     "my-company": {
        "api": "openai",
        "urlEnv": "MY_COMPANY_API_URL", // or "url": "https://litellm.my-company.com",
+       // "completionUrlRelativePath": "/v1/responses", // only if default is not enough,
        "keyEnv": "MY_COMPANY_API_KEY", // or "key": "123",
-       "models": ["gpt-4.1", "deepseek-r1"],
+       "models": ["gpt-5", "deepseek-r1"],
        "defaultModel": "deepseek-r1"
     }
   }
@@ -219,6 +220,7 @@ interface Config {
         defaultModel?: string;
         url?: string;
         urlEnv?: string;
+        completionUrlRelativePath?: string;
         key?: string;
         keyEnv?: string;
     }};

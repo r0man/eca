@@ -15,8 +15,8 @@
 
 (def base-url "https://api.openai.com")
 
-(defn ^:private base-completion-request! [{:keys [rid body api-url api-key on-error on-response]}]
-  (let [url (str api-url responses-path)]
+(defn ^:private base-completion-request! [{:keys [rid body api-url url-relative-path api-key on-error on-response]}]
+  (let [url (str api-url (or url-relative-path responses-path))]
     (llm-util/log-request logger-tag rid url body)
     (http/post
      url
@@ -69,7 +69,7 @@
                                               %) c))))))
         past-messages))
 
-(defn completion! [{:keys [model user-messages instructions reason? api-key api-url
+(defn completion! [{:keys [model user-messages instructions reason? api-key api-url url-relative-path
                            max-output-tokens past-messages tools web-search extra-payload]}
                    {:keys [on-message-received on-error on-prepare-tool-call on-tools-called on-reason on-usage-updated]}]
   (let [input (concat (normalize-messages past-messages)
@@ -168,6 +168,7 @@
                    {:rid (llm-util/gen-rid)
                     :body (assoc body :input input)
                     :api-url api-url
+                    :url-relative-path url-relative-path
                     :api-key api-key
                     :on-error on-error
                     :on-response handle-response})
@@ -186,6 +187,7 @@
      {:rid (llm-util/gen-rid)
       :body body
       :api-url api-url
+      :url-relative-path url-relative-path
       :api-key api-key
       :on-error on-error
       :on-response on-response-fn})))

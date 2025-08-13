@@ -26,8 +26,8 @@
                       :max_uses 10
                       :cache_control {:type "ephemeral"}})))
 
-(defn ^:private base-request! [{:keys [rid body api-url api-key content-block* on-error on-response]}]
-  (let [url (str api-url messages-path)
+(defn ^:private base-request! [{:keys [rid body api-url api-key url-relative-path content-block* on-error on-response]}]
+  (let [url (str api-url (or url-relative-path messages-path))
         reason-id (str (random-uuid))]
     (llm-util/log-request logger-tag rid url body)
     (http/post
@@ -96,7 +96,7 @@
 
 (defn completion!
   [{:keys [model user-messages temperature instructions max-output-tokens
-           api-url api-key reason? past-messages tools web-search extra-payload]
+           api-url api-key url-relative-path reason? past-messages tools web-search extra-payload]
     :or {temperature 1.0}}
    {:keys [on-message-received on-error on-reason on-prepare-tool-call on-tools-called on-usage-updated]}]
   (let [messages (concat (normalize-messages past-messages)
@@ -175,6 +175,7 @@
                                                :body (assoc body :messages messages)
                                                :api-url api-url
                                                :api-key api-key
+                                               :url-relative-path url-relative-path
                                                :content-block* (atom nil)
                                                :on-error on-error
                                                :on-response handle-response}))
@@ -191,6 +192,7 @@
       :body body
       :api-url api-url
       :api-key api-key
+      :url-relative-path url-relative-path
       :content-block* (atom nil)
       :on-error on-error
       :on-response on-response-fn})))

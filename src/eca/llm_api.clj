@@ -169,7 +169,8 @@
                             "anthropic" llm-providers.anthropic/completion!
                             (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
               url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))
-              key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))]
+              key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))
+              url-relative-path (:completionUrlRelativePath provider-config)]
           (provider-fn
            {:model model
             :instructions instructions
@@ -180,6 +181,7 @@
             :tools tools
             :extra-payload extra-payload
             :api-url url
+            :url-relative-path url-relative-path
             :api-key key}
            callbacks))
 

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Fix anthropic api for custom providers.
+- Support customize completion api url via custom providers.
+
 ## 0.26.0
 
 - Support manual approval for specific tools. #44
