@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.26.1
+
 - Fix anthropic api for custom providers.
 - Support customize completion api url via custom providers.
 
