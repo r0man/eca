@@ -37,7 +37,14 @@ _Demo using [eca-vscode](https://github.com/editor-code-assistant/eca-vscode)_
 
 A Free and OpenSource editor-agnostic tool that aims to easily link LLMs <-> Editors, giving the best UX possible for AI pair programming using a well-defined protocol. The server is written in Clojure and heavily inspired by the [LSP protocol](https://microsoft.github.io/language-server-protocol/) which is a success case for this kind of integration.
 
-The protocol makes easier for other editors integrate and having a server in the middle helps adding more features quickly like exporting metrics of features usage or single way to configure it for any editor.
+The protocol makes easier for other editors integrate and having a server in the middle helps adding more features quickly, some examples:
+- Tool call management
+- Multiple LLM interaction 
+- Telemetry of features usage
+- Single way to configure for any editor
+- Same UX, easy to onboard people and teams. 
+
+With the LLMs models race, the differences between them tend to be irrelevant in the future, but UX on how to edit code or plan changes is something that will exist, ECA helps editors focus on that.
 
 ## Getting started
 
