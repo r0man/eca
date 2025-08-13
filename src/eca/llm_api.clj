@@ -177,7 +177,6 @@
             :max-output-tokens max-output-tokens
             :reason? (and reason? (:reason? model-config))
             :past-messages past-messages
-            :web-search web-search
             :tools tools
             :extra-payload extra-payload
             :api-url url

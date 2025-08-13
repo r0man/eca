@@ -142,9 +142,10 @@
                                                                      :state :running
                                                                      :text "Generating"}))
       :on-usage-updated (fn [usage]
-                          (send-content! chat-ctx :system
-                                         (merge {:type :usage}
-                                                (usage-msg->usage usage model chat-ctx))))
+                          (when-let [usage (usage-msg->usage usage model chat-ctx)]
+                            (send-content! chat-ctx :system
+                                           (merge {:type :usage}
+                                                  usage))))
       :on-message-received (fn [{:keys [type] :as msg}]
                              (assert-chat-not-stopped! chat-ctx)
                              (case type
