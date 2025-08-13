@@ -2,6 +2,7 @@
   "This ns centralizes all available tools for LLMs including
    eca native tools and MCP servers."
   (:require
+   [babashka.fs :as fs]
    [clojure.string :as string]
    [eca.diff :as diff]
    [eca.features.tools.filesystem :as f.tools.filesystem]
@@ -10,8 +11,7 @@
    [eca.features.tools.util :as tools.util]
    [eca.logger :as logger]
    [eca.messenger :as messenger]
-   [eca.shared :refer [assoc-some]]
-   [babashka.fs :as fs])
+   [eca.shared :refer [assoc-some]])
   (:import
    [java.util Map]))
 
@@ -39,11 +39,16 @@
 (defn all-tools
   "Returns all available tools, including both native ECA tools
    (like filesystem and shell tools) and tools provided by MCP servers."
-  [db config]
+  [behavior db config]
   (let [disabled-tools (set (get-in config [:disabledTools] []))]
     (filterv
      (fn [tool]
-       (not (contains? disabled-tools (:name tool))))
+       (and (not (contains? disabled-tools (:name tool)))
+            ;; check for enabled-fn if present
+            ((or (:enabled-fn tool) (constantly true))
+             {:behavior behavior
+              :db db
+              :config config})))
      (concat
       (mapv #(assoc % :origin :native) (native-tools db config))
       (mapv #(assoc % :origin :mcp) (f.mcp/all-tools db))))))
@@ -127,17 +132,18 @@
                             :linesAdded added
                             :linesRemoved removed
                             :diff diff})))
-    "eca_edit_file" (let [path (get arguments "path")
-                          original-content (get arguments "original_content")
-                          new-content (get arguments "new_content")
-                          all? (get arguments "all_occurrences")]
-                      (when-let [{:keys [original-full-content
-                                         new-full-content]} (and path (fs/exists? path) original-content new-content
-                                                                 (f.tools.filesystem/file-change-full-content path original-content new-content all?))]
-                        (let [{:keys [added removed diff]} (diff/diff original-full-content new-full-content path)]
-                          {:type :fileChange
-                           :path path
-                           :linesAdded added
-                           :linesRemoved removed
-                           :diff diff})))
+    ("eca_plan_edit_file"
+     "eca_edit_file") (let [path (get arguments "path")
+                            original-content (get arguments "original_content")
+                            new-content (get arguments "new_content")
+                            all? (get arguments "all_occurrences")]
+                        (when-let [{:keys [original-full-content
+                                           new-full-content]} (and path (fs/exists? path) original-content new-content
+                                                                   (f.tools.filesystem/file-change-full-content path original-content new-content all?))]
+                          (let [{:keys [added removed diff]} (diff/diff original-full-content new-full-content path)]
+                            {:type :fileChange
+                             :path path
+                             :linesAdded added
+                             :linesRemoved removed
+                             :diff diff})))
     nil))

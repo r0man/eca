@@ -200,8 +200,8 @@ interface Config {
     systemPromptTemplateFile?: string;
     nativeTools: {
         filesystem: {enabled: boolean};
-         shell: {enabled: boolean;
-                 excludeCommands: string[]};
+        shell: {enabled: boolean,
+                excludeCommands: string[]};
     };
     disabledTools: string[],
     toolCall?: {

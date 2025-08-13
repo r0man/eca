@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Improve plan-mode to do file changes with diffs.
+
 ## 0.24.3
 
 - Fix initializationOptions config merge.

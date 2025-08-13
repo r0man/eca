@@ -17,10 +17,10 @@
   (System/exit (or status 1)))
 
 (defn ^:private version []
-  (->> [(str "eca " (config/eca-version))]
-       (string/join \newline)))
+  (str "eca " (config/eca-version)))
 
-(defn ^:private help [options-summary]
+(defn ^:private help
+  [options-summary]
   (->> ["ECA - Editor Code Assistant"
         ""
         "Usage: eca <command> [<options>]"

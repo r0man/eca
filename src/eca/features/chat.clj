@@ -115,7 +115,7 @@
         repo-map* (delay (f.index/repo-map db {:as-string? true}))
         instructions (f.prompt/build-instructions refined-contexts rules repo-map* (or behavior (:chat-default-behavior db)) config)
         past-messages (get-in db [:chats chat-id :messages] [])
-        all-tools (f.tools/all-tools @db* config)
+        all-tools (f.tools/all-tools behavior @db* config)
         received-msgs* (atom "")
         received-thinking* (atom "")
         tool-call-by-id* (atom {:args {}})

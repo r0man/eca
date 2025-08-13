@@ -171,18 +171,31 @@
       {:original-full-content original-full-content
        :new-full-content new-full-content})))
 
-(defn ^:private edit-file [arguments {:keys [db]}]
+(defn ^:private change-file [arguments {:keys [db]} diff?]
   (or (tools.util/invalid-arguments arguments (concat (path-validations db)
                                                       [["path" fs/readable? "File $path is not readable"]]))
       (let [path (get arguments "path")
             original-content (get arguments "original_content")
             new-content (get arguments "new_content")
+            new-content (if diff?
+                          (str "<<<<<<< HEAD\n"
+                               original-content
+                               "\n=======\n"
+                               new-content
+                               "\n>>>>>>> eca\n")
+                          new-content)
             all? (boolean (get arguments "all_occurrences"))]
         (if-let [{:keys [new-full-content]} (file-change-full-content path original-content new-content all?)]
           (do
             (spit path new-full-content)
             (tools.util/single-text-content (format "Successfully replaced content in %s." path)))
           (tools.util/single-text-content (format "Original content not found in %s" path) :error)))))
+
+(defn ^:private edit-file [arguments components]
+  (change-file arguments components false))
+
+(defn ^:private plan-edit-file [arguments components]
+  (change-file arguments components true))
 
 (defn ^:private move-file [arguments {:keys [db]}]
   (let [workspace-dirs (tools.util/workspace-roots-strs db)]
@@ -246,8 +259,9 @@
    {:description  (str "Replace a specific string or content block in a file with new content. "
                        "Finds the exact original content and replaces it with new content. "
                        "Be extra careful to format the original-content exactly correctly, "
-                       "taking extra care with whitespace and newlines. In addition to replacing strings, "
-                       "this can also be used to prepend, append, or delete contents from a file.")
+                       "taking extra care with whitespace and newlines. "
+                       "Avoid replacing whole functions, methods, or classes, change only the needed code. "
+                       "In addition to replacing strings, this can also be used to prepend, append, or delete contents from a file.")
     :parameters  {:type "object"
                   :properties {"path" {:type "string"
                                        :description "The absolute file path to do the replace."}
@@ -259,7 +273,29 @@
                                                   :description "Whether to replace all occurences of the file or just the first one (default)"}}
                   :required ["path" "original_content" "new_content"]}
     :handler #'edit-file
+    :enabled-fn (fn [{:keys [behavior]}] (not= "plan" behavior))
     :summary-fn (constantly "Editting file")}
+   "eca_plan_edit_file"
+   {:description  (str "Plan a file change where user needs to apply or reject the change. "
+                       "Replace a specific string or content block in a file with new content. "
+                       "Finds the exact original content and replaces it with new content. "
+                       "Be extra careful to format the original-content exactly correctly, "
+                       "taking extra care with whitespace and newlines. "
+                       "Avoid replacing whole functions, methods, or classes, change only the needed code. "
+                       "In addition to replacing strings, this can also be used to prepend, append, or delete contents from a file.")
+    :parameters  {:type "object"
+                  :properties {"path" {:type "string"
+                                       :description "The absolute file path to do the replace."}
+                               "original_content" {:type "string"
+                                                   :description "The exact content to find and replace"}
+                               "new_content" {:type "string"
+                                              :description "The new content to replace the original content with"}
+                               "all_occurrences" {:type "boolean"
+                                                  :description "Whether to replace all occurences of the file or just the first one (default)"}}
+                  :required ["path" "original_content" "new_content"]}
+    :handler #'plan-edit-file
+    :enabled-fn (fn [{:keys [behavior]}] (= "plan" behavior))
+    :summary-fn (constantly "Planning edit")}
    "eca_move_file"
    {:description (str "Move or rename files and directories. Can move files between directories "
                       "and rename them in a single operation. If the destination exists, the "
