@@ -4,6 +4,15 @@
 
 Chat is the main feature of ECA, allowing user to talk with LLM to behave like an agent, making changes using tools or just planning changes and next steps.
 
+### Behaviors
+
+![](./images/chat-behaviors.png)
+
+Behavior affect the prompt passed to LLM and the tools to include, the current supported behaviors are:
+
+- `agent`: Make changes to code via file changing tools.
+- `plan`: Useful to plan changes and define better LLM plan before changing code via agent mode.
+
 ### Tools
 
 ECA leverage tools to give more power to the LLM, this is the best way to make LLMs have more context about your codebase and behave like an agent.
