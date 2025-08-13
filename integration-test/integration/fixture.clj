@@ -7,7 +7,8 @@
 
 (defn initialize-request
   ([]
-   (initialize-request {:initializationOptions default-init-options}))
+   (initialize-request {:initializationOptions default-init-options
+                        :capabilities {:codeAssistant {:chat {}}}}))
   ([params]
    (initialize-request params [{:name "sample-test"
                                 :uri (h/file->uri (io/file h/default-root-project-path))}]))

@@ -29,8 +29,7 @@
           :chatWelcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
          (eca/request! (fixture/initialize-request
                         {:initializationOptions (merge fixture/default-init-options
-                                                       {:chatBehavior "plan"})
-                         :capabilities {:codeAssistant {:chat {}}}})))))
+                                                       {:chatBehavior "plan"})})))))
 
   (testing "initialized notification"
     (eca/notify! (fixture/initialized-notification)))
@@ -78,5 +77,4 @@
                                                                      :urlEnv "MY_CUSTOM_API_URL"
                                                                      :keyEnv "MY_CUSTOM_API_KEY"
                                                                      :models ["foo-1" "bar-2"]
-                                                                     :defaultModel "bar-2"}}})
-                         :capabilities {:codeAssistant {:chat {}}}}))))))
+                                                                     :defaultModel "bar-2"}}})}))))))
