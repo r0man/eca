@@ -198,8 +198,7 @@
              (h/messages)))))))
 
 (deftest basic-tool-calling-prompt-test
-  (testing "Asking to list directories, LLM will check
-for allowed directories and then list files"
+  (testing "Asking to list directories, LLM will check for allowed directories and then list files"
     (h/reset-components!)
     (let [{:keys [chat-id]}
           (complete!
