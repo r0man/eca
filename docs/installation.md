@@ -4,7 +4,16 @@
 
 Eca is written in Clojure and compiled into a native binary via graalvm. You can download the [native binaries from Github Releases](https://github.com/editor-code-assistant/eca/releases) or use one of the methods below:
 
-## Script (recommended)
+## Editor (recommended)
+
+ECA is already downloaded automatically by your ECA editor plugin, so you just need to install the plugin for your editor:
+
+- [Emacs](https://github.com/editor-code-assistant/eca-emacs)
+- [VsCode](https://github.com/editor-code-assistant/eca-vscode)
+- [Vim](https://github.com/editor-code-assistant/eca-nvim)
+- Intellij: Planned, help welcome
+
+## Script (recommended if manual installing)
 
 Stable release:
 
