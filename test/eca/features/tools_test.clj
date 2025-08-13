@@ -15,7 +15,8 @@
                      :parameters {"type" "object"
                                   :properties {"code" {:type "string"}}}
                      :origin :mcp}])
-         (f.tools/all-tools {:mcp-clients {:clojureMCP
+         (f.tools/all-tools "agent"
+                            {:mcp-clients {:clojureMCP
                                            {:tools [{:name "eval"
                                                      :description "eval code"
                                                      :parameters {"type" "object"
@@ -27,11 +28,21 @@
                      :description string?
                      :parameters some?
                      :origin :native}])
-         (f.tools/all-tools {} {:nativeTools {:filesystem {:enabled true}}}))))
+         (f.tools/all-tools "agent" {} {:nativeTools {:filesystem {:enabled true}}}))))
   (testing "Do not include disabled native tools"
     (is (match?
          (m/embeds [(m/mismatch {:name "eca_directory_tree"})])
-         (f.tools/all-tools {} {:nativeTools {:filesystem {:enabled false}}}))))
+         (f.tools/all-tools "agent" {} {:nativeTools {:filesystem {:enabled false}}}))))
+  (testing "Do not include edit tool if plan behavior"
+    (is (match?
+         (m/embeds [{:name "eca_plan_edit_file"}
+                    (m/mismatch {:name "eca_edit_file"})])
+         (f.tools/all-tools "plan" {} {:nativeTools {:filesystem {:enabled true}}}))))
+  (testing "Do not include plan edit tool if agent behavior"
+    (is (match?
+         (m/embeds [(m/mismatch {:name "eca_plan_edit_file"})
+                    {:name "eca_edit_file"}])
+         (f.tools/all-tools "agent" {} {:nativeTools {:filesystem {:enabled true}}}))))
   (testing "Replace special vars description"
     (is (match?
          (m/embeds [{:name "eca_directory_tree"
@@ -40,5 +51,5 @@
                      :origin :native}])
          (with-redefs [f.tools.filesystem/definitions {"eca_directory_tree" {:description "Only in $workspaceRoots"
                                                                              :parameters {}}}]
-           (f.tools/all-tools {:workspace-folders [{:name "foo" :uri (h/file-uri "file:///path/to/project/foo")}]}
+           (f.tools/all-tools "agent" {:workspace-folders [{:name "foo" :uri (h/file-uri "file:///path/to/project/foo")}]}
                               {:nativeTools {:filesystem {:enabled true}}}))))))
