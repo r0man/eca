@@ -10,28 +10,29 @@ Chat is the main feature of ECA, allowing user to talk with LLM to behave like a
 
 Behavior affect the prompt passed to LLM and the tools to include, the current supported behaviors are:
 
-- `agent`: Make changes to code via file changing tools.
 - `plan`: Useful to plan changes and define better LLM plan before changing code via agent mode.
+- `agent`: Make changes to code via file changing tools.
 
 ### Tools
 
+![](./images/tools.png)
+
 ECA leverage tools to give more power to the LLM, this is the best way to make LLMs have more context about your codebase and behave like an agent.
-It supports both MCP server tools + ECA native tools, for more details, check [configuration]().
+It supports both MCP server tools + ECA native tools.
 
 ### Native tools
 
 ECA support built-in tools to avoid user extra installation and configuration, these tools are always included on models requests that support tools and can be [disabled/configured via config](./configuration.md) `nativeTools`.
 
-Some native tools like `filesystem` have MCP alternatives, but ECA having them built-in avoid the need to external dependencies like npx.
-
 #### Filesystem
 
-Provides access to filesystem under workspace root, listing and reading files and directories a subset of [official MCP filesystem](https://mcpserverhub.com/servers/filesystem), important for agentic operations, without the need to support NPM or other tools.
+Provides access to filesystem under workspace root, listing, reading and writing files, important for agentic operations.
 
 - `eca_directory_tree`: list a directory as a tree (can be recursive).
 - `eca_read_file`: read a file content.
 - `eca_write_file`: write content to a new file.
 - `eca_edit_file`: replace lines of a file with a new content.
+- `eca_plan_edit_file`: Only used in plan mode, replace lines of a file with a new content.
 - `eca_move_file`: move/rename a file.
 - `eca_grep`: ripgrep/grep for paths with specified content.
 
