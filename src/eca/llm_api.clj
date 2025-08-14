@@ -12,19 +12,6 @@
 
 (def ^:private logger-tag "[LLM-API]")
 
-(defn extra-models [config]
-  (let [ollama-host (:host (:ollama config))
-        ollama-port (:port (:ollama config))]
-    (mapv
-     (fn [{:keys [model] :as ollama-model}]
-       (let [capabilities (llm-providers.ollama/model-capabilities {:host ollama-host :port ollama-port :model model})]
-         (assoc ollama-model
-                :tools (and (get-in config [:ollama :useTools] true)
-                            (boolean (some #(= % "tools") capabilities)))
-                :reason? (and (get-in config [:ollama :think] true)
-                              (boolean (some #(= % "thinking") capabilities))))))
-     (llm-providers.ollama/list-models {:host ollama-host :port ollama-port}))))
-
 ;; TODO ask LLM for the most relevant parts of the path
 (defn refine-file-context [path lines-range]
   (cond
@@ -60,6 +47,23 @@
   (or (:openaiApiUrl config)
       (config/get-env "OPENAI_API_URL")
       llm-providers.openai/base-url))
+
+(defn ^:private ollama-api-url [config]
+  (or (:ollamaApiUrl config)
+      (config/get-env "OLLAMA_API_URL")
+      llm-providers.ollama/base-url))
+
+(defn extra-models [config]
+  (let [ollama-api-url (ollama-api-url config)]
+    (mapv
+     (fn [{:keys [model] :as ollama-model}]
+       (let [capabilities (llm-providers.ollama/model-capabilities {:api-url ollama-api-url :model model})]
+         (assoc ollama-model
+                :tools (and (get-in config [:ollama :useTools] true)
+                            (boolean (some #(= % "tools") capabilities)))
+                :reason? (and (get-in config [:ollama :think] true)
+                              (boolean (some #(= % "thinking") capabilities))))))
+     (llm-providers.ollama/list-models {:api-url ollama-api-url}))))
 
 (defn default-model
   "Returns the default LLM model checking this waterfall:
@@ -161,8 +165,7 @@
 
         (string/starts-with? model config/ollama-model-prefix)
         (llm-providers.ollama/completion!
-         {:host (-> config :ollama :host)
-          :port (-> config :ollama :port)
+         {:api-url (ollama-api-url config)
           :reason? (:reason? model-config)
           :model (string/replace-first model config/ollama-model-prefix "")
           :instructions instructions

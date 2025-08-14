@@ -2,6 +2,7 @@
   (:require
    [llm-mock.anthropic :as llm-mock.anthropic]
    [llm-mock.openai :as llm-mock.openai]
+   [llm-mock.ollama :as llm-mock.ollama]
    [org.httpkit.server :as hk]))
 
 (def port 6660)
@@ -18,6 +19,18 @@
       (and (= :post request-method)
            (= uri "/anthropic/v1/messages"))
       (llm-mock.anthropic/handle-anthropic-messages req)
+
+      (and (= :get request-method)
+           (= uri "/ollama/api/tags"))
+      (llm-mock.ollama/handle-ollama-tags req)
+
+      (and (= :post request-method)
+           (= uri "/ollama/api/show"))
+      (llm-mock.ollama/handle-ollama-show req)
+
+      (and (= :post request-method)
+           (= uri "/ollama/api/chat"))
+      (llm-mock.ollama/handle-ollama-chat req)
 
       :else {:status 404 :headers {} :body "not found"})))
 

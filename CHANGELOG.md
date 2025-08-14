@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- breaking: Replace configs `ollama host` and `ollama port` with `ollamaApiUrl`.
+
 ## 0.26.2
 
 - Fix `chat/queryContext` to not return already added contexts

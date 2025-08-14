@@ -20,6 +20,7 @@
    :anthropicApiKey nil
    :openaiApiUrl nil
    :anthropicApiUrl nil
+   :ollamaApiUrl nil
    :rules []
    :commands []
    :nativeTools {:filesystem {:enabled true}
@@ -38,9 +39,7 @@
             "claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
-   :ollama {:host "http://localhost"
-            :port 11434
-            :useTools true
+   :ollama {:useTools true
             :think true}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :customProviders {}

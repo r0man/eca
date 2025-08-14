@@ -14,15 +14,13 @@
 (def ^:private list-models-url "%s/api/tags")
 (def ^:private show-model-url "%s/api/show")
 
-(defn ^:private base-url [host port]
-  (or (System/getenv "OLLAMA_API_BASE")
-      (str host ":" port)))
+(def base-url "http://localhost:11434")
 
-(defn list-models [{:keys [host port]}]
+(defn list-models [{:keys [api-url]}]
   (try
     (let [rid (llm-util/gen-rid)
           {:keys [status body]} (http/get
-                                 (format list-models-url (base-url host port))
+                                 (format list-models-url api-url)
                                  {:throw-exceptions? false
                                   :as :json})]
       (if (= 200 status)
@@ -36,11 +34,11 @@
       (logger/warn logger-tag "Error listing running models:" (.getMessage e))
       [])))
 
-(defn model-capabilities [{:keys [host port model]}]
+(defn model-capabilities [{:keys [model api-url]}]
   (try
     (let [rid (llm-util/gen-rid)
           {:keys [status body]} (http/post
-                                 (format show-model-url (base-url host port))
+                                 (format show-model-url api-url)
                                  {:throw-exceptions? false
                                   :body (json/generate-string {:model model})
                                   :as :json})]
@@ -96,7 +94,7 @@
             msg))
         past-messages))
 
-(defn completion! [{:keys [model user-messages reason? instructions host port past-messages tools]}
+(defn completion! [{:keys [model user-messages reason? instructions api-url past-messages tools]}
                    {:keys [on-message-received on-error on-prepare-tool-call on-tools-called
                            on-reason extra-payload]}]
   (let [messages (concat
@@ -108,7 +106,7 @@
                      :tools (->tools tools)
                      :stream true}
                     extra-payload)
-        url (format chat-url (base-url host port))
+        url (format chat-url api-url)
         tool-calls* (atom {})
         on-response-fn (fn handle-response [rid _event data reasoning?* reason-id]
                          (let [{:keys [message done_reason]} data]

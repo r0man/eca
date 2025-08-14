@@ -4,7 +4,7 @@
    [integration.helper :as h]
    [llm-mock.server :as llm-mock.server]))
 
-(def ^:private base-llm-mock-url
+(def base-llm-mock-url
   (str "http://localhost:" llm-mock.server/port))
 
 (def default-init-options {:pureConfig true

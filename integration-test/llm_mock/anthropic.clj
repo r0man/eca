@@ -140,7 +140,7 @@
                               (some #(= "tool_result" (:type %)) content))
                             (:messages body))]
     (if-not second-stage?
-      (let [args-json (json/generate-string {:path (h/project-path->canon-path "resources")})]
+      (do
         ;; Thinking prelude
         (sse-send! ch "content_block_start"
                    {:type "content_block_start"

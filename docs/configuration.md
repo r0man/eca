@@ -195,9 +195,10 @@ Example:
 ```typescript
 interface Config {
     openaiApiKey?: string;
-    anthropicApiKey?: string;
     openaiApiUrl?: string;
+    anthropicApiKey?: string;
     anthropicApiUrl?: string;
+    ollamaApiUrl: string;
     rules: [{path: string;}];
     commands: [{path: string;}];
     systemPromptTemplateFile?: string;
@@ -251,9 +252,10 @@ interface Config {
 ```javascript
 {
   "openaiApiKey" : null,
-  "anthropicApiKey" : null,
   "openaiApiUrl" : null,
+  "anthropicApiKey" : null,
   "anthropicApiUrl" : null,
+  "ollamaApiUrl": "http://localhost:11434"
   "rules" : [],
   "commands" : [],
   "nativeTools": {"filesystem": {"enabled": true},
@@ -268,8 +270,6 @@ interface Config {
   "customProviders": {},
   "models": {},
   "ollama" : {
-    "host" : "http://localhost",
-    "port" : 11434,
     "useTools": true,
     "think": true
   },
