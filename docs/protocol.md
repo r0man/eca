@@ -657,7 +657,7 @@ interface ToolCalledContent {
         /**
          * The content of this output
          */
-        content: string; 
+        text: string; 
     }];
     
     /**

@@ -3,19 +3,12 @@
    [clojure.test :refer [deftest is testing]]
    [integration.eca :as eca]
    [integration.fixture :as fixture]
+   [integration.helper :refer [match-content] :as h]
    [llm-mock.mocks :as llm.mocks]
    [matcher-combinators.matchers :as m]
    [matcher-combinators.test :refer [match?]]))
 
 (eca/clean-after-test)
-
-(defn match-content [chat-id request-id role content]
-  (is (match?
-       {:chatId chat-id
-        :requestId request-id
-        :role role
-        :content content}
-       (eca/client-awaits-server-notification :chat/contentReceived))))
 
 (deftest simple-text
   (eca/start-process!)
@@ -208,5 +201,106 @@
                        :encrypted_content "enc-123"}
                       {:role "assistant" :content [{:type "output_text" :text "hello there!"}]}
                       {:role "user" :content [{:type "input_text" :text "how are you?"}]}]
+              :instructions (m/pred string?)}
+             llm.mocks/*last-req-body*))))))
+
+(deftest tool-calling
+  (eca/start-process!)
+
+  (eca/request! (fixture/initialize-request))
+  (eca/notify! (fixture/initialized-notification))
+  (let [chat-id* (atom nil)]
+    (testing "We ask what files LLM see"
+      (llm.mocks/set-case! :tool-calling-0)
+      (let [req-id 0
+            resp (eca/request! (fixture/chat-prompt-request
+                                {:request-id req-id
+                                 :model "gpt-5"
+                                 :message "What files you see?"}))
+            chat-id (reset! chat-id* (:chatId resp))]
+
+        (is (match?
+             {:chatId (m/pred string?)
+              :model "gpt-5"
+              :status "success"}
+             resp))
+
+        (match-content chat-id req-id "user" {:type "text" :text "What files you see?\n"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Waiting model"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Generating"})
+        (match-content chat-id req-id "assistant" {:type "reasonStarted" :id "123"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "123" :text "I should call tool"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "123" :text " eca_directory_tree"})
+        (match-content chat-id req-id "assistant" {:type "reasonFinished" :id "123"})
+        (match-content chat-id req-id "assistant" {:type "text" :text "I will list files"})
+        (match-content chat-id req-id "assistant" {:type "toolCallPrepare"
+                                                   :origin "native"
+                                                   :id "tool-1"
+                                                   :name "eca_directory_tree"
+                                                   :argumentsText ""
+                                                   :manualApproval false
+                                                   :summary "Listing file tree"})
+        (match-content chat-id req-id "assistant" {:type "toolCallPrepare"
+                                                   :origin "native"
+                                                   :id "tool-1"
+                                                   :name "eca_directory_tree"
+                                                   :argumentsText "{\"pat"
+                                                   :manualApproval false
+                                                   :summary "Listing file tree"})
+        (match-content chat-id req-id "assistant" {:type "toolCallPrepare"
+                                                   :origin "native"
+                                                   :id "tool-1"
+                                                   :name "eca_directory_tree"
+                                                   :argumentsText (str "{\"path\":\"" (h/project-path->canon-path "resources") "\"}")
+                                                   :manualApproval false
+                                                   :summary "Listing file tree"})
+        (match-content chat-id req-id "system" {:type "usage"
+                                                :messageInputTokens 5
+                                                :messageOutputTokens 30
+                                                :sessionTokens 35
+                                                :messageCost (m/pred string?)
+                                                :sessionCost (m/pred string?)})
+        (match-content chat-id req-id "assistant" {:type "toolCallRun"
+                                                   :origin "native"
+                                                   :id "tool-1"
+                                                   :name "eca_directory_tree"
+                                                   :arguments {:path (h/project-path->canon-path "resources")}
+                                                   :manualApproval false
+                                                   :summary "Listing file tree"})
+        (match-content chat-id req-id "assistant" {:type "toolCalled"
+                                                   :origin "native"
+                                                   :id "tool-1"
+                                                   :name "eca_directory_tree"
+                                                   :arguments {:path (h/project-path->canon-path "resources")}
+                                                   :summary "Listing file tree"
+                                                   :error false
+                                                   :outputs [{:type "text" :text (str "[FILE] " (h/project-path->canon-path "resources/file2.md\n")
+                                                                                      "[FILE] " (h/project-path->canon-path "resources/file1.md\n"))}]})
+        (match-content chat-id req-id "assistant" {:type "text" :text "The files I see:\n"})
+        (match-content chat-id req-id "assistant" {:type "text" :text "file1\nfile2\n"})
+        (match-content chat-id req-id "system" {:type "usage"
+                                                :messageInputTokens 5
+                                                :messageOutputTokens 30
+                                                :sessionTokens 70
+                                                :messageCost (m/pred string?)
+                                                :sessionCost (m/pred string?)})
+        (match-content chat-id req-id "system" {:type "progress" :state "finished"})
+        (is (match?
+             {:input [{:role "user" :content [{:type "input_text" :text "What files you see?"}]}
+                      {:type "reasoning"
+                       :id "123"
+                       :summary [{:type "summary_text" :text "I should call tool eca_directory_tree"}]
+                       :encrypted_content "enc-123"}
+                      {:role "assistant" :content [{:type "output_text" :text "I will list files"}]}
+                      {:type "function_call"
+                       :name "eca_directory_tree"
+                       :call_id "tool-1"
+                       :arguments (str "{\"path\":\"" (h/project-path->canon-path "resources") "\"}")}
+                      {:type "function_call_output"
+                       :call_id "tool-1"
+                       :output (str "[FILE] " (h/project-path->canon-path "resources/file2.md\n")
+                                    "[FILE] " (h/project-path->canon-path "resources/file1.md\n\n"))}]
+              :tools (m/embeds
+                      [{:name "eca_directory_tree"}])
               :instructions (m/pred string?)}
              llm.mocks/*last-req-body*))))))

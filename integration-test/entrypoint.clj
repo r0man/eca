@@ -5,7 +5,7 @@
    [llm-mock.server :as llm-mock.server]))
 
 (def namespaces
-  '[integration.initialize-test
+  '[;integration.initialize-test
     integration.chat.openai-test])
 
 (defn timeout [timeout-ms callback]

@@ -2,7 +2,10 @@
   (:require
    [babashka.fs :as fs]
    [clojure.java.io :as io]
-   [clojure.string :as string]))
+   [clojure.string :as string]
+   [clojure.test :refer [is]]
+   [integration.eca :as eca]
+   [matcher-combinators.test :refer [match?]]))
 
 (def windows?
   "Whether is running on MS-Windows."
@@ -17,6 +20,11 @@
       (fs/path "sample-test")
       fs/canonicalize
       str))
+
+(defn project-path->canon-path
+  "Returns the canonical name of the root project's SUB-PATH."
+  [sub-path]
+  (.getCanonicalPath (io/file default-root-project-path sub-path)))
 
 (defn escape-uri
   "Escapes enough URI characters for testing purposes and returns it.
@@ -34,3 +42,11 @@
     (if *escape-uris?*
       (escape-uri uri)
       uri)))
+
+(defn match-content [chat-id request-id role content]
+  (is (match?
+       {:chatId chat-id
+        :requestId request-id
+        :role role
+        :content content}
+       (eca/client-awaits-server-notification :chat/contentReceived))))
