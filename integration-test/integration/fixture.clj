@@ -9,7 +9,9 @@
 
 (def default-init-options {:pureConfig true
                            :openaiApiUrl (str base-llm-mock-url "/openai")
-                           :anthropicApiUrl (str base-llm-mock-url "/anthropic")})
+                           :openaiApiKey "foo"
+                           :anthropicApiUrl (str base-llm-mock-url "/anthropic")
+                           :anthropicApiKey "foo"})
 
 (defn initialize-request
   ([]

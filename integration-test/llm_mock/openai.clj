@@ -53,6 +53,8 @@
   (hk/close ch))
 
 (defn handle-openai-responses [req]
+  (llm.mocks/set-last-req-body! (some-> (slurp (:body req))
+                                        (json/parse-string true)))
   (hk/as-channel
    req
    {:on-open (fn [ch]

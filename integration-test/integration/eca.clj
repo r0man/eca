@@ -4,7 +4,8 @@
    [clojure.core.async :as async]
    [clojure.java.io :as io]
    [clojure.test :refer [use-fixtures]]
-   [integration.client :as client]))
+   [integration.client :as client]
+   [llm-mock.mocks :as llm.mocks]))
 
 (def ^:dynamic *eca-binary-path* nil)
 (def ^:dynamic *eca-process* nil)
@@ -33,7 +34,9 @@
   (some-> *mock-client* client/shutdown)
   (some-> *eca-process* deref) ;; wait for shutdown of client to shutdown server
   (alter-var-root #'*eca-process* (constantly nil))
-  (alter-var-root #'*mock-client* (constantly nil)))
+  (alter-var-root #'*mock-client* (constantly nil))
+  (llm.mocks/set-case! nil)
+  (llm.mocks/set-last-req-body! nil))
 
 (defn clean-after-test []
   (use-fixtures :each (fn [f] (clean!) (f)))
