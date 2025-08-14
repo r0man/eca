@@ -258,7 +258,7 @@
                     f.mcp/get-prompt! (fn [_ args-map _]
                                         (reset! prompt-args args-map)
                                         {:messages [{:role :user :content "test"}]})
-                    f.chat/prompt-messages! (fn [messages _reason? ctx] (reset! invoked? [messages ctx]))]
+                    f.chat/prompt-messages! (fn [messages ctx] (reset! invoked? [messages ctx]))]
         (#'f.chat/send-mcp-prompt! {:prompt "awesome-prompt" :args [42 "yo"]} test-chat-ctx)
         (is (match?
              @prompt-args
