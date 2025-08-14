@@ -69,17 +69,12 @@ To use ECA, you need to configure at least one model with your API key. See the 
 
 ```json
 {
-  "openaiApiKey": "your-openai-api-key-here"
-}
-```
-
-Or for Anthropic:
-
-```json
-{
+  "openaiApiKey": "your-openai-api-key-here",
   "anthropicApiKey": "your-anthropic-api-key-here"
 }
 ```
+
+**Note**: For other providers or custom models, see the [custom providers documentation](./models#setting-up-a-custom-provider).
 
 ### 3. Start chatting
 

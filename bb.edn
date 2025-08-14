@@ -18,8 +18,4 @@
          get-last-changelog-entry make/get-last-changelog-entry
          integration-test make/integration-test
 
-         docs-serve {:doc "Create symlinks for README.md and CHANGELOG.md in docs/ and serve with mkdocs"
-                     :task (do
-                             (shell "ln -sf ../README.md docs/README.md")
-                             (shell "ln -sf ../CHANGELOG.md docs/CHANGELOG.md")
-                             (shell "mkdocs serve -a 0.0.0.0:8005"))}}}
+         docs make/local-webpage}}
