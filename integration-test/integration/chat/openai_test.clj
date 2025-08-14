@@ -1,4 +1,4 @@
-(ns integration.chat-openai-test
+(ns integration.chat.openai-test
   (:require
    [clojure.test :refer [deftest is testing]]
    [integration.eca :as eca]
