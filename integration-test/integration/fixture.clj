@@ -26,3 +26,6 @@
 
 (defn exit-notification []
   [:exit {}])
+
+(defn chat-prompt-request [params]
+  [:chat/prompt params])
