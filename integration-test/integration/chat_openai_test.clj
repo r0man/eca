@@ -28,13 +28,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "gpt-5"
+                                 :model "gpt-4.1"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "gpt-4.1"
               :status "success"}
              resp))
 
@@ -61,13 +61,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "gpt-5"
+                                 :model "gpt-4.1"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "gpt-4.1"
               :status "success"}
              resp))
 
@@ -94,13 +94,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "gpt-5"
+                                 :model "gpt-4.1"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "gpt-4.1"
               :status "success"}
              resp))
 
@@ -124,4 +124,89 @@
                       {:role "user" :content [{:type "input_text" :text "Who's there?"}]}
                       {:role "assistant" :content [{:type "output_text" :text "Foo"}]}
                       {:role "user" :content [{:type "input_text" :text "What foo?"}]}]}
+             llm.mocks/*last-req-body*))))))
+
+(deftest reasoning-text
+  (eca/start-process!)
+
+  (eca/request! (fixture/initialize-request))
+  (eca/notify! (fixture/initialized-notification))
+  (let [chat-id* (atom nil)]
+    (testing "We send a hello message"
+      (llm.mocks/set-case! :reasoning-0)
+      (let [req-id 0
+            resp (eca/request! (fixture/chat-prompt-request
+                                {:request-id req-id
+                                 :model "gpt-5"
+                                 :message "hello!"}))
+            chat-id (reset! chat-id* (:chatId resp))]
+
+        (is (match?
+             {:chatId (m/pred string?)
+              :model "gpt-5"
+              :status "success"}
+             resp))
+
+        (match-content chat-id req-id "user" {:type "text" :text "hello!\n"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Waiting model"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Generating"})
+        (match-content chat-id req-id "assistant" {:type "reasonStarted" :id "123"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "123" :text "I should say"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "123" :text " hello"})
+        (match-content chat-id req-id "assistant" {:type "reasonFinished" :id "123"})
+        (match-content chat-id req-id "assistant" {:type "text" :text "hello"})
+        (match-content chat-id req-id "assistant" {:type "text" :text " there!"})
+        (match-content chat-id req-id "system" {:type "usage"
+                                                :messageInputTokens 5
+                                                :messageOutputTokens 30
+                                                :sessionTokens 35
+                                                :messageCost (m/pred string?)
+                                                :sessionCost (m/pred string?)})
+        (match-content chat-id req-id "system" {:type "progress" :state "finished"})
+        (is (match?
+             {:input [{:role "user" :content [{:type "input_text" :text "hello!"}]}]
+              :instructions (m/pred string?)}
+             llm.mocks/*last-req-body*))))
+
+    (testing "We reply"
+      (llm.mocks/set-case! :reasoning-1)
+      (let [req-id 1
+            resp (eca/request! (fixture/chat-prompt-request
+                                {:request-id req-id
+                                 :chat-id @chat-id*
+                                 :model "gpt-5"
+                                 :message "how are you?"}))
+            chat-id @chat-id*]
+
+        (is (match?
+             {:chatId (m/pred string?)
+              :model "gpt-5"
+              :status "success"}
+             resp))
+
+        (match-content chat-id req-id "user" {:type "text" :text "how are you?\n"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Waiting model"})
+        (match-content chat-id req-id "system" {:type "progress" :state "running" :text "Generating"})
+        (match-content chat-id req-id "assistant" {:type "reasonStarted" :id "234"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "234" :text "I should say"})
+        (match-content chat-id req-id "assistant" {:type "reasonText" :id "234" :text " fine"})
+        (match-content chat-id req-id "assistant" {:type "reasonFinished" :id "234"})
+        (match-content chat-id req-id "assistant" {:type "text" :text "I'm "})
+        (match-content chat-id req-id "assistant" {:type "text" :text " fine"})
+        (match-content chat-id req-id "system" {:type "usage"
+                                                :messageInputTokens 10
+                                                :messageOutputTokens 20
+                                                :sessionTokens 65
+                                                :messageCost (m/pred string?)
+                                                :sessionCost (m/pred string?)})
+        (match-content chat-id req-id "system" {:type "progress" :state "finished"})
+        (is (match?
+             {:input [{:role "user" :content [{:type "input_text" :text "hello!"}]}
+                      {:type "reasoning"
+                       :id "123"
+                       :summary [{:type "summary_text" :text "I should say hello"}]
+                       :encrypted_content "enc-123"}
+                      {:role "assistant" :content [{:type "output_text" :text "hello there!"}]}
+                      {:role "user" :content [{:type "input_text" :text "how are you?"}]}]
+              :instructions (m/pred string?)}
              llm.mocks/*last-req-body*))))))
