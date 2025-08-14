@@ -106,3 +106,11 @@
       1 (entrypoint/run-all (str (first eca-bins-found)))
       (throw (ex-info "More than one eca executables found. Can only work with one."
                       {:bin-found eca-bins-found})))))
+
+(defn local-webpage []
+  (let [files ["CHANGELOG.md" "README.md"]]
+    (doseq [f files]
+      (fs/copy f "docs" {:replace-existing true}))
+    (fs/copy-tree "images" "docs" {:replace-existing true})
+    (p/shell "docker login docker.pkg.github.com")
+    (p/shell (str "docker run --rm -it -p 8000:8000 -v " (fs/cwd) ":/docs ghcr.io/editor-code-assistant/docs-image/docs-image"))))

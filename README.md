@@ -48,12 +48,37 @@ With the LLMs models race, the differences between them tend to be irrelevant in
 
 ## Getting started
 
+### 1. Install the editor plugin
+
 Install the plugin for your editor and ECA server will be downloaded and started automatically:
 
 - [Emacs](https://github.com/editor-code-assistant/eca-emacs)
 - [VsCode](https://github.com/editor-code-assistant/eca-vscode)
 - [Vim](https://github.com/editor-code-assistant/eca-nvim)
 - Intellij: Planned, help welcome
+
+### 2. Set up your first model
+
+To use ECA, you need to configure at least one model with your API key. See the [Models documentation](./models#adding-and-configuring-models) for detailed instructions on:
+
+- Setting up API keys for OpenAI, Anthropic, or Ollama
+- Adding and customizing models
+- Configuring custom providers
+
+**Quick start**: Create a `.eca/config.json` file in your project root with your API key:
+
+```json
+{
+  "openaiApiKey": "your-openai-api-key-here",
+  "anthropicApiKey": "your-anthropic-api-key-here"
+}
+```
+
+**Note**: For other providers or custom models, see the [custom providers documentation](./models#setting-up-a-custom-provider).
+
+### 3. Start chatting
+
+Once your model is configured, you can start using ECA's chat interface in your editor to ask questions, review code, and work together on your project.
 
 ## How it works
 
