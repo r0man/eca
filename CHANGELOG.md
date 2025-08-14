@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix `chat/queryContext` to not return already added contexts
+
 ## 0.26.1
 
 - Fix anthropic api for custom providers.

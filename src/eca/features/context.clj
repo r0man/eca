@@ -52,15 +52,15 @@
                                      (take 200) ;; for performance, user can always make query specific for better results.
                                      (map (fn [file-or-dir]
                                             {:type (if (fs/directory? file-or-dir)
-                                                     :directory
-                                                     :file)
+                                                     "directory"
+                                                     "file")
                                              :path (str (fs/canonicalize file-or-dir))})))
                                     (:workspace-folders @db*))
-        root-dirs (mapv (fn [{:keys [uri]}] {:type :directory
+        root-dirs (mapv (fn [{:keys [uri]}] {:type "directory"
                                              :path (shared/uri->filename uri)})
                         (:workspace-folders @db*))
-        mcp-resources (mapv #(assoc % :type :mcpResource) (f.mcp/all-resources @db*))]
-    (concat [{:type :repoMap}]
+        mcp-resources (mapv #(assoc % :type "mcpResource") (f.mcp/all-resources @db*))]
+    (concat [{:type "repoMap"}]
             root-dirs
             all-subfiles-and-dirs
             mcp-resources)))
