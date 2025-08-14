@@ -29,3 +29,7 @@ result
 
 # emacs
 *~
+
+# docs symlinks
+docs/README.md
+docs/CHANGELOG.md
