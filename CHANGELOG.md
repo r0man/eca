@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.26.2
+
 - Fix `chat/queryContext` to not return already added contexts
 - Fix some MCP prompts that didn't work.
 
