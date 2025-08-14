@@ -120,9 +120,9 @@ Important notes:
 git commit -m \"$(cat <<'EOF'
    Commit message here.
 
-   🤖 Generated with [opencode](https://opencode.ai)
+   🤖 Generated with [eca](https://eca.dev)
 
-   Co-Authored-By: opencode <noreply@opencode.ai>
+   Co-Authored-By: eca <noreply@eca.dev>
    EOF
    )\"
 </example>
@@ -167,7 +167,7 @@ gh pr create --title \"the pr title\" --body \"$(cat <<'EOF'
 ## Test plan
 [Checklist of TODOs for testing the pull request...]
 
-🤖 Generated with [opencode](https://opencode.ai)
+🤖 Generated with [eca](https://eca.dev)
 EOF
 )\"
 </example>
