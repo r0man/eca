@@ -28,7 +28,7 @@
                          (if (fs/directory? path) "DIR" "FILE")
                          path)))
           ""
-          (fs/list-dir @path))))))
+          (sort (fs/list-dir @path)))))))
 
 (def ^:private read-file-max-lines 2000)
 

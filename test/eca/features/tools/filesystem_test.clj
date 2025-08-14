@@ -38,10 +38,8 @@
     (is (match?
          {:error false
           :contents [{:type :text
-                      :text (format (str "[FILE] %s\n"
-                                         "[DIR] %s\n")
-                                    (h/file-path "/foo/bar/baz/some.clj")
-                                    (h/file-path "/foo/bar/baz/qux"))}]}
+                      :text (str "[DIR] "  (h/file-path "/foo/bar/baz/qux") "\n"
+                                 "[FILE] " (h/file-path "/foo/bar/baz/some.clj") "\n")}]}
          (with-redefs [fs/exists? (constantly true)
                        fs/starts-with? (constantly true)
                        fs/list-dir (constantly [(fs/path (h/file-path "/foo/bar/baz/some.clj"))

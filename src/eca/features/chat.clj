@@ -211,6 +211,7 @@
                                           (future
                                             (if @approved?*
                                               (let [result (f.tools/call-tool! name arguments @db* config)]
+                                                (assert-chat-not-stopped! chat-ctx)
                                                 (add-to-history! {:role "tool_call" :content (assoc tool-call
                                                                                                     :details details
                                                                                                     :summary summary
