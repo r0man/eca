@@ -1,5 +1,6 @@
 (ns eca.llm-api
   (:require
+   [babashka.fs :as fs]
    [clojure.string :as string]
    [eca.config :as config]
    [eca.llm-providers.anthropic :as llm-providers.anthropic]
@@ -26,28 +27,38 @@
 
 ;; TODO ask LLM for the most relevant parts of the path
 (defn refine-file-context [path lines-range]
-  (let [content (slurp path)]
-    (if lines-range
-      (let [lines (string/split-lines content)
-            start (dec (:start lines-range))
-            end (min (count lines) (:end lines-range))]
-        (string/join "\n" (subvec lines start end)))
-      content)))
+  (cond
+    (not (fs/exists? path))
+    "File not found"
+
+    (not (fs/readable? path))
+    "File not readable"
+
+    :else
+    (let [content (slurp path)]
+      (if lines-range
+        (let [lines (string/split-lines content)
+              start (dec (:start lines-range))
+              end (min (count lines) (:end lines-range))]
+          (string/join "\n" (subvec lines start end)))
+        content))))
 
 (defn ^:private anthropic-api-key [config]
   (or (:anthropicApiKey config)
       (config/get-env "ANTHROPIC_API_KEY")))
 
-(defn ^:private anthropic-api-url []
-  (or (config/get-env "ANTHROPIC_API_URL")
+(defn ^:private anthropic-api-url [config]
+  (or (:anthropicApiUrl config)
+      (config/get-env "ANTHROPIC_API_URL")
       llm-providers.anthropic/base-url))
 
 (defn ^:private openai-api-key [config]
   (or (:openaiApiKey config)
       (config/get-env "OPENAI_API_KEY")))
 
-(defn ^:private openai-api-url []
-  (or (config/get-env "OPENAI_API_URL")
+(defn ^:private openai-api-url [config]
+  (or (:openaiApiUrl config)
+      (config/get-env "OPENAI_API_URL")
       llm-providers.openai/base-url))
 
 (defn default-model
@@ -129,7 +140,7 @@
           :tools tools
           :web-search web-search
           :extra-payload extra-payload
-          :api-url (openai-api-url)
+          :api-url (openai-api-url config)
           :api-key (openai-api-key config)}
          callbacks)
 
@@ -144,7 +155,7 @@
           :tools tools
           :web-search web-search
           :extra-payload extra-payload
-          :api-url (anthropic-api-url)
+          :api-url (anthropic-api-url config)
           :api-key (anthropic-api-key config)}
          callbacks)
 

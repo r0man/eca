@@ -196,6 +196,8 @@ Example:
 interface Config {
     openaiApiKey?: string;
     anthropicApiKey?: string;
+    openaiApiUrl?: string;
+    anthropicApiUrl?: string;
     rules: [{path: string;}];
     commands: [{path: string;}];
     systemPromptTemplateFile?: string;
@@ -250,6 +252,8 @@ interface Config {
 {
   "openaiApiKey" : null,
   "anthropicApiKey" : null,
+  "openaiApiUrl" : null,
+  "anthropicApiUrl" : null,
   "rules" : [],
   "commands" : [],
   "nativeTools": {"filesystem": {"enabled": true},
@@ -259,8 +263,8 @@ interface Config {
   "toolCall": {
     "manualApproval": null,
   },
-  "mcpTimeoutSeconds" : 10,
-  "mcpServers" : [],
+  "mcpTimeoutSeconds" : 60,
+  "mcpServers" : {},
   "customProviders": {},
   "models": {},
   "ollama" : {
@@ -270,7 +274,7 @@ interface Config {
     "think": true
   },
   "chat" : {
-    "welcomeMessage" : "Welcome to ECA! What you have in mind?\n\n"
+    "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
   },
   "index" : {
     "ignoreFiles" : [ {

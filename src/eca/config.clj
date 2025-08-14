@@ -18,6 +18,8 @@
 (def initial-config
   {:openaiApiKey nil
    :anthropicApiKey nil
+   :openaiApiUrl nil
+   :anthropicApiUrl nil
    :rules []
    :commands []
    :nativeTools {:filesystem {:enabled true}

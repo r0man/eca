@@ -1,9 +1,15 @@
 (ns integration.fixture
   (:require
    [clojure.java.io :as io]
-   [integration.helper :as h]))
+   [integration.helper :as h]
+   [llm-mock.server :as llm-mock.server]))
 
-(def default-init-options {:pureConfig true})
+(def ^:private base-llm-mock-url
+  (str "http://localhost:" llm-mock.server/port))
+
+(def default-init-options {:pureConfig true
+                           :openaiApiUrl (str base-llm-mock-url "/openai")
+                           :anthropicApiUrl (str base-llm-mock-url "/anthropic")})
 
 (defn initialize-request
   ([]

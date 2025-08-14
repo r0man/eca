@@ -1,7 +1,8 @@
 (ns entrypoint
   (:require
    [clojure.test :as t]
-   [integration.eca :as eca]))
+   [integration.eca :as eca]
+   [llm-mock.server :as llm-mock.server]))
 
 (def namespaces
   '[integration.initialize-test
@@ -33,12 +34,16 @@
   (alter-var-root #'eca/*eca-binary-path* (constantly binary))
   (apply require namespaces)
 
+  (llm-mock.server/start!)
+
   (let [timeout-minutes (if (re-find #"(?i)win|mac" (System/getProperty "os.name"))
                           10 ;; win and mac ci runs take longer
                           5)
         test-results (timeout (* timeout-minutes 60 1000)
                               #(with-log-tail-report
                                  (apply t/run-tests namespaces)))]
+
+    (llm-mock.server/stop!)
 
     (when (= test-results :timed-out)
       (println)
