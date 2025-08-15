@@ -6,8 +6,8 @@
    [eca.llm-providers.anthropic :as llm-providers.anthropic]
    [eca.llm-providers.ollama :as llm-providers.ollama]
    [eca.llm-providers.openai :as llm-providers.openai]
-   [eca.logger :as logger]
-   [eca.llm-providers.openai-chat :as llm-providers.openai-chat]))
+   [eca.llm-providers.openai-chat :as llm-providers.openai-chat]
+   [eca.logger :as logger]))
 
 (set! *warn-on-reflection* true)
 
