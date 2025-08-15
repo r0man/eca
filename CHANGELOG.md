@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.28.0
+
 - Change api for custom providers to support `openai-responses` instead of just `openai`, still supporting `openai` only.
 - Add limit to repoMap with default of 800 total entries and 50 per dir. #35
 - Add support for OpenAI Chat Completions API for broad third-party model support.
