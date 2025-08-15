@@ -16,11 +16,11 @@ _Demo using [eca-vscode](https://github.com/editor-code-assistant/eca-vscode)_
 
 <hr>
 <p align="center">
-  <a href="./docs/installation.md"><strong>installation</strong></a> •
-  <a href="./docs/features.md"><strong>features</strong></a> •
-  <a href="./docs/configuration.md"><strong>configuration</strong></a> •
-  <a href="./docs/models.md"><strong>models</strong></a> •
-  <a href="./docs/protocol.md"><strong>protocol</strong></a>
+  <a href="https://eca.dev/installation"><strong>installation</strong></a> •
+  <a href="https://eca.dev/features"><strong>features</strong></a> •
+  <a href="https://eca.dev/configuration"><strong>configuration</strong></a> •
+  <a href="https://eca.dev/models"><strong>models</strong></a> •
+  <a href="https://eca.dev/protocol"><strong>protocol</strong></a>
 </p>
 <hr>
 
