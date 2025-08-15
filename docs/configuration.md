@@ -231,8 +231,6 @@ interface Config {
       extraPayload: {[key: string]: any}
     }};
     ollama?: {
-        host: string;
-        port: string;
         useTools: boolean;
         think: boolean;
     };
