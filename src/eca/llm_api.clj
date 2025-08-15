@@ -179,7 +179,8 @@
         (let [[provider model] (string/split model #"/" 2)
               provider-config (get custom-providers (keyword provider))
               provider-fn (case (:api provider-config)
-                            "openai" llm-providers.openai/completion!
+                            ("openai-responses"
+                             "openai") llm-providers.openai/completion!
                             "anthropic" llm-providers.anthropic/completion!
                             (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
               url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))

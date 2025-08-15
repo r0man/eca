@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Change api for custom providers to support `openai-responses` instead of just `openai`, still supporting `openai` only.
+
 ## 0.27.0
 
 - Add support for auto read `AGENT.md` from workspace root and global eca dir, considering as context for chat prompts.

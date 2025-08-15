@@ -109,7 +109,7 @@ Example:
 {
   "customProviders": {
     "my-company": {
-       "api": "openai",
+       "api": "openai-responses",
        "urlEnv": "MY_COMPANY_API_URL", // or "url"
        "keyEnv": "MY_COMPANY_API_KEY", // or "key"
        "models": ["gpt-5", "deepseek-r1"],
@@ -123,7 +123,7 @@ Example:
 
 | Option | Type | Description | Required |
 |--------|------|-------------|----------|
-| `api` | string | The API schema to use (`"openai"` or `"anthropic"`) | Yes |
+| `api` | string | The API schema to use (`"openai-responses"` or `"anthropic"`) | Yes |
 | `urlEnv` | string | Environment variable name containing the API URL | Yes* |
 | `url` | string | Direct API URL (use instead of `urlEnv`) | Yes* |
 | `keyEnv` | string | Environment variable name containing the API key | Yes* |
@@ -140,7 +140,7 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 {
   "customProviders": {
     "litellm": {
-       "api": "openai",
+       "api": "openai-responses",
        "url": "https://litellm.my-company.com",
        "key": "your-api-key",
        "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"],
