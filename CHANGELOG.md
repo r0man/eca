@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.26.3
+
 - breaking: Replace configs `ollama host` and `ollama port` with `ollamaApiUrl`.
 
 ## 0.26.2
