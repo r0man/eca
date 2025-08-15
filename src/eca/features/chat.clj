@@ -100,7 +100,7 @@
 
 (defn ^:private prompt-messages!
   [user-messages
-   {:keys [db* config chat-id contexts behavior model] :as chat-ctx}]
+   {:keys [db* config chat-id contexts behavior model instructions] :as chat-ctx}]
   (when (seq contexts)
     (send-content! chat-ctx :system {:type :progress
                                      :state :running
@@ -108,10 +108,6 @@
   (let [db @db*
         all-models (models/all)
         provider (get-in all-models [model :provider])
-        rules (f.rules/all config (:workspace-folders db))
-        refined-contexts (f.context/raw-contexts->refined contexts db config)
-        repo-map* (delay (f.index/repo-map db {:as-string? true}))
-        instructions (f.prompt/build-instructions refined-contexts rules repo-map* (or behavior (:chat-default-behavior db)) config)
         past-messages (get-in db [:chats chat-id :messages] [])
         all-tools (f.tools/all-tools behavior @db* config)
         received-msgs* (atom "")
@@ -321,8 +317,8 @@
               :external-id (:external-id message-content)
               :text (:text message-content)}))
 
-(defn ^:private handle-command! [{:keys [command args]} {:keys [chat-id db* config model] :as chat-ctx}]
-  (let [{:keys [type] :as result} (f.commands/handle-command! command args chat-id model config db*)]
+(defn ^:private handle-command! [{:keys [command args]} {:keys [chat-id db* config model instructions] :as chat-ctx}]
+  (let [{:keys [type] :as result} (f.commands/handle-command! command args chat-id model instructions config db*)]
     (case type
       :chat-messages (do
                        (doseq [[chat-id messages] (:chats result)]
@@ -344,11 +340,17 @@
                     (let [new-id (str (random-uuid))]
                       (swap! db* assoc-in [:chats new-id] {:id new-id})
                       new-id))
-        chosen-model (or model (default-model @db* config))
+        db @db*
+        chosen-model (or model (default-model db config))
+        rules (f.rules/all config (:workspace-folders db))
+        refined-contexts (f.context/raw-contexts->refined contexts db config)
+        repo-map* (delay (f.index/repo-map db {:as-string? true}))
+        instructions (f.prompt/build-instructions refined-contexts rules repo-map* (or behavior (:chat-default-behavior db)) config)
         chat-ctx {:chat-id chat-id
                   :request-id request-id
                   :contexts contexts
                   :behavior behavior
+                  :instructions instructions
                   :model chosen-model
                   :db* db*
                   :config config

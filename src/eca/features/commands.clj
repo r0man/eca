@@ -71,11 +71,15 @@
                                     (dissoc :server))))
         eca-commands [{:name "costs"
                        :type :native
-                       :description "Show the total costs of the current chat session."
+                       :description "Total costs of the current chat session."
                        :arguments []}
                       {:name "repo-map-show"
                        :type :native
-                       :description "Show the actual repoMap of current session."
+                       :description "Actual repoMap of current session."
+                       :arguments []}
+                      {:name "prompt-show"
+                       :type :native
+                       :description "Prompt sent to LLM as system instructions."
                        :arguments []}
                       {:name "resume"
                        :type :native
@@ -100,7 +104,7 @@
               raw-content
               (map-indexed vector args)))))
 
-(defn handle-command! [command args chat-id model config db*]
+(defn handle-command! [command args chat-id model instructions config db*]
   (let [db @db*
         custom-commands (custom-commands config (:workspace-folders db))]
     (case command
@@ -119,6 +123,8 @@
                  :chats {chat-id [{:role "system" :content [{:type :text :text text}]}]}})
       "repo-map-show" {:type :chat-messages
                        :chats {chat-id [{:role "system" :content [{:type :text :text (f.index/repo-map db {:as-string? true})}]}]}}
+      "prompt-show" {:type :chat-messages
+                     :chats {chat-id [{:role "system" :content [{:type :text :text instructions}]}]}}
 
       "resume" (let [chats (:chats db)]
                  ;; Override current chat with first chat
