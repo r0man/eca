@@ -102,17 +102,15 @@ ECA allows you to configure custom LLM providers that follow API schemas similar
 
 When configuring custom providers, choose the appropriate API type:
 
+- **`anthropic`**: Anthropic's native API for Claude models.
 - **`openai-responses`**: OpenAI's new responses API endpoint (`/v1/responses`). Best for OpenAI models with enhanced features like reasoning and web search.
 - **`openai-chat`**: Standard OpenAI Chat Completions API (`/v1/chat/completions`). Use this for most third-party providers:
-
   - OpenRouter
   - DeepSeek
   - Together AI
   - Groq
   - Local LiteLLM servers
   - Any OpenAI-compatible provider
-
-- **`anthropic`**: Anthropic's native API for Claude models.
 
 Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
 
