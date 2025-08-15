@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.27.0
+
 - Add support for auto read `AGENT.md` from workspace root and global eca dir, considering as context for chat prompts.
 - Add `/prompt-show` command to show ECA prompt sent to LLM.
 - Add `/init` command to ask LLM to create/update `AGENT.md` file.
