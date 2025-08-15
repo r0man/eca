@@ -98,9 +98,25 @@ ECA allows you to configure custom LLM providers that follow API schemas similar
 - Custom company LLM endpoints
 - Additional cloud providers not natively supported
 
+### API Types for Custom Providers
+
+When configuring custom providers, choose the appropriate API type:
+
+- **`openai-responses`**: OpenAI's new responses API endpoint (`/v1/responses`). Best for OpenAI models with enhanced features like reasoning and web search.
+- **`openai-chat`**: Standard OpenAI Chat Completions API (`/v1/chat/completions`). Use this for most third-party providers:
+  - OpenRouter
+  - DeepSeek
+  - Together AI
+  - Groq
+  - Local LiteLLM servers
+  - Any OpenAI-compatible provider
+- **`anthropic`**: Anthropic's native API for Claude models.
+
+Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
+
 ### Setting up a custom provider
 
-It's possible to configure ECA to be aware of custom LLM providers if they follow a API schema similar to currently supported ones (openai, anthropic), example for a custom hosted litellm server:
+It's possible to configure ECA to be aware of custom LLM providers if they follow a API schema similar to currently supported ones (openai-responses, openai-chat or anthropic), example for a custom hosted litellm server:
 
 Example:
 
@@ -109,7 +125,7 @@ Example:
 {
   "customProviders": {
     "my-company": {
-       "api": "openai-responses",
+       "api": "openai-chat",
        "urlEnv": "MY_COMPANY_API_URL", // or "url"
        "keyEnv": "MY_COMPANY_API_KEY", // or "key"
        "models": ["gpt-5", "deepseek-r1"],
@@ -123,7 +139,7 @@ Example:
 
 | Option | Type | Description | Required |
 |--------|------|-------------|----------|
-| `api` | string | The API schema to use (`"openai-responses"` or `"anthropic"`) | Yes |
+| `api` | string | The API schema to use (`"openai-responses"`, `"openai-chat"`, or `"anthropic"`) | Yes |
 | `urlEnv` | string | Environment variable name containing the API URL | Yes* |
 | `url` | string | Direct API URL (use instead of `urlEnv`) | Yes* |
 | `keyEnv` | string | Environment variable name containing the API key | Yes* |
@@ -166,4 +182,40 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 }
 ```
 
-After configuring custom providers, the models will be available as `provider/model` (e.g., `litellm/gpt-5`, `enterprise/claude-3-opus-20240229`).
+### Example: OpenRouter
+
+[OpenRouter](https://openrouter.ai) provides access to many models through a unified API:
+
+```json
+{
+  "customProviders": {
+    "openrouter": {
+      "api": "openai-chat",
+      "url": "https://openrouter.ai/api/v1",
+      "keyEnv": "OPENROUTER_API_KEY",
+      "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"],
+      "defaultModel": "anthropic/claude-3.5-sonnet"
+    }
+  }
+}
+```
+
+### Example: DeepSeek
+
+[DeepSeek](https://deepseek.com) offers powerful reasoning and coding models:
+
+```json
+{
+  "customProviders": {
+    "deepseek": {
+      "api": "openai-chat",
+      "url": "https://api.deepseek.com",
+      "keyEnv": "DEEPSEEK_API_KEY",
+      "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],
+      "defaultModel": "deepseek-chat"
+    }
+  }
+}
+```
+
+After configuring custom providers, the models will be available as `provider/model` (e.g., `openrouter/anthropic/claude-3.5-sonnet`, `deepseek/deepseek-chat`).

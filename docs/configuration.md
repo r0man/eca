@@ -167,10 +167,10 @@ interface Config {
     mcpServers: {[key: string]: {
         command: string;
         args?: string[];
-        disabled?: boolean; 
+        disabled?: boolean;
     }};
     customProviders: {[key: string]: {
-        api: 'openai' | 'anthropic';
+        api: 'openai-responses' | 'openai-chat' | 'anthropic';
         models: string[];
         defaultModel?: string;
         url?: string;
@@ -198,6 +198,22 @@ interface Config {
 }
 ```
 
+### Custom Provider API Types
+
+When configuring custom providers, choose the appropriate API type:
+
+- **`openai-responses`**: OpenAI's new responses API endpoint (`/v1/responses`). Best for OpenAI models with enhanced features like reasoning and web search.
+- **`openai-chat`**: Standard OpenAI Chat Completions API (`/v1/chat/completions`). Use this for most third-party providers:
+  - OpenRouter
+  - DeepSeek
+  - Together AI
+  - Groq
+  - Local LiteLLM servers
+  - Any OpenAI-compatible provider
+- **`anthropic`**: Anthropic's native API for Claude models.
+
+Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
+
 ### Default values
 
 ```javascript
@@ -210,7 +226,7 @@ interface Config {
   "rules" : [],
   "commands" : [],
   "nativeTools": {"filesystem": {"enabled": true},
-                  "shell": {"enabled": true, 
+                  "shell": {"enabled": true,
                             "excludeCommands": []}},
   "disabledTools": [],
   "toolCall": {
