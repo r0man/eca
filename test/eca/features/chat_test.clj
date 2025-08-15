@@ -2,6 +2,7 @@
   (:require
    [clojure.test :refer [deftest is testing]]
    [eca.features.chat :as f.chat]
+   [eca.features.prompt :as f.prompt]
    [eca.features.tools :as f.tools]
    [eca.features.tools.mcp :as f.mcp]
    [eca.llm-api :as llm-api]
@@ -255,10 +256,10 @@
           invoked? (atom nil)]
       (with-redefs [f.mcp/all-prompts (fn [_]
                                         [{:name "awesome-prompt" :arguments test-arguments}])
-                    f.mcp/get-prompt! (fn [_ args-map _]
-                                        (reset! prompt-args args-map)
-                                        {:messages [{:role :user :content "test"}]})
-                    f.chat/prompt-messages! (fn [messages ctx] (reset! invoked? [messages ctx]))]
+                    f.prompt/get-prompt! (fn [_ args-map _]
+                                           (reset! prompt-args args-map)
+                                           {:messages [{:role :user :content "test"}]})
+                    f.chat/prompt-messages! (fn [messages _ ctx] (reset! invoked? [messages ctx]))]
         (#'f.chat/send-mcp-prompt! {:prompt "awesome-prompt" :args [42 "yo"]} test-chat-ctx)
         (is (match?
              @prompt-args

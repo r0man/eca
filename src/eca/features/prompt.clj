@@ -4,7 +4,7 @@
    [clojure.string :as string]
    [eca.features.tools.mcp :as f.mcp]
    [eca.logger :as logger]
-   [eca.shared :refer [multi-str]])
+   [eca.shared :refer [multi-str] :as shared])
   (:import
    [java.util Map]))
 
@@ -21,12 +21,20 @@
 (defn ^:private agent-behavior* [] (slurp (io/resource "prompts/agent_behavior.txt")))
 (def ^:private agent-behavior (memoize agent-behavior*))
 
+(defn ^:private init-prompt-template* [] (slurp (io/resource "prompts/init.txt")))
+(def ^:private init-prompt-template (memoize init-prompt-template*))
+
+(defn ^:private replace-vars [s vars]
+  (reduce
+   (fn [p [k v]]
+     (string/replace p (str "{" (name k) "}") v))
+   s
+   vars))
+
 (defn ^:private eca-prompt [behavior config]
   (let [prompt (or (some-> (:systemPromptTemplateFile config) slurp)
                    (base-prompt-template))]
-    (reduce
-     (fn [p [k v]]
-       (string/replace p (str "{" (name k) "}") v))
+    (replace-vars
      prompt
      {:behavior (case behavior
                   "plan" (plan-behavior)
@@ -56,6 +64,11 @@
     ""
     refined-contexts)
    "</contexts>"))
+
+(defn build-init-prompt [db]
+  (replace-vars
+   (init-prompt-template)
+   {:workspaceFolders (string/join ", " (map (comp shared/uri->filename :uri) (:workspace-folders db)))}))
 
 (defn get-prompt! [^String name ^Map arguments db]
   (logger/info logger-tag (format "Calling prompt '%s' with args '%s'" name arguments))

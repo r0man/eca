@@ -5,6 +5,7 @@
    [clojure.string :as string]
    [eca.config :as config]
    [eca.features.index :as f.index]
+   [eca.features.prompt :as f.prompt]
    [eca.features.tools.mcp :as f.mcp]
    [eca.shared :as shared :refer [multi-str]]))
 
@@ -69,21 +70,24 @@
                                     (assoc :name (str (:server %) ":" (:name %))
                                            :type :mcpPrompt)
                                     (dissoc :server))))
-        eca-commands [{:name "costs"
+        eca-commands [{:name "init"
+                       :type :native
+                       :description "Create/update the AGENT.md file teaching LLM about the project"}
+                      {:name "costs"
                        :type :native
                        :description "Total costs of the current chat session."
-                       :arguments []}
-                      {:name "repo-map-show"
-                       :type :native
-                       :description "Actual repoMap of current session."
+                       {:name "resume"
+                        :type :native
+                        :description "Resume the chats from this session workspaces."
+                        :arguments []}
+                       {:name "repo-map-show"
+                        :type :native
+                        :description "Actual repoMap of current session."
+                        :arguments []}
                        :arguments []}
                       {:name "prompt-show"
                        :type :native
                        :description "Prompt sent to LLM as system instructions."
-                       :arguments []}
-                      {:name "resume"
-                       :type :native
-                       :description "Resume the chats from this session workspaces."
                        :arguments []}]
         custom-commands (map (fn [custom]
                                {:name (:name custom)
@@ -108,6 +112,16 @@
   (let [db @db*
         custom-commands (custom-commands config (:workspace-folders db))]
     (case command
+      "init" {:type :send-prompt
+              :clear-history-after-finished? true
+              :prompt (f.prompt/build-init-prompt db)}
+      "resume" (let [chats (:chats db)]
+                 ;; Override current chat with first chat
+                 (when-let [first-chat (second (first chats))]
+                   (swap! db* assoc-in [:chats chat-id] first-chat)
+                   ;; TODO support multiple chats update
+                   {:type :chat-messages
+                    :chats {chat-id (:messages first-chat)}}))
       "costs" (let [total-input-tokens (get-in db [:chats chat-id :total-input-tokens] 0)
                     total-input-cache-creation-tokens (get-in db [:chats chat-id :total-input-cache-creation-tokens] nil)
                     total-input-cache-read-tokens (get-in db [:chats chat-id :total-input-cache-read-tokens] nil)
@@ -126,17 +140,10 @@
       "prompt-show" {:type :chat-messages
                      :chats {chat-id [{:role "system" :content [{:type :text :text instructions}]}]}}
 
-      "resume" (let [chats (:chats db)]
-                 ;; Override current chat with first chat
-                 (when-let [first-chat (second (first chats))]
-                   (swap! db* assoc-in [:chats chat-id] first-chat)
-                   ;; TODO support multiple chats update
-                   {:type :chat-messages
-                    :chats {chat-id (:messages first-chat)}}))
-
       ;; else check if a custom command
       (if-let [custom-command-prompt (get-custom-command command args custom-commands)]
         {:type :send-prompt
+         :clear-history-after-finished? false
          :prompt custom-command-prompt}
         {:type :text
          :text (str "Unknown command: " command)}))))

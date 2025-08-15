@@ -32,12 +32,14 @@
     :role role
     :content content}))
 
-(defn finish-chat-prompt! [status {:keys [chat-id db*] :as chat-ctx}]
+(defn finish-chat-prompt! [status {:keys [chat-id db* clear-history-after-finished?] :as chat-ctx}]
   (swap! db* assoc-in [:chats chat-id :status] status)
   (send-content! chat-ctx :system
                  {:type :progress
                   :state :finished})
-  (db/update-workspaces-cache! @db*))
+  (if clear-history-after-finished?
+    (swap! db* assoc-in [:chats chat-id :messages] [])
+    (db/update-workspaces-cache! @db*)))
 
 (defn ^:private assert-chat-not-stopped! [{:keys [chat-id db*] :as chat-ctx}]
   (when (identical? :stoping (get-in @db* [:chats chat-id :status]))
@@ -100,12 +102,14 @@
 
 (defn ^:private prompt-messages!
   [user-messages
+   clear-history-after-finished?
    {:keys [db* config chat-id contexts behavior model instructions] :as chat-ctx}]
   (when (seq contexts)
     (send-content! chat-ctx :system {:type :progress
                                      :state :running
                                      :text "Parsing given context"}))
   (let [db @db*
+        chat-ctx (assoc chat-ctx :clear-history-after-finished? clear-history-after-finished?)
         all-models (models/all)
         provider (get-in all-models [model :provider])
         past-messages (get-in db [:chats chat-id :messages] [])
@@ -286,7 +290,7 @@
       (send-content! chat-ctx :system
                      {:type :text
                       :text error-message})
-      (prompt-messages! messages chat-ctx))))
+      (prompt-messages! messages false chat-ctx))))
 
 (defn ^:private message-content->chat-content [role message-content]
   (case role
@@ -327,7 +331,7 @@
                                           (:role message)
                                           (message-content->chat-content (:role message) (:content message)))))
                        (finish-chat-prompt! :idle chat-ctx))
-      :send-prompt (prompt-messages! [{:role "user" :content (:prompt result)}] chat-ctx)
+      :send-prompt (prompt-messages! [{:role "user" :content (:prompt result)}] (:clear-history-after-finished? result) chat-ctx)
       nil)))
 
 (defn prompt
@@ -363,7 +367,7 @@
     (case (:type decision)
       :mcp-prompt (send-mcp-prompt! decision chat-ctx)
       :eca-command (handle-command! decision chat-ctx)
-      :prompt-message (prompt-messages! [{:role "user" :content [{:type :text :text message}]}] chat-ctx))
+      :prompt-message (prompt-messages! [{:role "user" :content [{:type :text :text message}]}] false chat-ctx))
     {:chat-id chat-id
      :model chosen-model
      :status :success}))

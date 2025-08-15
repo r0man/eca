@@ -58,6 +58,8 @@ Here are the current supported contexts types:
 
 ECA will always include if found the `AGENT.md` file (configurable via `agentFileRelativePath` config) as context, searching for both `/project-root/AGENT.md` and `~/.config/eca/AGENT.md`.
 
+You can ask ECA to create/update this file via `/init` command.
+
 ### Commands
 
 ![](./images/commands.png)
