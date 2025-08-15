@@ -194,6 +194,10 @@ interface Config {
         ignoreFiles: [{
             type: string;
         }];
+        repoMap?: {
+            maxTotalEntries?: number;
+            maxEntriesPerDir?: number;
+        };
     };
 }
 ```
@@ -231,7 +235,11 @@ interface Config {
   "index" : {
     "ignoreFiles" : [ {
       "type" : "gitignore"
-    } ]
+    } ],
+    "repoMap": {
+      "maxTotalEntries": 800,
+      "maxEntriesPerDir": 50
+    }
   }
 }
 ```

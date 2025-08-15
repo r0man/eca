@@ -72,18 +72,19 @@
                                     (dissoc :server))))
         eca-commands [{:name "init"
                        :type :native
-                       :description "Create/update the AGENT.md file teaching LLM about the project"}
+                       :description "Create/update the AGENT.md file teaching LLM about the project"
+                       :arguments []}
                       {:name "costs"
                        :type :native
                        :description "Total costs of the current chat session."
-                       {:name "resume"
-                        :type :native
-                        :description "Resume the chats from this session workspaces."
-                        :arguments []}
-                       {:name "repo-map-show"
-                        :type :native
-                        :description "Actual repoMap of current session."
-                        :arguments []}
+                       :arguments []}
+                      {:name "resume"
+                       :type :native
+                       :description "Resume the chats from this session workspaces."
+                       :arguments []}
+                      {:name "repo-map-show"
+                       :type :native
+                       :description "Actual repoMap of current session."
                        :arguments []}
                       {:name "prompt-show"
                        :type :native
@@ -136,7 +137,7 @@
                 {:type :chat-messages
                  :chats {chat-id [{:role "system" :content [{:type :text :text text}]}]}})
       "repo-map-show" {:type :chat-messages
-                       :chats {chat-id [{:role "system" :content [{:type :text :text (f.index/repo-map db {:as-string? true})}]}]}}
+                       :chats {chat-id [{:role "system" :content [{:type :text :text (f.index/repo-map db config {:as-string? true})}]}]}}
       "prompt-show" {:type :chat-messages
                      :chats {chat-id [{:role "system" :content [{:type :text :text instructions}]}]}}
 

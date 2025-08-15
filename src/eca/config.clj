@@ -46,7 +46,9 @@
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :agentFileRelativePath "AGENT.md"
    :customProviders {}
-   :index {:ignoreFiles [{:type :gitignore}]}})
+   :index {:ignoreFiles [{:type :gitignore}]
+           :repoMap {:maxTotalEntries 800
+                     :maxEntriesPerDir 50}}})
 
 (defn get-env [env] (System/getenv env))
 (defn get-property [property] (System/getProperty property))
