@@ -30,10 +30,6 @@ The models capabilities and configurations are retrieved from [models.dev](https
 
 - [any local ollama model](https://ollama.com/search)
 
-### Custom models for built-in providers
-
-Just configure the model in your eca `models` config, for more details check its [configuration](./configuration.md#adding-models).
-
 ## Adding and Configuring Models
 
 ### Setting up your first model
