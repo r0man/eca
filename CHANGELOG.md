@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Change api for custom providers to support `openai-responses` instead of just `openai`, still supporting `openai` only.
+- Add limit to repoMap with default of 800 total entries and 50 per dir. #35
 
 ## 0.27.0
 
