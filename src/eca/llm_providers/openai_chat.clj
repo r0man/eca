@@ -166,32 +166,7 @@
 
    Handles the full conversation flow including tool calls, streaming responses,
    and message normalization. Supports both single and parallel tool execution.
-   Compatible with OpenRouter and other OpenAI-compatible providers.
-
-   Parameters:
-   - model: Model ID (e.g., 'gpt-4', 'gpt-3.5-turbo', 'o1-preview')
-   - user-messages: Current user input messages
-   - instructions: System-level instructions for the model
-   - temperature: Sampling temperature (default 1.0)
-   - api-key: API key for the provider
-   - api-url: Base URL for the provider's API
-   - max-output-tokens: Maximum tokens in response
-   - past-messages: Previous conversation history
-   - tools: Available tools for function calling
-   - extra-payload: Additional request parameters
-
-   Callbacks:
-   - on-message-received: Called for each streaming text chunk and finish events
-     Format: {:type :text :text \"chunk\"} or {:type :finish :finish-reason \"reason\"}
-   - on-error: Called for any errors during processing
-   - on-prepare-tool-call: Called as tool calls are being prepared/accumulated
-   - on-tools-called: Called when tools need execution, expects {:new-messages [...]}
-   - on-reason: Called for reasoning/thinking events (o1 models and compatible)
-     Format: {:status :started/:thinking/:finished :id \"uuid\" :text \"reasoning chunk\"}
-
-   The function handles the OpenAI streaming protocol, accumulates partial tool call
-   arguments across chunks, executes tools when complete, and manages the conversation
-   flow including recursive API calls for tool result processing."
+   Compatible with OpenRouter and other OpenAI-compatible providers."
   [{:keys [model user-messages instructions temperature api-key api-url max-output-tokens
            past-messages tools extra-payload]
     :or {temperature 1.0}}
