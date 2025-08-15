@@ -198,12 +198,6 @@ interface Config {
 }
 ```
 
-### Custom Provider API Types
-
-When configuring custom providers, choose the appropriate API type:
-
-- **`openai-responses`**: OpenAI's new responses API endpoint (`/v1/responses`). Best for OpenAI models with enhanced features like reasoning and web search.
-
 ### Default values
 
 ```javascript
