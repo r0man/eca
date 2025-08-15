@@ -10,7 +10,6 @@ nav:
     - Overview: README.md
     - Configuration: configuration.md
     - Development: development.md
-    - Models: models.md
     - Protocol: protocol.md
   - Features: features.md
   - Installation: installation.md
