@@ -2,6 +2,7 @@
   (:require
    [llm-mock.anthropic :as llm-mock.anthropic]
    [llm-mock.openai :as llm-mock.openai]
+   [llm-mock.openai-chat :as llm-mock.openai-chat]
    [llm-mock.ollama :as llm-mock.ollama]
    [org.httpkit.server :as hk]))
 
@@ -15,6 +16,10 @@
       (and (= :post request-method)
            (= uri "/openai/v1/responses"))
       (llm-mock.openai/handle-openai-responses req)
+
+      (and (= :post request-method)
+           (= uri "/openai-chat/chat/completions"))
+      (llm-mock.openai-chat/handle-openai-chat req)
 
       (and (= :post request-method)
            (= uri "/anthropic/v1/messages"))
