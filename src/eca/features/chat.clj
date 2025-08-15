@@ -348,7 +348,7 @@
         chosen-model (or model (default-model db config))
         rules (f.rules/all config (:workspace-folders db))
         refined-contexts (f.context/raw-contexts->refined contexts db config)
-        repo-map* (delay (f.index/repo-map db {:as-string? true}))
+        repo-map* (delay (f.index/repo-map db config {:as-string? true}))
         instructions (f.prompt/build-instructions refined-contexts rules repo-map* (or behavior (:chat-default-behavior db)) config)
         chat-ctx {:chat-id chat-id
                   :request-id request-id
