@@ -3,8 +3,6 @@
 ## Unreleased
 
 - Change api for custom providers to support `openai-responses` instead of just `openai`, still supporting `openai` only.
-
-## 0.28.0
 - Add support for OpenAI Chat Completions API for broad third-party model support.
   - A new `openai-chat` custom provider `api` type was added to support any provider using the standard OpenAI `/v1/chat/completions` endpoint.
   - This enables easy integration with services like OpenRouter, Groq, DeepSeek, Together AI, and local LiteLLM instances.
