@@ -30,9 +30,9 @@ The models capabilities and configurations are retrieved from [models.dev](https
 
 - [any local ollama model](https://ollama.com/search)
 
-## Adding and Configuring Models
+### Adding and Configuring Models
 
-### Setting up your first model
+#### Setting up your first model
 
 To start using ECA, you need to configure at least one model with your API key. Here's how to set up a model:
 
@@ -40,7 +40,7 @@ To start using ECA, you need to configure at least one model with your API key. 
 2. **Set your API key**: Create a configuration file with your credentials
 3. **Start using ECA**: The model will be available in your editor
 
-### Setting up API keys
+#### Setting up API keys
 
 Create a configuration file at `.eca/config.json` in your project root or at `~/.config/eca/config.json` globally:
 
@@ -55,7 +55,7 @@ Create a configuration file at `.eca/config.json` in your project root or at `~/
 - `OPENAI_API_KEY` for OpenAI
 - `ANTHROPIC_API_KEY` for Anthropic
 
-### Adding new models
+#### Adding new models
 
 You can add new models or override existing ones in your configuration:
 
@@ -69,7 +69,7 @@ You can add new models or override existing ones in your configuration:
 }
 ```
 
-### Customizing model behavior
+#### Customizing model behavior
 
 You can customize model parameters like temperature, reasoning effort, etc.:
 
