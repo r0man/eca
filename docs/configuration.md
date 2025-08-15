@@ -41,6 +41,10 @@ Via env var during server process spawn:
 ECA_CONFIG='{"myConfig": "my_value"}' eca server
 ```
 
+## Models
+
+For models configuration check the [dedicated models section](./models.md#adding-and-configuring-models).
+
 ## Rules
 
 Rules are contexts that are passed to the LLM during a prompt and are useful to tune prompts or LLM behavior.
@@ -103,27 +107,6 @@ For MCP servers configuration, use the `mcpServers` config, example:
 }
 ```
 
-## Custom LLM providers
-
-It's possible to configure ECA to be aware of custom LLM providers if they follow a API schema similar to currently supported ones (openai, anthropic), example for a custom hosted litellm server:
-
-```javascript
-{
-  "customProviders": {
-    "my-company": {
-       "api": "openai",
-       "urlEnv": "MY_COMPANY_API_URL", // or "url": "https://litellm.my-company.com",
-       // "completionUrlRelativePath": "/v1/responses", // only if default is not enough,
-       "keyEnv": "MY_COMPANY_API_KEY", // or "key": "123",
-       "models": ["gpt-5", "deepseek-r1"],
-       "defaultModel": "deepseek-r1"
-    }
-  }
-}
-```
-
-With that, ECA will include in the known models something like: `my-company/gpt-4.1`, `my-company/deepseek-r1`.
-
 ## Custom command prompts
 
 You can configure custom command prompts for project, global or via `commands` config pointing to the path of the commands.
@@ -154,37 +137,6 @@ Just add to your config the `commands` pointing to `.md` files that will be sear
 ```javascript
 {
   "commands": [{"path": "my-custom-prompt.md"}]
-}
-```
-
-## Adding models
-
-It's possible to add new models just adding `models <yourmodel>`, example:
-
-```javascript
-{
-  "models": {
-    "o1": {}
-  }
-}
-```
-
-### Overriding model payloads
-
-To override the payload sent to LLMs via `models <modelName> extraPayload` config, this way you can configure custom LLM settings like `temperature`, `reasoning_effort`, `verbosity` etc.
-This config will be merged with current default used by ECA.
-
-Example:
-
-```javascript
-{
-  "models": {
-    "gpt-5": {
-      "extraPayload": {
-        "verbosity": "high"
-      }
-    }
-  }
 }
 ```
 

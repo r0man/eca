@@ -92,6 +92,8 @@ You can customize model parameters like temperature, reasoning effort, etc.:
 }
 ```
 
+This config will be merged with current default used by ECA.
+
 ## Custom model providers
 
 ECA allows you to configure custom LLM providers that follow API schemas similar to OpenAI or Anthropic. This is useful when you want to use:
@@ -102,15 +104,18 @@ ECA allows you to configure custom LLM providers that follow API schemas similar
 
 ### Setting up a custom provider
 
-Add a `customProviders` section to your `.eca/config.json` file:
+It's possible to configure ECA to be aware of custom LLM providers if they follow a API schema similar to currently supported ones (openai, anthropic), example for a custom hosted litellm server:
 
+Example:
+
+`~/.config/eca/config.json`
 ```json
 {
   "customProviders": {
     "my-company": {
        "api": "openai",
-       "urlEnv": "MY_COMPANY_API_URL",
-       "keyEnv": "MY_COMPANY_API_KEY",
+       "urlEnv": "MY_COMPANY_API_URL", // or "url"
+       "keyEnv": "MY_COMPANY_API_KEY", // or "key"
        "models": ["gpt-5", "deepseek-r1"],
        "defaultModel": "deepseek-r1"
     }
