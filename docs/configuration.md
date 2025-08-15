@@ -167,10 +167,10 @@ interface Config {
     mcpServers: {[key: string]: {
         command: string;
         args?: string[];
-        disabled?: boolean; 
+        disabled?: boolean;
     }};
     customProviders: {[key: string]: {
-        api: 'openai' | 'anthropic';
+        api: 'openai-responses' | 'openai-chat' | 'anthropic';
         models: string[];
         defaultModel?: string;
         url?: string;
@@ -214,7 +214,7 @@ interface Config {
   "rules" : [],
   "commands" : [],
   "nativeTools": {"filesystem": {"enabled": true},
-                  "shell": {"enabled": true, 
+                  "shell": {"enabled": true,
                             "excludeCommands": []}},
   "disabledTools": [],
   "toolCall": {

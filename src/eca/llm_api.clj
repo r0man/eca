@@ -6,6 +6,7 @@
    [eca.llm-providers.anthropic :as llm-providers.anthropic]
    [eca.llm-providers.ollama :as llm-providers.ollama]
    [eca.llm-providers.openai :as llm-providers.openai]
+   [eca.llm-providers.openai-chat :as llm-providers.openai-chat]
    [eca.logger :as logger]))
 
 (set! *warn-on-reflection* true)
@@ -182,6 +183,7 @@
                             ("openai-responses"
                              "openai") llm-providers.openai/completion!
                             "anthropic" llm-providers.anthropic/completion!
+                            "openai-chat" llm-providers.openai-chat/completion!
                             (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
               url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))
               key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))
