@@ -44,7 +44,7 @@ To start using ECA, you need to configure at least one model with your API key. 
 
 Create a configuration file at `.eca/config.json` in your project root or at `~/.config/eca/config.json` globally:
 
-```json
+```javascript
 {
   "openaiApiKey": "your-openai-api-key-here",
   "anthropicApiKey": "your-anthropic-api-key-here"
@@ -59,7 +59,7 @@ Create a configuration file at `.eca/config.json` in your project root or at `~/
 
 You can add new models or override existing ones in your configuration:
 
-```json
+```javascript
 {
   "openaiApiKey": "your-openai-api-key-here",
   "models": {
@@ -73,7 +73,7 @@ You can add new models or override existing ones in your configuration:
 
 You can customize model parameters like temperature, reasoning effort, etc.:
 
-```json
+```javascript
 {
   "openaiApiKey": "your-openai-api-key-here",
   "models": {
@@ -104,12 +104,14 @@ When configuring custom providers, choose the appropriate API type:
 
 - **`openai-responses`**: OpenAI's new responses API endpoint (`/v1/responses`). Best for OpenAI models with enhanced features like reasoning and web search.
 - **`openai-chat`**: Standard OpenAI Chat Completions API (`/v1/chat/completions`). Use this for most third-party providers:
+
   - OpenRouter
   - DeepSeek
   - Together AI
   - Groq
   - Local LiteLLM servers
   - Any OpenAI-compatible provider
+
 - **`anthropic`**: Anthropic's native API for Claude models.
 
 Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
@@ -120,8 +122,8 @@ It's possible to configure ECA to be aware of custom LLM providers if they follo
 
 Example:
 
-`~/.config/eca/config.json`
-```json
+`~/.config/eca/config.javascript`
+```javascript
 {
   "customProviders": {
     "my-company": {
@@ -152,7 +154,7 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 
 ### Example: Custom LiteLLM server
 
-```json
+```javascript
 {
   "customProviders": {
     "litellm": {
@@ -168,7 +170,7 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 
 ### Example: Using environment variables
 
-```json
+```javascript
 {
   "customProviders": {
     "enterprise": {
@@ -186,7 +188,7 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 
 [OpenRouter](https://openrouter.ai) provides access to many models through a unified API:
 
-```json
+```javascript
 {
   "customProviders": {
     "openrouter": {
@@ -204,7 +206,7 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 
 [DeepSeek](https://deepseek.com) offers powerful reasoning and coding models:
 
-```json
+```javascript
 {
   "customProviders": {
     "deepseek": {
