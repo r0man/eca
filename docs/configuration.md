@@ -237,6 +237,7 @@ interface Config {
     chat?: {
         welcomeMessage: string;
     };
+    agentFileRelativePath: string;
     index?: {
         ignoreFiles: [{
             type: string;
@@ -274,6 +275,7 @@ interface Config {
   "chat" : {
     "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
   },
+  "agentFileRelativePath": "AGENT.md"
   "index" : {
     "ignoreFiles" : [ {
       "type" : "gitignore"

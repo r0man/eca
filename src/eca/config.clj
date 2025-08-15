@@ -11,7 +11,9 @@
    [clojure.core.memoize :as memoize]
    [clojure.java.io :as io]
    [clojure.string :as string]
-   [eca.shared :as shared]))
+   [eca.shared :as shared])
+  (:import
+   [java.io File]))
 
 (set! *warn-on-reflection* true)
 
@@ -42,6 +44,7 @@
    :ollama {:useTools true
             :think true}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
+   :agentFileRelativePath "AGENT.md"
    :customProviders {}
    :index {:ignoreFiles [{:type :gitignore}]}})
 
@@ -64,10 +67,13 @@
 
 (def ^:private config-from-envvar (memoize config-from-envvar*))
 
-(defn ^:private config-from-global-file* []
+(defn global-config-dir ^File []
   (let [xdg-config-home (or (get-env "XDG_CONFIG_HOME")
-                            (io/file (get-property "user.home") ".config"))
-        config-file (io/file xdg-config-home "eca" "config.json")]
+                            (io/file (get-property "user.home") ".config"))]
+    (io/file xdg-config-home "eca")))
+
+(defn ^:private config-from-global-file* []
+  (let [config-file (io/file (global-config-dir) "config.json")]
     (when (.exists config-file)
       (safe-read-json-string (slurp config-file)))))
 

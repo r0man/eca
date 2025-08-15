@@ -1,6 +1,7 @@
 (ns eca.features.context
   (:require
    [babashka.fs :as fs]
+   [eca.config :as config]
    [eca.features.index :as f.index]
    [eca.features.tools.mcp :as f.mcp]
    [eca.llm-api :as llm-api]
@@ -11,32 +12,52 @@
 
 (def ^:private logger-tag "[CONTEXT]")
 
-(defn raw-contexts->refined [contexts db]
-  (mapcat (fn [{:keys [type path lines-range uri]}]
-            (case (name type)
-              "file" [{:type :file
-                       :path path
-                       :partial (boolean lines-range)
-                       :content (llm-api/refine-file-context path lines-range)}]
-              "directory" (->> (fs/glob path "**")
-                               (remove fs/directory?)
-                               (map (fn [path]
-                                      (let [filename (str (fs/canonicalize path))]
-                                        {:type :file
-                                         :path filename
-                                         :content (llm-api/refine-file-context filename nil)}))))
-              "repoMap" [{:type :repoMap}]
-              "mcpResource" (try
-                              (mapv
-                               (fn [{:keys [text]}]
-                                 {:type :mcpResource
-                                  :uri uri
-                                  :content text})
-                               (:contents (f.mcp/get-resource! uri db)))
-                              (catch Exception e
-                                (logger/warn logger-tag (format "Error getting MCP resource %s: %s" uri (.getMessage e)))
-                                []))))
-          contexts))
+(defn ^:private agents-file-contexts
+  "Search for AGENT.md file both in workspaceRoot and global config dir."
+  [db config]
+  (let [local-agent-files (keep (fn [{:keys [uri]}]
+                                  (let [agent-file (fs/path (shared/uri->filename uri) (:agentFileRelativePath config))]
+                                    (when (fs/readable? agent-file)
+                                      (fs/canonicalize agent-file))))
+                                (:workspace-folders db))
+        global-agent-file (let [agent-file (fs/path (config/global-config-dir) (:agentFileRelativePath config))]
+                            (when (fs/readable? agent-file)
+                              (fs/canonicalize agent-file)))]
+    (mapv (fn [path]
+            {:type :file
+             :path (str path)
+             :partial false
+             :content (llm-api/refine-file-context (str path) nil)})
+          (concat local-agent-files
+                  (when global-agent-file [global-agent-file])))))
+
+(defn raw-contexts->refined [contexts db config]
+  (concat (agents-file-contexts db config)
+          (mapcat (fn [{:keys [type path lines-range uri]}]
+                    (case (name type)
+                      "file" [{:type :file
+                               :path path
+                               :partial (boolean lines-range)
+                               :content (llm-api/refine-file-context path lines-range)}]
+                      "directory" (->> (fs/glob path "**")
+                                       (remove fs/directory?)
+                                       (map (fn [path]
+                                              (let [filename (str (fs/canonicalize path))]
+                                                {:type :file
+                                                 :path filename
+                                                 :content (llm-api/refine-file-context filename nil)}))))
+                      "repoMap" [{:type :repoMap}]
+                      "mcpResource" (try
+                                      (mapv
+                                       (fn [{:keys [text]}]
+                                         {:type :mcpResource
+                                          :uri uri
+                                          :content text})
+                                       (:contents (f.mcp/get-resource! uri db)))
+                                      (catch Exception e
+                                        (logger/warn logger-tag (format "Error getting MCP resource %s: %s" uri (.getMessage e)))
+                                        []))))
+                  contexts)))
 
 (defn ^:private contexts-for [root-filename query config]
   (let [all-files (fs/glob root-filename (str "**" (or query "") "**"))

@@ -109,7 +109,7 @@
         all-models (models/all)
         provider (get-in all-models [model :provider])
         rules (f.rules/all config (:workspace-folders db))
-        refined-contexts (f.context/raw-contexts->refined contexts db)
+        refined-contexts (f.context/raw-contexts->refined contexts db config)
         repo-map* (delay (f.index/repo-map db {:as-string? true}))
         instructions (f.prompt/build-instructions refined-contexts rules repo-map* (or behavior (:chat-default-behavior db)) config)
         past-messages (get-in db [:chats chat-id :messages] [])

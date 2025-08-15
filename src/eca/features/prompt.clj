@@ -43,7 +43,7 @@
     rules)
    "</rules>"
    ""
-   "<contexts>"
+   "<contexts description=\"Manually provided by user, usually when provided user knows that your task is related to those files, so consider reliying on it but use tools to read/find any extra files/contexts if really needed.\">"
    (reduce
     (fn [context-str {:keys [type path content partial uri]}]
       (str context-str (case type

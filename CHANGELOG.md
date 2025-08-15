@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add support for auto read `AGENT.md` from workspace root and global eca dir, considering as context for chat prompts.
+
 ## 0.26.3
 
 - breaking: Replace configs `ollama host` and `ollama port` with `ollamaApiUrl`.

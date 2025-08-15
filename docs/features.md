@@ -54,6 +54,10 @@ Here are the current supported contexts types:
 - `repoMap`: a summary view of workspaces files and folders, server will calculate this and pass to LLM. Currently, the repo-map includes only the file paths in git.
 - `mcpResource`: resources provided by running MCPs servers.
 
+#### AGENT.md automatic context
+
+ECA will always include if found the `AGENT.md` file (configurable via `agentFileRelativePath` config) as context, searching for both `/project-root/AGENT.md` and `~/.config/eca/AGENT.md`.
+
 ### Commands
 
 ![](./images/commands.png)
