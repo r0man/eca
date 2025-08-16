@@ -1,4 +1,4 @@
-<img src="images/logo.png" width="110" align="right">
+<a href="https://eca.dev"><img src="images/logo.png" width="110" align="right"></a>
 
 [![GitHub Release](https://img.shields.io/github/v/release/editor-code-assistant/eca?display_name=release&style=flat-square)](https://github.com/editor-code-assistant/eca/releases/latest)
 <a href="https://github.com/editor-code-assistant/eca/stargazers"><img alt="GitHub Stars" title="Total number of GitHub stars the ECA project has received"
