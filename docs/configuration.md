@@ -1,6 +1,6 @@
 # Configuration
 
-Check all available configs [here](#all-configs) and its default values [here](#default-values).
+Check all available configs and its default values [here](#all-configs).
 
 ## Ways to configure
 
@@ -62,41 +62,41 @@ Rules are Multi-Document context files (`.mdc`) and the following metadata is su
 
 There are 3 possible ways to configure rules following this order of priority:
 
-### Project file
+=== "Project file"
 
-A `.eca/rules` folder from the workspace root containing `.mdc` files with the rules.
+    A `.eca/rules` folder from the workspace root containing `.mdc` files with the rules.
 
-`.eca/rules/talk_funny.mdc`
-```markdown
---- 
-description: Use when responding anything
----
+    `.eca/rules/talk_funny.mdc`
+    ```markdown
+    --- 
+    description: Use when responding anything
+    ---
 
-- Talk funny like Mickey!
-```
+    - Talk funny like Mickey!
+    ```
 
-### Global file
+=== "Global file"
 
-A `$XDG_CONFIG_HOME/eca/rules` or `~/.config/eca/rules` folder containing `.mdc` files with the rules.
+    A `$XDG_CONFIG_HOME/eca/rules` or `~/.config/eca/rules` folder containing `.mdc` files with the rules.
 
-`~/.config/eca/rules/talk_funny.mdc`
-```markdown
---- 
-description: Use when responding anything
----
+    `~/.config/eca/rules/talk_funny.mdc`
+    ```markdown
+    --- 
+    description: Use when responding anything
+    ---
 
-- Talk funny like Mickey!
-```
+    - Talk funny like Mickey!
+    ```
 
-### Config
+=== "Config"
 
-Just add to your config the `:rules` pointing to `.mdc` files that will be searched from the workspace root if not an absolute path:
+    Just add toyour config the `:rules` pointing to `.mdc` files that will be searched from the workspace root if not an absolute path:
 
-```javascript
-{
-  "rules": [{"path": "my-rule.mdc"}]
-}
-```
+    ```javascript
+    {
+      "rules": [{"path": "my-rule.mdc"}]
+    }
+    ```
 
 ## MCP
 
@@ -119,134 +119,134 @@ For MCP servers configuration, use the `mcpServers` config, example:
 You can configure custom command prompts for project, global or via `commands` config pointing to the path of the commands.
 Prompts can use variables like `$ARGS`, `$ARG1`, `ARG2`, to replace in the prompt during command call.
 
-### Local custom commands
+=== "Local custom commands"
 
-A `.eca/commands` folder from the workspace root containing `.md` files with the custom prompt.
+    A `.eca/commands` folder from the workspace root containing `.md` files with the custom prompt.
 
-`.eca/commands/check-performance.md`
-```markdown
-Check for performance issues in $ARG1 and optimize if needed.
-```
+    `.eca/commands/check-performance.md`
+    ```markdown
+    Check for performance issues in $ARG1 and optimize if needed.
+    ```
 
-### Global custom commands
+=== "Global custom commands"
 
-A `$XDG_CONFIG_HOME/eca/commands` or `~/.config/eca/commands` folder containing `.md` files with the custom command prompt.
+    A `$XDG_CONFIG_HOME/eca/commands` or `~/.config/eca/commands` folder containing `.md` files with the custom command prompt.
 
-`~/.config/eca/commands/check-performance.mdc`
-```markdown
-Check for performance issues in $ARG1 and optimize if needed.
-```
+    `~/.config/eca/commands/check-performance.mdc`
+    ```markdown
+    Check for performance issues in $ARG1 and optimize if needed.
+    ```
 
-### Config
+=== "Config"
 
-Just add to your config the `commands` pointing to `.md` files that will be searched from the workspace root if not an absolute path:
+    Just add to your config the `commands` pointing to `.md` files that will be searched from the workspace root if not an absolute path:
 
-```javascript
-{
-  "commands": [{"path": "my-custom-prompt.md"}]
-}
-```
+    ```javascript
+    {
+      "commands": [{"path": "my-custom-prompt.md"}]
+    }
+    ```
 
 ## All configs
 
-### Schema
+=== "Schema"
 
-```typescript
-interface Config {
-    openaiApiKey?: string;
-    openaiApiUrl?: string;
-    anthropicApiKey?: string;
-    anthropicApiUrl?: string;
-    ollamaApiUrl: string;
-    rules: [{path: string;}];
-    commands: [{path: string;}];
-    systemPromptTemplateFile?: string;
-    nativeTools: {
-        filesystem: {enabled: boolean};
-        shell: {enabled: boolean,
-                excludeCommands: string[]};
-    };
-    disabledTools: string[],
-    toolCall?: {
-      manualApproval?: boolean | string[], // manual approve all tools or the specified tools
-    };
-    mcpTimeoutSeconds: number;
-    mcpServers: {[key: string]: {
-        command: string;
-        args?: string[];
-        disabled?: boolean;
-    }};
-    customProviders: {[key: string]: {
-        api: 'openai-responses' | 'openai-chat' | 'anthropic';
-        models: string[];
-        defaultModel?: string;
-        url?: string;
-        urlEnv?: string;
-        completionUrlRelativePath?: string;
-        key?: string;
-        keyEnv?: string;
-    }};
-    models: {[key: string]: {
-      extraPayload: {[key: string]: any}
-    }};
-    ollama?: {
-        useTools: boolean;
-        think: boolean;
-    };
-    chat?: {
-        welcomeMessage: string;
-    };
-    agentFileRelativePath: string;
-    index?: {
-        ignoreFiles: [{
-            type: string;
-        }];
-        repoMap?: {
-            maxTotalEntries?: number;
-            maxEntriesPerDir?: number;
+    ```typescript
+    interface Config {
+        openaiApiKey?: string;
+        openaiApiUrl?: string;
+        anthropicApiKey?: string;
+        anthropicApiUrl?: string;
+        ollamaApiUrl: string;
+        rules: [{path: string;}];
+        commands: [{path: string;}];
+        systemPromptTemplateFile?: string;
+        nativeTools: {
+            filesystem: {enabled: boolean};
+            shell: {enabled: boolean,
+                    excludeCommands: string[]};
         };
-    };
-}
-```
-
-### Default values
-
-```javascript
-{
-  "openaiApiKey" : null,
-  "openaiApiUrl" : null,
-  "anthropicApiKey" : null,
-  "anthropicApiUrl" : null,
-  "ollamaApiUrl": "http://localhost:11434"
-  "rules" : [],
-  "commands" : [],
-  "nativeTools": {"filesystem": {"enabled": true},
-                  "shell": {"enabled": true,
-                            "excludeCommands": []}},
-  "disabledTools": [],
-  "toolCall": {
-    "manualApproval": null,
-  },
-  "mcpTimeoutSeconds" : 60,
-  "mcpServers" : {},
-  "customProviders": {},
-  "models": {},
-  "ollama" : {
-    "useTools": true,
-    "think": true
-  },
-  "chat" : {
-    "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
-  },
-  "agentFileRelativePath": "AGENT.md"
-  "index" : {
-    "ignoreFiles" : [ {
-      "type" : "gitignore"
-    } ],
-    "repoMap": {
-      "maxTotalEntries": 800,
-      "maxEntriesPerDir": 50
+        disabledTools: string[],
+        toolCall?: {
+          manualApproval?: boolean | string[], // manual approve all tools or the specified tools
+        };
+        mcpTimeoutSeconds: number;
+        mcpServers: {[key: string]: {
+            command: string;
+            args?: string[];
+            disabled?: boolean;
+        }};
+        customProviders: {[key: string]: {
+            api: 'openai-responses' | 'openai-chat' | 'anthropic';
+            models: string[];
+            defaultModel?: string;
+            url?: string;
+            urlEnv?: string;
+            completionUrlRelativePath?: string;
+            key?: string;
+            keyEnv?: string;
+        }};
+        models: {[key: string]: {
+          extraPayload: {[key: string]: any}
+        }};
+        ollama?: {
+            useTools: boolean;
+            think: boolean;
+        };
+        chat?: {
+            welcomeMessage: string;
+        };
+        agentFileRelativePath: string;
+        index?: {
+            ignoreFiles: [{
+                type: string;
+            }];
+            repoMap?: {
+                maxTotalEntries?: number;
+                maxEntriesPerDir?: number;
+            };
+        };
     }
-  }
-}
-```
+    ```
+
+=== "Default values"
+
+    ```javascript
+    {
+      "openaiApiKey" : null,
+      "openaiApiUrl" : null,
+      "anthropicApiKey" : null,
+      "anthropicApiUrl" : null,
+      "ollamaApiUrl": "http://localhost:11434"
+      "rules" : [],
+      "commands" : [],
+      "nativeTools": {"filesystem": {"enabled": true},
+                      "shell": {"enabled": true,
+                                "excludeCommands": []}},
+      "disabledTools": [],
+      "toolCall": {
+        "manualApproval": null,
+      },
+      "mcpTimeoutSeconds" : 60,
+      "mcpServers" : {},
+      "customProviders": {},
+      "models": {},
+      "ollama" : {
+        "useTools": true,
+        "think": true
+      },
+      "chat" : {
+        "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
+      },
+      "agentFileRelativePath": "AGENT.md"
+      "index" : {
+        "ignoreFiles" : [ {
+          "type" : "gitignore"
+        } ],
+        "repoMap": {
+          "maxTotalEntries": 800,
+          "maxEntriesPerDir": 50
+        }
+      }
+    }
+    ```
