@@ -52,6 +52,22 @@ There are 3 ways to configure ECA following this order of priority:
 
 For models configuration check the [dedicated models section](./models.md#adding-and-configuring-models).
 
+## MCP
+
+For MCP servers configuration, use the `mcpServers` config, example:
+
+`.eca/config.json`
+```javascript
+{
+  "mcpServers": {
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    }
+  }
+}
+```
+
 ## Rules
 
 Rules are contexts that are passed to the LLM during a prompt and are useful to tune prompts or LLM behavior.
@@ -97,22 +113,6 @@ There are 3 possible ways to configure rules following this order of priority:
       "rules": [{"path": "my-rule.mdc"}]
     }
     ```
-
-## MCP
-
-For MCP servers configuration, use the `mcpServers` config, example:
-
-`.eca/config.json`
-```javascript
-{
-  "mcpServers": {
-    "memory": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-memory"]
-    }
-  }
-}
-```
 
 ## Custom command prompts
 
