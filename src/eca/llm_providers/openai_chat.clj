@@ -217,7 +217,8 @@
                                     (on-message-received {:type :text :text (:content delta)}))
 
                                   ;; Process reasoning if present (o1 models and compatible providers)
-                                  (when-let [reasoning-text (:reasoning delta)]
+                                  (when-let [reasoning-text (or (:reasoning delta)
+                                                                (:reasoning_content delta))]
                                     (when on-reason
                                       (when-not @reasoning-started*
                                         ;; Generate new reason-id for each thinking block
@@ -232,6 +233,7 @@
                                   ;; Check if reasoning just stopped (was active, now nil, and we have content)
                                   (when (and @reasoning-started*
                                              (nil? (:reasoning delta))
+                                             (nil? (:reasoning_content delta))
                                              (:content delta)
                                              on-reason)
                                     (on-reason {:status :finished :id @current-reason-id*})
