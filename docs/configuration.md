@@ -1,45 +1,52 @@
 # Configuration
 
+Check all available configs [here](#all-configs) and its default values [here](#default-values).
+
 ## Ways to configure
 
-Check all available configs [here](../src/eca/config.clj#L17).
 There are 3 ways to configure ECA following this order of priority:
 
-### InitializationOptions (convenient for editors)
+=== "Global config file"
 
-Client editors can pass custom settings when sending the `initialize` request via the `initializationOptions` object:
+    Convenient for users and multiple projects
 
-```javascript
-"initializationOptions": {
-  "chatBehavior": "agent"
-}
-```
+    `~/.config/eca/config.json`
+    ```javascript
+    {
+      "chatBehavior": "agent"
+    }
+    ```
+  
+=== "Local Config file"
 
-### Local Config file (convenient for users)
+    Convenient for users
 
-`.eca/config.json`
-```javascript
-{
-  "chatBehavior": "agent"
-}
-```
+    `.eca/config.json`
+    ```javascript
+    {
+      "chatBehavior": "agent"
+    }
+    ```
+    
+=== "InitializationOptions"
 
-### Global config file (convenient for users and multiple projects)
+    Convenient for editors
 
-`~/.config/eca/config.json`
-```javascript
-{
-  "chatBehavior": "agent"
-}
-```
+    Client editors can pass custom settings when sending the `initialize` request via the `initializationOptions` object:
 
-### Env Var
+    ```javascript
+    "initializationOptions": {
+      "chatBehavior": "agent"
+    }
+    ```
 
-Via env var during server process spawn:
+=== "Env var"
 
-```bash
-ECA_CONFIG='{"myConfig": "my_value"}' eca server
-```
+    Via env var during server process spawn:
+
+    ```bash
+    ECA_CONFIG='{"myConfig": "my_value"}' eca server
+    ```
 
 ## Models
 
