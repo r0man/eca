@@ -4,7 +4,7 @@ Check all available configs and its default values [here](#all-configs).
 
 ## Ways to configure
 
-There are 3 ways to configure ECA following this order of priority:
+There are multiples ways to configure ECA:
 
 === "Global config file"
 
