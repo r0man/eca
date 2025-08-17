@@ -9,6 +9,7 @@ nav:
   - Home:
     - Overview: README.md
     - Configuration: configuration.md
+    - Models: models.md
     - Development: development.md
     - Protocol: protocol.md
   - Features: features.md
