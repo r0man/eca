@@ -18,4 +18,4 @@
          get-last-changelog-entry make/get-last-changelog-entry
          integration-test make/integration-test
 
-         docs make/local-webpage}}
+         local-webpage make/local-webpage}}
