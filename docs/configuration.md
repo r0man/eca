@@ -68,6 +68,39 @@ For MCP servers configuration, use the `mcpServers` config, example:
 }
 ```
 
+## Custom command prompts
+
+You can configure custom command prompts for project, global or via `commands` config pointing to the path of the commands.
+Prompts can use variables like `$ARGS`, `$ARG1`, `ARG2`, to replace in the prompt during command call.
+
+=== "Local custom commands"
+
+    A `.eca/commands` folder from the workspace root containing `.md` files with the custom prompt.
+
+    `.eca/commands/check-performance.md`
+    ```markdown
+    Check for performance issues in $ARG1 and optimize if needed.
+    ```
+
+=== "Global custom commands"
+
+    A `$XDG_CONFIG_HOME/eca/commands` or `~/.config/eca/commands` folder containing `.md` files with the custom command prompt.
+
+    `~/.config/eca/commands/check-performance.mdc`
+    ```markdown
+    Check for performance issues in $ARG1 and optimize if needed.
+    ```
+
+=== "Config"
+
+    Just add to your config the `commands` pointing to `.md` files that will be searched from the workspace root if not an absolute path:
+
+    ```javascript
+    {
+      "commands": [{"path": "my-custom-prompt.md"}]
+    }
+    ```
+
 ## Rules
 
 Rules are contexts that are passed to the LLM during a prompt and are useful to tune prompts or LLM behavior.
@@ -111,39 +144,6 @@ There are 3 possible ways to configure rules following this order of priority:
     ```javascript
     {
       "rules": [{"path": "my-rule.mdc"}]
-    }
-    ```
-
-## Custom command prompts
-
-You can configure custom command prompts for project, global or via `commands` config pointing to the path of the commands.
-Prompts can use variables like `$ARGS`, `$ARG1`, `ARG2`, to replace in the prompt during command call.
-
-=== "Local custom commands"
-
-    A `.eca/commands` folder from the workspace root containing `.md` files with the custom prompt.
-
-    `.eca/commands/check-performance.md`
-    ```markdown
-    Check for performance issues in $ARG1 and optimize if needed.
-    ```
-
-=== "Global custom commands"
-
-    A `$XDG_CONFIG_HOME/eca/commands` or `~/.config/eca/commands` folder containing `.md` files with the custom command prompt.
-
-    `~/.config/eca/commands/check-performance.mdc`
-    ```markdown
-    Check for performance issues in $ARG1 and optimize if needed.
-    ```
-
-=== "Config"
-
-    Just add to your config the `commands` pointing to `.md` files that will be searched from the workspace root if not an absolute path:
-
-    ```javascript
-    {
-      "commands": [{"path": "my-custom-prompt.md"}]
     }
     ```
 
