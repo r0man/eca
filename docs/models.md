@@ -120,7 +120,7 @@ It's possible to configure ECA to be aware of custom LLM providers if they follo
 
 Example:
 
-`~/.config/eca/config.javascript`
+`~/.config/eca/config.json`
 ```javascript
 {
   "customProviders": {
@@ -150,72 +150,75 @@ Example:
 
 _* Either the `url` or `urlEnv` option is required, and either the `key` or `keyEnv` option is required._
 
-### Example: Custom LiteLLM server
-
-```javascript
-{
-  "customProviders": {
-    "litellm": {
-       "api": "openai-responses",
-       "url": "https://litellm.my-company.com",
-       "key": "your-api-key",
-       "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"],
-       "defaultModel": "gpt-5"
-    }
-  }
-}
-```
-
-### Example: Using environment variables
-
-```javascript
-{
-  "customProviders": {
-    "enterprise": {
-       "api": "anthropic",
-       "urlEnv": "ENTERPRISE_LLM_URL",
-       "keyEnv": "ENTERPRISE_LLM_KEY",
-       "models": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
-       "defaultModel": "claude-3-sonnet-20240229"
-    }
-  }
-}
-```
-
-### Example: OpenRouter
-
-[OpenRouter](https://openrouter.ai) provides access to many models through a unified API:
-
-```javascript
-{
-  "customProviders": {
-    "openrouter": {
-      "api": "openai-chat",
-      "url": "https://openrouter.ai/api/v1",
-      "keyEnv": "OPENROUTER_API_KEY",
-      "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"],
-      "defaultModel": "anthropic/claude-3.5-sonnet"
-    }
-  }
-}
-```
-
-### Example: DeepSeek
-
-[DeepSeek](https://deepseek.com) offers powerful reasoning and coding models:
-
-```javascript
-{
-  "customProviders": {
-    "deepseek": {
-      "api": "openai-chat",
-      "url": "https://api.deepseek.com",
-      "keyEnv": "DEEPSEEK_API_KEY",
-      "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],
-      "defaultModel": "deepseek-chat"
-    }
-  }
-}
-```
 
 After configuring custom providers, the models will be available as `provider/model` (e.g., `openrouter/anthropic/claude-3.5-sonnet`, `deepseek/deepseek-chat`).
+
+### Examples
+
+=== "LiteLLM"
+
+    ```javascript
+    {
+      "customProviders": {
+        "litellm": {
+        "api": "openai-responses",
+        "url": "https://litellm.my-company.com",
+        "key": "your-api-key",
+        "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"],
+        "defaultModel": "gpt-5"
+        }
+      }
+    }
+    ```
+
+=== "Environment variables"
+
+    ```javascript
+    {
+      "customProviders": {
+        "enterprise": {
+           "api": "anthropic",
+           "urlEnv": "ENTERPRISE_LLM_URL",
+           "keyEnv": "ENTERPRISE_LLM_KEY",
+           "models": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
+           "defaultModel": "claude-3-sonnet-20240229"
+        }
+      }
+    }
+    ```
+
+=== "OpenRouter"
+
+    [OpenRouter](https://openrouter.ai) provides access to many models through a unified API:
+
+    ```javascript
+    {
+      "customProviders": {
+        "openrouter": {
+          "api": "openai-chat",
+          "url": "https://openrouter.ai/api/v1",
+          "keyEnv": "OPENROUTER_API_KEY",
+          "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"],
+          "defaultModel": "anthropic/claude-3.5-sonnet"
+        }
+      }
+    }
+    ```
+
+=== "DeepSeek"
+
+    [DeepSeek](https://deepseek.com) offers powerful reasoning and coding models:
+
+    ```javascript
+    {
+      "customProviders": {
+        "deepseek": {
+          "api": "openai-chat",
+          "url": "https://api.deepseek.com",
+          "keyEnv": "DEEPSEEK_API_KEY",
+          "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],
+          "defaultModel": "deepseek-chat"
+        }
+      }
+    }
+    ```
