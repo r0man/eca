@@ -6,7 +6,7 @@ Chat is the main feature of ECA, allowing user to talk with LLM to behave like a
 
 ### Behaviors
 
-![](./images/chat-behaviors.png)
+![](./images/features/chat-behaviors.png)
 
 Behavior affect the prompt passed to LLM and the tools to include, the current supported behaviors are:
 
@@ -15,7 +15,7 @@ Behavior affect the prompt passed to LLM and the tools to include, the current s
 
 ### Tools
 
-![](./images/tools.png)
+![](./images/features/tools.png)
 
 ECA leverage tools to give more power to the LLM, this is the best way to make LLMs have more context about your codebase and behave like an agent.
 It supports both MCP server tools + ECA native tools.
@@ -44,7 +44,7 @@ Provides access to run shell commands, useful to run build tools, tests, and oth
 
 ### Contexts
 
-![](./images/contexts.png)
+![](./images/features/contexts.png)
 
 User can include contexts to the chat (`@`), including MCP resources, which can help LLM generate output with better quality.
 Here are the current supported contexts types:
@@ -62,7 +62,7 @@ You can ask ECA to create/update this file via `/init` command.
 
 ### Commands
 
-![](./images/commands.png)
+![](./images/features/commands.png)
 
 Eca supports commands that usually are triggered via shash (`/`) in the chat, completing in the chat will show the known commands which include ECA commands, MCP prompts and resources.
 
