@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add `/doctor` command to help with troubleshooting
+
 ## 0.29.1
 
 - Fix args streaming in toolCallPrepare to not repeat the args. https://github.com/editor-code-assistant/eca-nvim/issues/28

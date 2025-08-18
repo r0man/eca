@@ -74,9 +74,12 @@ Eca supports commands that usually are triggered via shash (`/`) in the chat, co
 
 The built-in commands are:
 
-`/costs`: shows costs about current session.
-`/repo-map-show`: shows the current repoMap context of the session.
-`/resume`: resume a chat from previous session of this workspace folder.
+`/init`: Create/update the AGENT.md file with details about the workspace for best LLM output quality.
+`/costs`: Show costs about current session.
+`/resume`: Resume a chat from previous session of this workspace folder.
+`/doctor`: Show information about ECA, useful for troubleshooting.
+`/repo-map-show`: Show the current repoMap context of the session.
+`/prompt-show`: Show the final prompt sent to LLM with all contexts and ECA details.
 
 #### Custom commands
 

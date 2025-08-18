@@ -7,6 +7,7 @@
    [eca.features.index :as f.index]
    [eca.features.prompt :as f.prompt]
    [eca.features.tools.mcp :as f.mcp]
+   [eca.llm-api :as llm-api]
    [eca.shared :as shared :refer [multi-str]]))
 
 (set! *warn-on-reflection* true)
@@ -82,6 +83,10 @@
                        :type :native
                        :description "Resume the chats from this session workspaces."
                        :arguments []}
+                      {:name "doctor"
+                       :type :native
+                       :description "Check ECA details for troubleshooting."
+                       :arguments []}
                       {:name "repo-map-show"
                        :type :native
                        :description "Actual repoMap of current session."
@@ -108,6 +113,22 @@
                 (string/replace content (str "$ARG" (inc i)) arg))
               raw-content
               (map-indexed vector args)))))
+
+(defn ^:private doctor-msg [db config]
+  (let [model (llm-api/default-model db config)]
+    (multi-str (str "ECA version:" (config/eca-version))
+               ""
+               (str "Default model: " model)
+               ""
+               (str "Relevant env vars: " (reduce (fn [s [key val]]
+                                                    (if (or (string/includes? key "KEY")
+                                                            (string/includes? key "API")
+                                                            (string/includes? key "URL")
+                                                            (string/includes? key "BASE"))
+                                                      (str s key "=" val "\n")
+                                                      s))
+                                                  ""
+                                                  (System/getenv))))))
 
 (defn handle-command! [command args chat-id model instructions config db*]
   (let [db @db*
@@ -136,6 +157,8 @@
                                     (str "Total cost: $" (shared/tokens->cost total-input-tokens total-input-cache-creation-tokens total-input-cache-read-tokens total-output-tokens model db)))]
                 {:type :chat-messages
                  :chats {chat-id [{:role "system" :content [{:type :text :text text}]}]}})
+      "doctor" {:type :chat-messages
+                :chats {chat-id [{:role "system" :content [{:type :text :text (doctor-msg db config)}]}]}}
       "repo-map-show" {:type :chat-messages
                        :chats {chat-id [{:role "system" :content [{:type :text :text (f.index/repo-map db config {:as-string? true})}]}]}}
       "prompt-show" {:type :chat-messages
