@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.29.0
+
 - Add editor tools to retrieve information like diagnostics. #56
 
 ## 0.28.0
