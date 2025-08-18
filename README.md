@@ -21,6 +21,7 @@ _Demo using [eca-vscode](https://github.com/editor-code-assistant/eca-vscode)_
   <a href="https://eca.dev/configuration"><strong>configuration</strong></a> •
   <a href="https://eca.dev/models"><strong>models</strong></a> •
   <a href="https://eca.dev/protocol"><strong>protocol</strong></a>
+  <a href="https://eca.dev/troubleshooting"><strong>troubleshooting</strong></a>
 </p>
 <hr>
 
@@ -89,10 +90,6 @@ Editors spawn the server via `eca server` and communicate via stdin/stdout, simi
 ## Roadmap
 
 Check the planned work [here](https://github.com/orgs/editor-code-assistant/projects/1).
-
-## Troubleshooting
-
-You can start eca with `--log-level debug` or `--verbose` which should log helpful information to stderr buffer like what is being sent to LLMs or what ECA is responding to editors.
 
 ## Contributing
 
