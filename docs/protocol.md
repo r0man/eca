@@ -547,6 +547,8 @@ interface UsageContent {
 
 /**
  * Tool call that LLM is preparing to execute.
+ * This will be sent multiple times for same tool id for each time LLM outputs 
+ * a part of the arg, so clients should append the arguments to UI.
  */
 interface ToolCallPrepareContent {
     type: 'toolCallPrepare';
@@ -587,7 +589,7 @@ interface ToolCallPrepareContent {
 }
 
 /**
- * Tool call final request that LLM may trigger.
+ * Tool call final request that LLM may trigger, sent once per id.
  */
 interface ToolCallRunContent {
     type: 'toolCallRun';
@@ -628,7 +630,7 @@ interface ToolCallRunContent {
 }
 
 /**
- * Tool call result that LLM trigerred and was executed already.
+ * Tool call result that LLM trigerred and was executed already, sent once per id.
  */
 interface ToolCalledContent {
     type: 'toolCalled';
@@ -683,6 +685,9 @@ interface ToolCalledContent {
     details?: ToolCallDetails;
 }
 
+/**
+ * Tool call rejected, sent once per id.
+ */
 interface ToolCallRejected {
     type: 'toolCallRejected';
     

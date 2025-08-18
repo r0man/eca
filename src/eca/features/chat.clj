@@ -116,7 +116,6 @@
         all-tools (f.tools/all-tools behavior @db* config)
         received-msgs* (atom "")
         received-thinking* (atom "")
-        tool-call-by-id* (atom {:args {}})
         add-to-history! (fn [msg]
                           (swap! db* update-in [:chats chat-id :messages] (fnil conj []) msg))]
 
@@ -165,13 +164,12 @@
                                          (finish-chat-prompt! :idle chat-ctx))))
       :on-prepare-tool-call (fn [{:keys [id name arguments-text]}]
                               (assert-chat-not-stopped! chat-ctx)
-                              (swap! tool-call-by-id* update-in [id :args] str arguments-text)
                               (send-content! chat-ctx :assistant
                                              (assoc-some
                                               {:type :toolCallPrepare
                                                :name name
                                                :origin (tool-name->origin name all-tools)
-                                               :arguments-text (get-in @tool-call-by-id* [id :args])
+                                               :arguments-text arguments-text
                                                :id id
                                                :manual-approval (f.tools/manual-approval? name config)}
                                               :summary (f.tools/tool-call-summary all-tools name nil))))
@@ -248,8 +246,7 @@
                                                                  :reason :user
                                                                  :id id}
                                                                 :details details
-                                                                :summary summary))))
-                                            (swap! tool-call-by-id* dissoc id)))))]
+                                                                :summary summary))))))))]
                            ;; Wait all tool calls to complete before returning
                            (run! deref calls)
                            (send-content! chat-ctx :system {:type :progress :state :running :text "Generating"})

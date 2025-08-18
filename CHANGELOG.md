@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix args streaming in toolCallPrepare to not repeat the args. https://github.com/editor-code-assistant/eca-nvim/issues/28
+
 ## 0.29.0
 
 - Add editor tools to retrieve information like diagnostics. #56
