@@ -251,7 +251,7 @@
                                                    :origin "native"
                                                    :id "tool-1"
                                                    :name "eca_directory_tree"
-                                                   :argumentsText (str "{\"path\":\"" (h/project-path->canon-path "resources") "\"}")
+                                                   :argumentsText (str "h\":\"" (h/project-path->canon-path "resources") "\"}")
                                                    :manualApproval false
                                                    :summary "Listing file tree"})
         (match-content chat-id req-id "system" {:type "usage"
