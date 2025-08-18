@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.29.2
+
 - Add `/doctor` command to help with troubleshooting
 
 ## 0.29.1
