@@ -56,3 +56,7 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
+
+google_analytics:
+  - G-VFJYDKR1MR
+  - auto
