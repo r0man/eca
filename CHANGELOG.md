@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add editor tools to retrieve information like diagnostics. #56
+
 ## 0.28.0
 
 - Change api for custom providers to support `openai-responses` instead of just `openai`, still supporting `openai` only.

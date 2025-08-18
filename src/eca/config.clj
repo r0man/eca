@@ -27,7 +27,8 @@
    :commands []
    :nativeTools {:filesystem {:enabled true}
                  :shell {:enabled true
-                         :excludeCommands []}}
+                         :excludeCommands []}
+                 :editor {:enabled true}}
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}

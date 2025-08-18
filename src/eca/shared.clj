@@ -1,6 +1,7 @@
 (ns eca.shared
   (:require
    [camel-snake-kebab.core :as csk]
+   [clojure.java.io :as io]
    [clojure.string :as string]
    [clojure.walk :as walk])
   (:import
@@ -8,6 +9,9 @@
    [java.nio.file Paths]))
 
 (set! *warn-on-reflection* true)
+
+(def windows-os?
+  (.contains (System/getProperty "os.name") "Windows"))
 
 (def line-separator
   "The system's line separator."
@@ -18,6 +22,17 @@
     (-> uri Paths/get .toString
         ;; WINDOWS drive letters
         (string/replace #"^[a-z]:\\" string/upper-case))))
+
+(defn filename->uri [^String filename]
+  (let [uri (-> filename io/file .toPath .toUri .toString)
+        [_match scheme+auth path] (re-matches #"([a-z:]+//.*?)(/.*)" uri)]
+    (str scheme+auth
+         (-> path
+             (string/replace-first #"^/[a-zA-Z](?::|%3A)/"
+                                   (if windows-os?
+                                     string/upper-case
+                                     string/lower-case))
+             (string/replace ":" "%3A")))))
 
 (defn update-last [coll f]
   (if (seq coll)

@@ -7,7 +7,7 @@
    [eca.logger :as logger]
    [eca.messenger :as messenger]
    [eca.nrepl :as nrepl]
-   [eca.shared :as shared]
+   [eca.shared :as shared :refer [assoc-some]]
    [lsp4clj.io-server :as io-server]
    [lsp4clj.liveness-probe :as liveness-probe]
    [lsp4clj.server :as lsp.server]))
@@ -104,7 +104,10 @@
      (lsp.server/send-notification server "tool/serverUpdated" params)))
   (showMessage [_this msg]
     (lsp.server/discarding-stdout
-     (lsp.server/send-notification server "$/showMessage" msg))))
+     (lsp.server/send-notification server "$/showMessage" msg)))
+  (editor-diagnostics [_this uri]
+    (lsp.server/discarding-stdout
+     (lsp.server/send-request server "editor/getDiagnostics" (assoc-some {} :uri uri)))))
 
 (defn start-server! [server]
   (let [db* (atom db/initial-db)

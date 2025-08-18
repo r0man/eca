@@ -161,10 +161,11 @@ There are 3 possible ways to configure rules following this order of priority:
         rules: [{path: string;}];
         commands: [{path: string;}];
         systemPromptTemplateFile?: string;
-        nativeTools: {
+        nativeTools?: {
             filesystem: {enabled: boolean};
             shell: {enabled: boolean,
                     excludeCommands: string[]};
+            editor: {enabled: boolean,};
         };
         disabledTools: string[],
         toolCall?: {
@@ -222,7 +223,8 @@ There are 3 possible ways to configure rules following this order of priority:
       "commands" : [],
       "nativeTools": {"filesystem": {"enabled": true},
                       "shell": {"enabled": true,
-                                "excludeCommands": []}},
+                                "excludeCommands": []},
+                       "editor": {"enabled": true}},
       "disabledTools": [],
       "toolCall": {
         "manualApproval": null,

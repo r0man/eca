@@ -1,0 +1,50 @@
+(ns eca.features.tools.editor
+  (:require
+   [babashka.fs :as fs]
+   [clojure.string :as string]
+   [eca.features.tools.util :as tools.util]
+   [eca.logger :as logger]
+   [eca.messenger :as messenger]
+   [eca.shared :as shared]))
+
+(defn ^:private diagnostics [arguments {:keys [messenger]}]
+  (or (tools.util/invalid-arguments arguments [["path" #(or (nil? %)
+                                                            (string/blank? %)
+                                                            (not (fs/directory? %))) "Path needs to be a file, not a directory."]])
+      (let [uri (some-> (get arguments "path") not-empty shared/filename->uri)]
+        (try
+          (let [diags (:diagnostics @(messenger/editor-diagnostics messenger uri))]
+            (if (seq diags)
+              {:error false
+               :contents [{:type :text
+                           :text (reduce
+                                  (fn [s {:keys [uri range severity code message]}]
+                                    (str s (format "%s:%s:%s: %s: %s%s"
+                                                   (shared/uri->filename uri)
+                                                   (-> range :start :line)
+                                                   (-> range :start :character)
+                                                   severity
+                                                   (if code (format "[%s] " code) "")
+                                                   message)))
+                                  ""
+                                  diags)}]}
+              {:error false
+               :contents [{:type :text
+                           :text "No diagnostics found"}]}))
+          (catch Exception e
+            (logger/error (format "Error getting editor diagnostics for arguments %s: %s" arguments e))
+            {:error true
+             :contents [{:type :text
+                         :text "Error getting editor diagnostics"}]})))))
+
+(def definitions
+  {"eca_editor_diagnostics"
+   {:description (str "Return editor diagnostics/findings (Ex: LSP diagnostics) for workspaces. "
+                      "Only provide the path if you want to get diagnostics for a specific file.")
+    :parameters {:type "object"
+                 :properties {"path" {:type "string"
+                                      :description "Optional absolute path to a file to return diagnostics only for that file."}}
+                 :required []}
+    :handler #'diagnostics
+    :enabled-fn (fn [{:keys [db]}] (-> db :client-capabilities :code-assistant :editor :diagnostics))
+    :summary-fn (constantly "Checking diagnostics")}})

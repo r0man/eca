@@ -21,15 +21,16 @@
   (cond-> uri windows?
           (string/replace #"^(file):///(?!\w:/)" "$1:///C:/")))
 
-(defrecord TestMessenger [messages*]
+(defrecord TestMessenger [messages* diagnostics*]
   messenger/IMessenger
   (chat-content-received [_ data] (swap! messages* update :chat-content-received (fnil conj []) data))
   (tool-server-updated [_ data] (swap! messages* update :tool-server-update (fnil conj []) data))
-  (showMessage [_ data] (swap! messages* update :show-message (fnil conj []) data)))
+  (showMessage [_ data] (swap! messages* update :show-message (fnil conj []) data))
+  (editor-diagnostics [_ _uri] (delay {:diagnostics @diagnostics*})))
 
 (defn ^:private make-components []
   {:db* (atom db/initial-db)
-   :messenger (->TestMessenger (atom {}))
+   :messenger (->TestMessenger (atom {}) (atom []))
    :config config/initial-config})
 
 (def components* (atom (make-components)))

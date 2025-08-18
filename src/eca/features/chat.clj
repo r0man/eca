@@ -103,7 +103,7 @@
 (defn ^:private prompt-messages!
   [user-messages
    clear-history-after-finished?
-   {:keys [db* config chat-id contexts behavior model instructions] :as chat-ctx}]
+   {:keys [db* config chat-id contexts behavior model instructions messenger] :as chat-ctx}]
   (when (seq contexts)
     (send-content! chat-ctx :system {:type :progress
                                      :state :running
@@ -210,7 +210,7 @@
                                          ;; Execute each tool call concurrently
                                           (future
                                             (if @approved?*
-                                              (let [result (f.tools/call-tool! name arguments @db* config)]
+                                              (let [result (f.tools/call-tool! name arguments @db* config messenger)]
                                                 (assert-chat-not-stopped! chat-ctx)
                                                 (add-to-history! {:role "tool_call" :content (assoc tool-call
                                                                                                     :details details

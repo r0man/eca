@@ -127,9 +127,19 @@ interface WorkspaceFolder {
 interface ClientCapabilities {
     codeAssistant?: {
         chat?: boolean;
-        doc?: boolean;
-        edit?: boolean;
-        fix?: boolean;
+        
+        /**
+         * Whether client supports provide editor informations to server like
+         * diagnostics, cursor information and others.
+         */
+        editor?: {
+            /**
+             * Whether client supports provide editor diagnostics 
+             * information to server (Ex: LSP diagnostics) via `editor/getDiagnostics` 
+             * server request.
+             */ 
+            diagnostics?: boolean;
+        }
     }
 }
 
@@ -941,6 +951,78 @@ _Response:_
 
 ```typescript
 interface ChatDeleteResponse {}
+```
+
+## Editor diagnostics (↪️)
+
+A server request to retrieve LSP or any other kind of diagnostics if available from current workspaces.
+Useful for server to provide to LLM information about errors/warnings about current code.
+
+_Request:_ 
+
+* method: `editor/getDiagnostics`
+* params: `EditorGetDiagnosticsParams` defined as follows:
+
+```typescript
+interface EditorGetDiagnosticsParams {
+    /**
+     * Optional uri to get diagnostics, if nil return whole workspaces diagnostics.
+     */
+    uri?: string;
+}
+```
+
+_Response:_
+
+```typescript
+interface EditorGetDiagnosticsResponse {
+    /**
+     * The list of diagnostics.
+     */
+    diagnostics: EditorDiagnostic[];
+}
+
+interface EditorDiagnostic {
+    /**
+     * The diagnostic file uri.
+     */
+    uri: string;
+    
+    /**
+     * The diagnostic severity.
+     */
+    severity: 'error' | 'warning' | 'info' | 'hint';
+    
+    /**
+     * The diagnostic source. Ex: 'clojure-lsp'
+     */
+    source: string;
+    
+    /**
+     * The diagnostic range (1-based).
+     */
+    range: {
+        start: {
+            line: number;
+            character: number;
+        };
+        
+        end: {
+            line: number;
+            character: number;
+        };
+    };
+    
+    /**
+     * The diagnostic code. Ex: 'wrong-args'
+     */
+    code?: string;
+
+    /**
+     * The diagnostic message. Ex: 'Wrong number of args for function X'
+     */
+    message: string; 
+}
 ```
 
 ### Completion (↩️)

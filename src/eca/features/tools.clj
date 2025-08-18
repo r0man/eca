@@ -5,6 +5,7 @@
    [babashka.fs :as fs]
    [clojure.string :as string]
    [eca.diff :as diff]
+   [eca.features.tools.editor :as f.tools.editor]
    [eca.features.tools.filesystem :as f.tools.filesystem]
    [eca.features.tools.mcp :as f.mcp]
    [eca.features.tools.shell :as f.tools.shell]
@@ -31,7 +32,9 @@
           (when (get-in config [:nativeTools :filesystem :enabled])
             f.tools.filesystem/definitions)
           (when (get-in config [:nativeTools :shell :enabled])
-            f.tools.shell/definitions))))
+            f.tools.shell/definitions)
+          (when (get-in config [:nativeTools :editor :enabled])
+            f.tools.editor/definitions))))
 
 (defn ^:private native-tools [db config]
   (vals (native-definitions db config)))
@@ -53,12 +56,14 @@
       (mapv #(assoc % :origin :native) (native-tools db config))
       (mapv #(assoc % :origin :mcp) (f.mcp/all-tools db))))))
 
-(defn call-tool! [^String name ^Map arguments db config]
+(defn call-tool! [^String name ^Map arguments db config messenger]
   (logger/info logger-tag (format "Calling tool '%s' with args '%s'" name arguments))
   (let [arguments (update-keys arguments clojure.core/name)]
     (try
       (let [result (if-let [native-tool-handler (get-in (native-definitions db config) [name :handler])]
-                     (native-tool-handler arguments {:db db :config config})
+                     (native-tool-handler arguments {:db db
+                                                     :config config
+                                                     :messenger messenger})
                      (f.mcp/call-tool! name arguments db))]
         (logger/debug logger-tag "Tool call result: " result)
         result)
@@ -114,10 +119,10 @@
 
 (defn manual-approval? [name config]
   (boolean
-    (let [manual-approval? (get-in config [:toolCall :manualApproval] nil)]
-      (if (coll? manual-approval?)
-        (some #(= name (str %)) manual-approval?)
-        manual-approval?))))
+   (let [manual-approval? (get-in config [:toolCall :manualApproval] nil)]
+     (if (coll? manual-approval?)
+       (some #(= name (str %)) manual-approval?)
+       manual-approval?))))
 
 (defn tool-call-summary [all-tools name args]
   (when-let [summary-fn (:summary-fn (first (filter #(= name (:name %))

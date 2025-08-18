@@ -42,6 +42,12 @@ Provides access to run shell commands, useful to run build tools, tests, and oth
 
 - `eca_shell_command`: run shell command. Supports configs to exclude commands via `:nativeTools :shell :excludeCommands`.
 
+#### Editor
+
+Provides access to get information from editor workspaces.
+
+- `eca_editor_diagnostics`: Ask client about the diagnostics (like LSP diagnostics).
+
 ### Contexts
 
 ![](./images/features/contexts.png)
