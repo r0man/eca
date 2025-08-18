@@ -59,7 +59,7 @@ Install the plugin for your editor and ECA server will be downloaded and started
 
 ### 2. Set up your first model
 
-To use ECA, you need to configure at least one model with your API key. See the [Models documentation](./models.md#adding-and-configuring-models) for detailed instructions on:
+To use ECA, you need to configure at least one model with your API key. See the [Models documentation](https://eca.dev/models#adding-and-configuring-models) for detailed instructions on:
 
 - Setting up API keys for OpenAI, Anthropic, or Ollama
 - Adding and customizing models
@@ -74,7 +74,7 @@ To use ECA, you need to configure at least one model with your API key. See the 
 }
 ```
 
-**Note**: For other providers or custom models, see the [custom providers documentation](./models.md#setting-up-a-custom-provider).
+**Note**: For other providers or custom models, see the [custom providers documentation](https://eca.dev/models#setting-up-a-custom-provider).
 
 ### 3. Start chatting
 
@@ -97,7 +97,7 @@ You can start eca with `--log-level debug` or `--verbose` which should log helpf
 ## Contributing
 
 Contributions are very welcome, please open an issue for discussion or a pull request.
-For developer details, check [this doc](./docs/development.md).
+For developer details, check [this doc](https://eca.dev/development).
 
 ## Support the project 💖
 
