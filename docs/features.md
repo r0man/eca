@@ -20,6 +20,10 @@ Behavior affect the prompt passed to LLM and the tools to include, the current s
 ECA leverage tools to give more power to the LLM, this is the best way to make LLMs have more context about your codebase and behave like an agent.
 It supports both MCP server tools + ECA native tools.
 
+!!! warning "Automatic approval"
+
+    By default, ECA auto approve any tool call from LLM, to configure that or for which tools, check `toolCall manualApproval` config or try the `plan` behavior.
+
 ### Native tools
 
 ECA support built-in tools to avoid user extra installation and configuration, these tools are always included on models requests that support tools and can be [disabled/configured via config](./configuration.md) `nativeTools`.
