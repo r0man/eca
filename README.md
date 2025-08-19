@@ -56,7 +56,7 @@ Install the plugin for your editor and ECA server will be downloaded and started
 - [Emacs](https://github.com/editor-code-assistant/eca-emacs)
 - [VsCode](https://github.com/editor-code-assistant/eca-vscode)
 - [Vim](https://github.com/editor-code-assistant/eca-nvim)
-- Intellij: Planned, help welcome
+- Intellij: [WIP](https://github.com/editor-code-assistant/eca-intellij), help welcome
 
 ### 2. Set up your first model
 
