@@ -1,6 +1,7 @@
 (ns eca.features.context
   (:require
    [babashka.fs :as fs]
+   [clojure.string :as string]
    [eca.config :as config]
    [eca.features.index :as f.index]
    [eca.features.tools.mcp :as f.mcp]
@@ -60,8 +61,15 @@
                   contexts)))
 
 (defn ^:private contexts-for [root-filename query config]
-  (let [all-files (fs/glob root-filename (str "**" (or query "") "**"))
-        allowed-files (f.index/filter-allowed all-files root-filename config)]
+  (let [all-paths (fs/glob root-filename "**")
+        query (some-> query string/trim)
+        filtered (if (or (nil? query) (string/blank? query))
+                   all-paths
+                   (filter (fn [p]
+                             (string/includes? (-> (str p) string/lower-case)
+                                               (string/lower-case query)))
+                           all-paths))
+        allowed-files (f.index/filter-allowed filtered root-filename config)]
     allowed-files))
 
 (defn all-contexts [query db* config]
