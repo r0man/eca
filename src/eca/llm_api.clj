@@ -77,6 +77,7 @@
   - Any custom provider with defaultModel set
   - Anthropic api key set
   - Openai api key set
+  - Github copilot login done
   - Ollama first model if running
   - Anthropic default model."
   [db config]

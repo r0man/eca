@@ -154,7 +154,14 @@ _* Either the `url` or `urlEnv` option is required, and either the `key` or `key
 
 After configuring custom providers, the models will be available as `provider/model` (e.g., `openrouter/anthropic/claude-3.5-sonnet`, `deepseek/deepseek-chat`).
 
-### Examples
+### Providers setup
+
+=== "Github Copilot"
+    
+    1. Login to Github copilot via the chat command `/login github-copilot`.
+    2. Authenticate in Github with the given code.
+    3. Type anything in the chat to continue and done!
+
 
 === "LiteLLM"
 
@@ -167,22 +174,6 @@ After configuring custom providers, the models will be available as `provider/mo
         "key": "your-api-key",
         "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"],
         "defaultModel": "gpt-5"
-        }
-      }
-    }
-    ```
-
-=== "Environment variables"
-
-    ```javascript
-    {
-      "customProviders": {
-        "enterprise": {
-           "api": "anthropic",
-           "urlEnv": "ENTERPRISE_LLM_URL",
-           "keyEnv": "ENTERPRISE_LLM_KEY",
-           "models": ["claude-3-opus-20240229", "claude-3-sonnet-20240229"],
-           "defaultModel": "claude-3-sonnet-20240229"
         }
       }
     }
