@@ -30,3 +30,24 @@
   (testing "throws on uneven kvs"
     (is (thrown? IllegalArgumentException
                  (shared/assoc-some {} :a 1 :b)))))
+
+(deftest tokens->cost-test
+  (let [db {:models {"my-model" {:input-token-cost 0.01
+                                 :output-token-cost 0.02
+                                 :input-cache-creation-token-cost 0.005
+                                 :input-cache-read-token-cost 0.001}}}]
+    (testing "basic input/output cost"
+      (is (= "0.70" (shared/tokens->cost 30 nil nil 20 "my-model" db))))
+    (testing "with cache creation tokens"
+      (is (= "0.75" (shared/tokens->cost 30 10 nil 20 "my-model" db))))
+    (testing "with cache read tokens"
+      (is (= "0.73" (shared/tokens->cost 30 nil 30 20 "my-model" db))))
+    (testing "with both cache creation and read tokens"
+      (is (= "0.78" (shared/tokens->cost 30 10 30 20 "my-model" db))))
+    (testing "accepts provider-prefixed model names"
+      (is (= "0.70" (shared/tokens->cost 30 nil nil 20 "provider/my-model" db))))
+    (testing "returns nil when model is missing from db"
+      (is (nil? (shared/tokens->cost 30 nil nil 20 "unknown" db))))
+    (testing "returns nil when mandatory costs are missing"
+      (is (nil? (shared/tokens->cost 30 nil nil 20 "my-model-missing"
+                                     {:models {"my-model-missing" {:input-token-cost 0.01}}}))))))
