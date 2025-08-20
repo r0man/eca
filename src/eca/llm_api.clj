@@ -88,12 +88,14 @@
                                                                   (:models db)))]
               [:custom-provider-default-model custom-provider-default-model])
             (when (anthropic-api-key config)
-              [:api-key-found "anthropic/claude-sonnet-4"])
+              [:api-key-found "anthropic/claude-sonnet-4-20250514"])
             (when (openai-api-key config)
               [:api-key-found "openai/gpt-5"])
+            (when (get-in db [:auth "github-copilot" :api-key])
+              [:api-key-found "github-copilot/gpt-4.1"])
             (when-let [ollama-model (first (filter #(string/starts-with? % config/ollama-model-prefix) (keys (:models db))))]
               [:ollama-running ollama-model])
-            [:default "anthropic/claude-sonnet-4"])]
+            [:default "anthropic/claude-sonnet-4-20250514"])]
     (logger/info logger-tag (format "Default LLM model '%s' decision '%s'" model decision))
     model))
 

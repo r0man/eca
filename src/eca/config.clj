@@ -44,10 +44,10 @@
             "github-copilot/gpt-4o" {}
             "github-copilot/claude-3.5-sonnet" {}
             "github-copilot/gemini-2.0-flash-001" {}
-            "anthropic/claude-sonnet-4" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-opus-4.1" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-opus-4" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-3-5-haiku" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
+            "anthropic/claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
    :ollama {:useTools true
             :think true}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
