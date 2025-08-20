@@ -22,6 +22,7 @@
    :anthropicApiKey nil
    :openaiApiUrl nil
    :anthropicApiUrl nil
+   :githubCopilotApiUrl nil
    :ollamaApiUrl nil
    :rules []
    :commands []
@@ -32,16 +33,21 @@
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}
-   :models {"gpt-5" {}
-            "gpt-5-mini" {}
-            "gpt-5-nano" {}
-            "gpt-4.1" {}
-            "o4-mini" {}
-            "o3" {}
-            "claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
+   :models {"openai/gpt-5" {}
+            "openai/gpt-5-mini" {}
+            "openai/gpt-5-nano" {}
+            "openai/gpt-4.1" {}
+            "openai/o4-mini" {}
+            "openai/o3" {}
+            "github-copilot/gpt-5-mini" {}
+            "github-copilot/gpt-4.1" {}
+            "github-copilot/gpt-4o" {}
+            "github-copilot/claude-3.5-sonnet" {}
+            "github-copilot/gemini-2.0-flash-001" {}
+            "anthropic/claude-sonnet-4" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-opus-4.1" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-opus-4" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+            "anthropic/claude-3-5-haiku" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
    :ollama {:useTools true
             :think true}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}

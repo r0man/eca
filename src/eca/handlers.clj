@@ -3,6 +3,7 @@
    [eca.config :as config]
    [eca.db :as db]
    [eca.features.chat :as f.chat]
+   [eca.features.login :as f.login]
    [eca.features.tools :as f.tools]
    [eca.features.tools.mcp :as f.mcp]
    [eca.llm-api :as llm-api]
@@ -20,12 +21,12 @@
     (swap! db* update :models merge eca-models)
     (when-let [custom-providers (seq (:customProviders config))]
       (let [models (reduce
-                    (fn [models [provider {provider-models :models default-model :defaultModel}]]
+                    (fn [models [custom-provider {provider-models :models default-model :defaultModel}]]
                       (reduce
                        (fn [m model]
                          (let [known-model (get all-models model)]
                            (assoc m
-                                  (str (name provider) "/" model)
+                                  (str (name custom-provider) "/" model)
                                   {:tools (or (:tools known-model) true)
                                    :reason? (or (:reason? known-model) true)
                                    :web-search (or (:web-search known-model) true)
@@ -77,7 +78,9 @@
 (defn chat-prompt [{:keys [messenger db* config]} params]
   (logger/logging-task
    :eca/chat-prompt
-   (f.chat/prompt params db* messenger config)))
+   (case (get-in @db* [:chats (:chat-id params) :status])
+     :login (f.login/continue params db* messenger)
+     (f.chat/prompt params db* messenger config))))
 
 (defn chat-query-context [{:keys [db* config]} params]
   (logger/logging-task

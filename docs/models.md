@@ -4,11 +4,12 @@ The models capabilities and configurations are retrieved from [models.dev](https
 
 ## Built-in providers and capabilities
 
-| model     | tools (MCP) | reasoning / thinking | prompt caching | web_search |
-|-----------|-------------|----------------------|----------------|------------|
-| OpenAI    | √           | √                    | √              | √          |
-| Anthropic | √           | √                    | √              | √          |
-| Ollama    | √           | √                    | X              | X          |
+| model          | tools (MCP) | reasoning / thinking | prompt caching | web_search |
+|----------------|-------------|----------------------|----------------|------------|
+| OpenAI         | √           | √                    | √              | √          |
+| Anthropic      | √           | √                    | √              | √          |
+| Github Copilot | √           | √                    | √              | X          |
+| Ollama         | √           | √                    | X              | X          |
 
 ### OpenAI
 

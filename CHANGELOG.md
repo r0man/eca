@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Add `/login` command to login to providers
+- Add Github Copilot models support with login.
+
 ## 0.29.2
 
 - Add `/doctor` command to help with troubleshooting

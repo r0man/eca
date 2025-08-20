@@ -24,6 +24,7 @@
    :chat-behaviors ["agent" "plan"]
    :chat-default-behavior "agent"
    :models {}
+   :auth {}
    :mcp-clients {}})
 
 (defonce db* (atom initial-db))
@@ -94,10 +95,10 @@
   (when-let [global-cache (read-workspaces-cache (:workspace-folders @db*))]
     (swap! db* (fn [state-db]
                  (merge state-db
-                        (select-keys global-cache [:chats]))))))
+                        (select-keys global-cache [:chats :auth]))))))
 
 (defn ^:private normalize-db-for-write [db]
-  (-> (select-keys db [:chats])
+  (-> (select-keys db [:chats :auth])
       (update :chats (fn [chats]
                        (into {}
                              (map (fn [[k v]]

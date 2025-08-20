@@ -29,13 +29,14 @@
            :function (select-keys tool [:name :description :parameters])})
         tools))
 
-(defn ^:private base-request! [{:keys [rid body api-url api-key on-error on-response]}]
+(defn ^:private base-request! [{:keys [rid extra-headers body api-url api-key on-error on-response]}]
   (let [url (str api-url chat-completions-path)]
     (llm-util/log-request logger-tag rid url body)
     (http/post
      url
-     {:headers {"Authorization" (str "Bearer " api-key)
-                "Content-Type" "application/json"}
+     {:headers (merge {"Authorization" (str "Bearer " api-key)
+                       "Content-Type" "application/json"}
+                      extra-headers)
       :body (json/generate-string body)
       :throw-exceptions? false
       :async? true
@@ -129,7 +130,7 @@
        (filter valid-message?)))
 
 (defn ^:private execute-accumulated-tools!
-  [{:keys [tool-calls-atom instructions body api-url api-key on-tools-called on-error handle-response]}]
+  [{:keys [tool-calls-atom instructions extra-headers body api-url api-key on-tools-called on-error handle-response]}]
   (let [all-accumulated (vals @tool-calls-atom)
         completed-tools (->> all-accumulated
                              (filter #(every? % [:id :name :arguments-text]))
@@ -154,6 +155,7 @@
           (base-request!
            {:rid new-rid
             :body (assoc body :messages new-messages-list)
+            :extra-headers extra-headers
             :api-url api-url
             :api-key api-key
             :on-error on-error
@@ -168,7 +170,7 @@
    and message normalization. Supports both single and parallel tool execution.
    Compatible with OpenRouter and other OpenAI-compatible providers."
   [{:keys [model user-messages instructions temperature api-key api-url max-output-tokens
-           past-messages tools extra-payload]
+           past-messages tools extra-payload extra-headers]
     :or {temperature 1.0}}
    {:keys [on-message-received on-error on-prepare-tool-call on-tools-called on-reason]}]
 
@@ -202,6 +204,7 @@
                             (execute-accumulated-tools!
                              {:tool-calls-atom tool-calls-atom
                               :instructions    instructions
+                              :extra-headers   extra-headers
                               :body            body
                               :api-url         api-url
                               :api-key         api-key
@@ -273,6 +276,7 @@
     (base-request!
      {:rid         rid
       :body        body
+      :extra-headers extra-headers
       :api-url     api-url
       :api-key     api-key
       :tool-calls* tool-calls*

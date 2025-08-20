@@ -5,6 +5,7 @@
    [clojure.string :as string]
    [eca.config :as config]
    [eca.features.index :as f.index]
+   [eca.features.login :as f.login]
    [eca.features.prompt :as f.prompt]
    [eca.features.tools.mcp :as f.mcp]
    [eca.llm-api :as llm-api]
@@ -75,6 +76,10 @@
                        :type :native
                        :description "Create/update the AGENT.md file teaching LLM about the project"
                        :arguments []}
+                      {:name "login"
+                       :type :native
+                       :description "Log into a provider (Ex: /login gitub-copilot)"
+                       :arguments [{:name "provider-id"}]}
                       {:name "costs"
                        :type :native
                        :description "Total costs of the current chat session."
@@ -130,13 +135,24 @@
                                                   ""
                                                   (System/getenv))))))
 
-(defn handle-command! [command args chat-id model instructions config db*]
+(defn handle-command! [command args {:keys [chat-id db* config full-model instructions]}]
   (let [db @db*
         custom-commands (custom-commands config (:workspace-folders db))]
     (case command
       "init" {:type :send-prompt
               :clear-history-after-finished? true
               :prompt (f.prompt/build-init-prompt db)}
+      "login" (let [[msg error?] (if-let [provider (first args)]
+                                   (let [{:keys [message error]} (f.login/start-login chat-id provider db*)]
+                                     (if error
+                                       [error true]
+                                       [message]))
+                                   ["Inform the provider-id (Ex: github-copilot)" true])]
+                {:type :chat-messages
+                 :status (when-not error? :login)
+                 :skip-finish? true
+                 :chats {chat-id (->> [{:role "system" :content [{:type :text :text msg}]}]
+                                      (remove nil?))}})
       "resume" (let [chats (:chats db)]
                  ;; Override current chat with first chat
                  (when-let [first-chat (second (first chats))]
@@ -154,7 +170,7 @@
                                     (when total-input-cache-read-tokens
                                       (str "Total input cache read tokens: " total-input-cache-read-tokens))
                                     (str "Total output tokens: " total-output-tokens)
-                                    (str "Total cost: $" (shared/tokens->cost total-input-tokens total-input-cache-creation-tokens total-input-cache-read-tokens total-output-tokens model db)))]
+                                    (str "Total cost: $" (shared/tokens->cost total-input-tokens total-input-cache-creation-tokens total-input-cache-read-tokens total-output-tokens full-model db)))]
                 {:type :chat-messages
                  :chats {chat-id [{:role "system" :content [{:type :text :text text}]}]}})
       "doctor" {:type :chat-messages

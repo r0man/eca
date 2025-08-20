@@ -22,14 +22,14 @@
 (def ^:private one-million 1000000)
 
 (def ^:private models-with-web-search-support
-  #{"gpt-4.1"
-    "gpt-5"
-    "gpt-5-mini"
-    "gpt-5-nano"
-    "claude-sonnet-4-20250514"
-    "claude-opus-4-20250514"
-    "claude-opus-4-1-20250805"
-    "claude-3-5-haiku-20241022"})
+  #{"openai/gpt-4.1"
+    "openai/gpt-5"
+    "openai/gpt-5-mini"
+    "openai/gpt-5-nano"
+    "anthropic/claude-sonnet-4"
+    "anthropic/claude-opus-4"
+    "anthropic/claude-opus-4.1"
+    "anthropic/claude-3.5-haiku"})
 
 (defn all
   "Return all known existing models with their capabilities and configs."
@@ -39,18 +39,24 @@
      (merge m
             (reduce
              (fn [p [model model-config]]
-               (assoc p (name model) (assoc-some
-                                      {:provider (or (namespace model) (name provider))
-                                       :reason? (:reasoning model-config)
-                                       ;; TODO how to check for web-search mode dynamically
-                                       :web-search (contains? models-with-web-search-support (name model))
-                                       :tools (:tool_call model-config)
-                                       :max-output-tokens (-> model-config :limit :output)}
-                                      :input-token-cost (some-> (:input (:cost model-config)) float (/ one-million))
-                                      :output-token-cost (some-> (:output (:cost model-config)) float (/ one-million))
-                                      :input-cache-creation-token-cost (some-> (:cache_write (:cost model-config)) float (/ one-million))
-                                      :input-cache-read-token-cost (some-> (:cache_read (:cost model-config)) float (/ one-million)))))
+               (let [provider-name (or (namespace model) (name provider))]
+                 (assoc p (str provider-name "/" (name model))
+                        (assoc-some
+                         {:provider provider-name
+                          :reason? (:reasoning model-config)
+                          ;; TODO how to check for web-search mode dynamically
+                          :web-search (contains? models-with-web-search-support (name model))
+                          :tools (:tool_call model-config)
+                          :max-output-tokens (-> model-config :limit :output)}
+                         :input-token-cost (some-> (:input (:cost model-config)) float (/ one-million))
+                         :output-token-cost (some-> (:output (:cost model-config)) float (/ one-million))
+                         :input-cache-creation-token-cost (some-> (:cache_write (:cost model-config)) float (/ one-million))
+                         :input-cache-read-token-cost (some-> (:cache_read (:cost model-config)) float (/ one-million))))))
              {}
              (:models provider-config))))
    {}
    (models-dev)))
+
+(comment
+  (require '[clojure.pprint :as pprint])
+  (pprint/pprint (all)))

@@ -4,6 +4,7 @@
    [clojure.string :as string]
    [eca.config :as config]
    [eca.llm-providers.anthropic :as llm-providers.anthropic]
+   [eca.llm-providers.copilot :as llm-providers.copilot]
    [eca.llm-providers.ollama :as llm-providers.ollama]
    [eca.llm-providers.openai :as llm-providers.openai]
    [eca.llm-providers.openai-chat :as llm-providers.openai-chat]
@@ -49,6 +50,11 @@
       (config/get-env "OPENAI_API_URL")
       llm-providers.openai/base-url))
 
+(defn ^:private github-copilot-api-url [config]
+  (or (:githubCopilotApiUrl config)
+      (config/get-env "GITHUB_COPILOT_API_URL")
+      llm-providers.copilot/base-api-url))
+
 (defn ^:private ollama-api-url [config]
   (or (:ollamaApiUrl config)
       (config/get-env "OLLAMA_API_URL")
@@ -82,12 +88,12 @@
                                                                   (:models db)))]
               [:custom-provider-default-model custom-provider-default-model])
             (when (anthropic-api-key config)
-              [:api-key-found "claude-sonnet-4-20250514"])
+              [:api-key-found "anthropic/claude-sonnet-4"])
             (when (openai-api-key config)
-              [:api-key-found "gpt-5"])
+              [:api-key-found "openai/gpt-5"])
             (when-let [ollama-model (first (filter #(string/starts-with? % config/ollama-model-prefix) (keys (:models db))))]
               [:ollama-running ollama-model])
-            [:default "claude-sonnet-4-20250514"])]
+            [:default "anthropic/claude-sonnet-4"])]
     (logger/info logger-tag (format "Default LLM model '%s' decision '%s'" model decision))
     model))
 
@@ -96,9 +102,9 @@
          :type "function"))
 
 (defn complete!
-  [{:keys [model provider model-config instructions user-messages config on-first-response-received
+  [{:keys [provider model model-config instructions user-messages config on-first-response-received
            on-message-received on-error on-prepare-tool-call on-tools-called on-reason on-usage-updated
-           past-messages tools]}]
+           past-messages tools provider-auth]}]
   (let [first-response-received* (atom false)
         emit-first-message-fn (fn [& args]
                                 (when-not @first-response-received*
@@ -164,6 +170,25 @@
           :api-key (anthropic-api-key config)}
          callbacks)
 
+        (= "github-copilot" provider)
+        (llm-providers.openai-chat/completion!
+         {:model model
+          :instructions instructions
+          :user-messages user-messages
+          :max-output-tokens max-output-tokens
+          :reason? (:reason? model-config)
+          :past-messages past-messages
+          :tools tools
+          :extra-payload extra-payload
+          :api-url (github-copilot-api-url config)
+          :api-key (:api-token provider-auth)
+          :extra-headers {"openai-intent" "conversation-panel"
+                          "x-request-id" (str (random-uuid))
+                          "vscode-sessionid" ""
+                          "vscode-machineid" ""
+                          "copilot-integration-id" "vscode-chat"}}
+         callbacks)
+
         (string/starts-with? model config/ollama-model-prefix)
         (llm-providers.ollama/completion!
          {:api-url (ollama-api-url config)
@@ -206,3 +231,26 @@
         (on-error-wrapper {:message (str "ECA Unsupported model: " model)}))
       (catch Exception e
         (on-error-wrapper {:exception e})))))
+
+(defn auth-start [{:keys [provider]}]
+  (try
+    (case provider
+      "github-copilot" (let [auth (llm-providers.copilot/auth-url)]
+                         {:auth-type :oauth/simple
+                          :url (:url auth)
+                          :device-code (:device-code auth)
+                          :user-code (:user-code auth)})
+      {:error-message (str "Unknown provider: " provider)})
+    (catch Exception e
+      {:error-message (format "Error log into provider %s: %s" provider (.getMessage e))})))
+
+(defn auth-continue [{:keys [provider db*]}]
+  (try
+    (case provider
+      "github-copilot" (let [{:keys [api-token expires-at]} (llm-providers.copilot/auth-exchange (get-in @db* [:auth provider :device-code]))]
+                         {:api-token api-token
+                          :expires-at expires-at})
+      {:error-message (str "Unknown provider: " provider)})
+    (catch Exception e
+      (logger/error logger-tag "Error on login: " e)
+      {:error-message (format "Error log into provider %s: %s" provider (.getMessage e))})))
