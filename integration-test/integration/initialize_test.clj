@@ -3,8 +3,8 @@
    [clojure.test :refer [deftest is testing]]
    [integration.eca :as eca]
    [integration.fixture :as fixture]
-   [matcher-combinators.test :refer [match?]]
-   [matcher-combinators.matchers :as m]))
+   [matcher-combinators.matchers :as m]
+   [matcher-combinators.test :refer [match?]]))
 
 (eca/clean-after-test)
 
@@ -13,17 +13,22 @@
 
   (testing "initialize request with default config"
     (is (match?
-         {:models ["claude-3-5-haiku-20241022"
-                   "claude-opus-4-1-20250805"
-                   "claude-opus-4-20250514"
-                   "claude-sonnet-4-20250514"
-                   "gpt-4.1"
-                   "gpt-5"
-                   "gpt-5-mini"
-                   "gpt-5-nano"
-                   "o3"
-                   "o4-mini"]
-          :chatDefaultModel "claude-sonnet-4-20250514"
+         {:models ["anthropic/claude-3-5-haiku-20241022"
+                   "anthropic/claude-opus-4-1-20250805"
+                   "anthropic/claude-opus-4-20250514"
+                   "anthropic/claude-sonnet-4-20250514"
+                   "github-copilot/gpt-5-mini"
+                   "github-copilot/gpt-4.1"
+                   "github-copilot/gpt-4o"
+                   "github-copilot/claude-3.5-sonnet"
+                   "github-copilot/gemini-2.0-flash-001"
+                   "openai/gpt-4.1"
+                   "openai/gpt-5"
+                   "openai/gpt-5-mini"
+                   "openai/gpt-5-nano"
+                   "openai/o3"
+                   "openai/o4-mini"]
+          :chatDefaultModel "anthropic/claude-sonnet-4-20250514"
           :chatBehaviors ["agent" "plan"]
           :chatDefaultBehavior "plan"
           :chatWelcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
@@ -54,18 +59,23 @@
   (eca/start-process!)
   (testing "initialize request with custom providers"
     (is (match?
-         {:models ["claude-3-5-haiku-20241022"
-                   "claude-opus-4-1-20250805"
-                   "claude-opus-4-20250514"
-                   "claude-sonnet-4-20250514"
-                   "gpt-4.1"
-                   "gpt-5"
-                   "gpt-5-mini"
-                   "gpt-5-nano"
+         {:models ["anthropic/claude-3-5-haiku-20241022"
+                   "anthropic/claude-opus-4-1-20250805"
+                   "anthropic/claude-opus-4-20250514"
+                   "anthropic/claude-sonnet-4-20250514"
+                   "github-copilot/gpt-5-mini"
+                   "github-copilot/gpt-4.1"
+                   "github-copilot/gpt-4o"
+                   "github-copilot/claude-3.5-sonnet"
+                   "github-copilot/gemini-2.0-flash-001"
                    "myCustom/bar-2"
                    "myCustom/foo-1"
-                   "o3"
-                   "o4-mini"]
+                   "openai/gpt-4.1"
+                   "openai/gpt-5"
+                   "openai/gpt-5-mini"
+                   "openai/gpt-5-nano"
+                   "openai/o3"
+                   "openai/o4-mini"]
           :chatDefaultModel "myCustom/bar-2"
           :chatBehaviors ["agent" "plan"]
           :chatDefaultBehavior "agent"

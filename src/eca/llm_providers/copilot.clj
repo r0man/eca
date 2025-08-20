@@ -14,7 +14,7 @@
    "editor-plugin-version" "eca/*"
    "editor-version" (str "eca/" (config/eca-version))})
 
-(defn auth-url []
+(defn oauth-url []
   (let [{:keys [body]} (http/post
                         "https://github.com/login/device/code"
                         {:headers (auth-headers)
@@ -25,7 +25,7 @@
      :device-code (:device_code body)
      :url (:verification_uri body)}))
 
-(defn auth-exchange [device-code]
+(defn oauth-access-token [device-code]
   (let [{:keys [status body]} (http/post
                                "https://github.com/login/oauth/access_token"
                                {:headers (auth-headers)
@@ -33,32 +33,36 @@
                                                              :device_code device-code
                                                              :grant_type "urn:ietf:params:oauth:grant-type:device_code"})
                                 :throw-exceptions? false
-                                :as :json})
-        access-token (:access_token body)]
+                                :as :json})]
     (if (= 200 status)
-      (let [{:keys [body]} (http/get
-                            "https://api.github.com/copilot_internal/v2/token"
-                            {:headers (merge (auth-headers)
-                                             {"authorization" (str "token " access-token)})
-                             :throw-exceptions? false
-                             :as :json})]
-        (if-let [token (:token body)]
-          {:api-token token
-           :expires-at (:expires_at body)}
-          (throw (ex-info (format "Error: You may not have access to Github Copilot")
-                          {:status status
-                           :body body}))))
+      (:access_token body)
       (throw (ex-info (format "Github auth failed: %s" (pr-str body))
                       {:status status
                        :body body})))))
 
+(defn oauth-renew-token [access-token]
+  (let [{:keys [status body]} (http/get
+                               "https://api.github.com/copilot_internal/v2/token"
+                               {:headers (merge (auth-headers)
+                                                {"authorization" (str "token " access-token)})
+                                :throw-exceptions? false
+                                :as :json})]
+    (if-let [token (:token body)]
+      {:api-token token
+       :expires-at (:expires_at body)}
+      (throw (ex-info (format "Error on copilot login: %s" body)
+                      {:status status
+                       :body body})))))
+
 (comment
-  (def a (auth-url))
+  (def a (oauth-url))
   (:user-code a)
   (:device-code a)
   (:url a)
 
-  (def credentials (auth-exchange (:device-code a)))
+  (def access-token (oauth-access-token (:device-code a)))
+
+  (def credentials (oauth-renew-token access-token))
 
   (:api-token credentials)
   (:expires-at credentials))

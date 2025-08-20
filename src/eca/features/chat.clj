@@ -7,6 +7,7 @@
    [eca.features.commands :as f.commands]
    [eca.features.context :as f.context]
    [eca.features.index :as f.index]
+   [eca.features.login :as f.login]
    [eca.features.prompt :as f.prompt]
    [eca.features.rules :as f.rules]
    [eca.features.tools :as f.tools]
@@ -117,165 +118,171 @@
         received-thinking* (atom "")
         add-to-history! (fn [msg]
                           (swap! db* update-in [:chats chat-id :messages] (fnil conj []) msg))]
+    (when-let [expires-at (:expires-at provider-auth)]
+      (when (<= (long expires-at) (quot (System/currentTimeMillis) 1000))
+        (send-content! chat-ctx :system {:type :progress
+                                         :state :running
+                                         :text "Renewing auth token"})
+        (f.login/renew-auth! provider db*)))
 
     (send-content! chat-ctx :system {:type :progress
                                      :state :running
                                      :text "Waiting model"})
     (llm-api/complete!
-      {:model model
-       :provider provider
-       :model-config (get-in db [:models full-model])
-       :user-messages user-messages
-       :instructions instructions
-       :past-messages past-messages
-       :config config
-       :tools all-tools
-       :provider-auth provider-auth
-       :on-first-response-received (fn [& _]
-                                     (assert-chat-not-stopped! chat-ctx)
-                                     (doseq [message user-messages]
-                                       (add-to-history! message))
-                                     (send-content! chat-ctx :system {:type :progress
-                                                                      :state :running
-                                                                      :text "Generating"}))
-       :on-usage-updated (fn [usage]
-                           (when-let [usage (usage-msg->usage usage full-model chat-ctx)]
-                             (send-content! chat-ctx :system
-                                            (merge {:type :usage}
-                                                   usage))))
-       :on-message-received (fn [{:keys [type] :as msg}]
-                              (assert-chat-not-stopped! chat-ctx)
-                              (case type
-                                :text (do
-                                        (swap! received-msgs* str (:text msg))
-                                        (send-content! chat-ctx :assistant {:type :text
-                                                                            :text (:text msg)}))
-                                :url (send-content! chat-ctx :assistant {:type :url
-                                                                         :title (:title msg)
-                                                                         :url (:url msg)})
-                                :limit-reached (do
-                                                 (send-content! chat-ctx :system
-                                                                {:type :text
-                                                                 :text (str "API limit reached. Tokens: " (json/generate-string (:tokens msg)))})
+     {:model model
+      :provider provider
+      :model-config (get-in db [:models full-model])
+      :user-messages user-messages
+      :instructions instructions
+      :past-messages past-messages
+      :config config
+      :tools all-tools
+      :provider-auth provider-auth
+      :on-first-response-received (fn [& _]
+                                    (assert-chat-not-stopped! chat-ctx)
+                                    (doseq [message user-messages]
+                                      (add-to-history! message))
+                                    (send-content! chat-ctx :system {:type :progress
+                                                                     :state :running
+                                                                     :text "Generating"}))
+      :on-usage-updated (fn [usage]
+                          (when-let [usage (usage-msg->usage usage full-model chat-ctx)]
+                            (send-content! chat-ctx :system
+                                           (merge {:type :usage}
+                                                  usage))))
+      :on-message-received (fn [{:keys [type] :as msg}]
+                             (assert-chat-not-stopped! chat-ctx)
+                             (case type
+                               :text (do
+                                       (swap! received-msgs* str (:text msg))
+                                       (send-content! chat-ctx :assistant {:type :text
+                                                                           :text (:text msg)}))
+                               :url (send-content! chat-ctx :assistant {:type :url
+                                                                        :title (:title msg)
+                                                                        :url (:url msg)})
+                               :limit-reached (do
+                                                (send-content! chat-ctx :system
+                                                               {:type :text
+                                                                :text (str "API limit reached. Tokens: " (json/generate-string (:tokens msg)))})
 
-                                                 (finish-chat-prompt! :idle chat-ctx))
-                                :finish (do
-                                          (add-to-history! {:role "assistant" :content [{:type :text :text @received-msgs*}]})
-                                          (finish-chat-prompt! :idle chat-ctx))))
-       :on-prepare-tool-call (fn [{:keys [id name arguments-text]}]
-                               (assert-chat-not-stopped! chat-ctx)
-                               (send-content! chat-ctx :assistant
-                                              (assoc-some
-                                                {:type :toolCallPrepare
-                                                 :name name
-                                                 :origin (tool-name->origin name all-tools)
-                                                 :arguments-text arguments-text
-                                                 :id id
-                                                 :manual-approval (f.tools/manual-approval? name config)}
-                                                :summary (f.tools/tool-call-summary all-tools name nil))))
-       :on-tools-called (fn [tool-calls]
-                          (assert-chat-not-stopped! chat-ctx)
+                                                (finish-chat-prompt! :idle chat-ctx))
+                               :finish (do
+                                         (add-to-history! {:role "assistant" :content [{:type :text :text @received-msgs*}]})
+                                         (finish-chat-prompt! :idle chat-ctx))))
+      :on-prepare-tool-call (fn [{:keys [id name arguments-text]}]
+                              (assert-chat-not-stopped! chat-ctx)
+                              (send-content! chat-ctx :assistant
+                                             (assoc-some
+                                              {:type :toolCallPrepare
+                                               :name name
+                                               :origin (tool-name->origin name all-tools)
+                                               :arguments-text arguments-text
+                                               :id id
+                                               :manual-approval (f.tools/manual-approval? name config)}
+                                              :summary (f.tools/tool-call-summary all-tools name nil))))
+      :on-tools-called (fn [tool-calls]
+                         (assert-chat-not-stopped! chat-ctx)
                           ;; Flush any pending assistant text once before processing multiple tool calls
-                          (when-not (string/blank? @received-msgs*)
-                            (add-to-history! {:role "assistant" :content [{:type :text :text @received-msgs*}]})
-                            (reset! received-msgs* ""))
-                          (let [calls (doall
-                                        (for [{:keys [id name arguments] :as tool-call} tool-calls]
-                                          (let [approved?* (promise)
-                                                details (f.tools/get-tool-call-details name arguments)
-                                                summary (f.tools/tool-call-summary all-tools name arguments)
-                                                origin (tool-name->origin name all-tools)
-                                                manual-approval? (f.tools/manual-approval? name config)]
+                         (when-not (string/blank? @received-msgs*)
+                           (add-to-history! {:role "assistant" :content [{:type :text :text @received-msgs*}]})
+                           (reset! received-msgs* ""))
+                         (let [calls (doall
+                                      (for [{:keys [id name arguments] :as tool-call} tool-calls]
+                                        (let [approved?* (promise)
+                                              details (f.tools/get-tool-call-details name arguments)
+                                              summary (f.tools/tool-call-summary all-tools name arguments)
+                                              origin (tool-name->origin name all-tools)
+                                              manual-approval? (f.tools/manual-approval? name config)]
                                             ;; Inform UI the tool is about to run and store approval promise
-                                            (send-content! chat-ctx :assistant
-                                                           (assoc-some
-                                                             {:type :toolCallRun
-                                                              :name name
-                                                              :origin (tool-name->origin name all-tools)
-                                                              :arguments arguments
-                                                              :id id
-                                                              :manual-approval manual-approval?}
-                                                             :details details
-                                                             :summary summary))
-                                            (swap! db* assoc-in [:chats chat-id :tool-calls id :approved?*] approved?*)
-                                            (if manual-approval?
-                                              (send-content! chat-ctx :system
-                                                             {:type :progress
-                                                              :state :running
-                                                              :text "Waiting for tool call approval"})
+                                          (send-content! chat-ctx :assistant
+                                                         (assoc-some
+                                                          {:type :toolCallRun
+                                                           :name name
+                                                           :origin (tool-name->origin name all-tools)
+                                                           :arguments arguments
+                                                           :id id
+                                                           :manual-approval manual-approval?}
+                                                          :details details
+                                                          :summary summary))
+                                          (swap! db* assoc-in [:chats chat-id :tool-calls id :approved?*] approved?*)
+                                          (if manual-approval?
+                                            (send-content! chat-ctx :system
+                                                           {:type :progress
+                                                            :state :running
+                                                            :text "Waiting for tool call approval"})
                                               ;; Otherwise auto approve
-                                              (deliver approved?* true))
+                                            (deliver approved?* true))
                                             ;; Execute each tool call concurrently
-                                            (future
-                                              (if @approved?*
-                                                (let [result (f.tools/call-tool! name arguments @db* config messenger)]
-                                                  (assert-chat-not-stopped! chat-ctx)
-                                                  (add-to-history! {:role "tool_call" :content (assoc tool-call
-                                                                                                      :details details
-                                                                                                      :summary summary
-                                                                                                      :origin origin)})
-                                                  (add-to-history! {:role "tool_call_output" :content (assoc tool-call
-                                                                                                             :error (:error result)
-                                                                                                             :output result
-                                                                                                             :details details
-                                                                                                             :summary summary
-                                                                                                             :origin origin)})
-                                                  (send-content! chat-ctx :assistant
-                                                                 (assoc-some
-                                                                   {:type :toolCalled
-                                                                    :origin origin
-                                                                    :name name
-                                                                    :arguments arguments
-                                                                    :error (:error result)
-                                                                    :id id
-                                                                    :outputs (:contents result)}
-                                                                   :details details
-                                                                   :summary summary)))
-                                                (do
-                                                  (add-to-history! {:role "tool_call" :content tool-call})
-                                                  (add-to-history! {:role "tool_call_output"
-                                                                    :content (assoc tool-call :output {:error true
-                                                                                                       :contents [{:text "Tool call rejected by user"
-                                                                                                                   :type :text}]})})
-                                                  (send-content! chat-ctx :assistant
-                                                                 (assoc-some
-                                                                   {:type :toolCallRejected
-                                                                    :origin origin
-                                                                    :name name
-                                                                    :arguments arguments
-                                                                    :reason :user
-                                                                    :id id}
-                                                                   :details details
-                                                                   :summary summary))))))))]
+                                          (future
+                                            (if @approved?*
+                                              (let [result (f.tools/call-tool! name arguments @db* config messenger)]
+                                                (assert-chat-not-stopped! chat-ctx)
+                                                (add-to-history! {:role "tool_call" :content (assoc tool-call
+                                                                                                    :details details
+                                                                                                    :summary summary
+                                                                                                    :origin origin)})
+                                                (add-to-history! {:role "tool_call_output" :content (assoc tool-call
+                                                                                                           :error (:error result)
+                                                                                                           :output result
+                                                                                                           :details details
+                                                                                                           :summary summary
+                                                                                                           :origin origin)})
+                                                (send-content! chat-ctx :assistant
+                                                               (assoc-some
+                                                                {:type :toolCalled
+                                                                 :origin origin
+                                                                 :name name
+                                                                 :arguments arguments
+                                                                 :error (:error result)
+                                                                 :id id
+                                                                 :outputs (:contents result)}
+                                                                :details details
+                                                                :summary summary)))
+                                              (do
+                                                (add-to-history! {:role "tool_call" :content tool-call})
+                                                (add-to-history! {:role "tool_call_output"
+                                                                  :content (assoc tool-call :output {:error true
+                                                                                                     :contents [{:text "Tool call rejected by user"
+                                                                                                                 :type :text}]})})
+                                                (send-content! chat-ctx :assistant
+                                                               (assoc-some
+                                                                {:type :toolCallRejected
+                                                                 :origin origin
+                                                                 :name name
+                                                                 :arguments arguments
+                                                                 :reason :user
+                                                                 :id id}
+                                                                :details details
+                                                                :summary summary))))))))]
                             ;; Wait all tool calls to complete before returning
-                            (run! deref calls)
-                            (send-content! chat-ctx :system {:type :progress :state :running :text "Generating"})
-                            {:new-messages (get-in @db* [:chats chat-id :messages])}))
-       :on-reason (fn [{:keys [status id text external-id]}]
-                    (assert-chat-not-stopped! chat-ctx)
-                    (case status
-                      :started (send-content! chat-ctx :assistant
-                                              {:type :reasonStarted
-                                               :id id})
-                      :thinking (do
-                                  (swap! received-thinking* str text)
-                                  (send-content! chat-ctx :assistant
-                                                 {:type :reasonText
-                                                  :id id
-                                                  :text text}))
-                      :finished (do
-                                  (add-to-history! {:role "reason" :content {:id id
-                                                                             :external-id external-id
-                                                                             :text @received-thinking*}})
-                                  (send-content! chat-ctx :assistant
-                                                 {:type :reasonFinished
-                                                  :id id}))
-                      nil))
-       :on-error (fn [{:keys [message exception]}]
-                   (send-content! chat-ctx :system
-                                  {:type :text
-                                   :text (or message (str "Error: " (ex-message exception)))})
-                   (finish-chat-prompt! :idle chat-ctx))})))
+                           (run! deref calls)
+                           (send-content! chat-ctx :system {:type :progress :state :running :text "Generating"})
+                           {:new-messages (get-in @db* [:chats chat-id :messages])}))
+      :on-reason (fn [{:keys [status id text external-id]}]
+                   (assert-chat-not-stopped! chat-ctx)
+                   (case status
+                     :started (send-content! chat-ctx :assistant
+                                             {:type :reasonStarted
+                                              :id id})
+                     :thinking (do
+                                 (swap! received-thinking* str text)
+                                 (send-content! chat-ctx :assistant
+                                                {:type :reasonText
+                                                 :id id
+                                                 :text text}))
+                     :finished (do
+                                 (add-to-history! {:role "reason" :content {:id id
+                                                                            :external-id external-id
+                                                                            :text @received-thinking*}})
+                                 (send-content! chat-ctx :assistant
+                                                {:type :reasonFinished
+                                                 :id id}))
+                     nil))
+      :on-error (fn [{:keys [message exception]}]
+                  (send-content! chat-ctx :system
+                                 {:type :text
+                                  :text (or message (str "Error: " (ex-message exception)))})
+                  (finish-chat-prompt! :idle chat-ctx))})))
 
 (defn ^:private send-mcp-prompt!
   [{:keys [prompt args]}

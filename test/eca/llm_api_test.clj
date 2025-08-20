@@ -10,9 +10,9 @@
 (deftest default-model-test
   (testing "Custom provider default-model? present"
     (with-redefs [config/get-env (constantly nil)]
-      (let [db {:models {"my-model" {:custom-provider? true :default-model? true}}}
+      (let [db {:models {"my-provider/my-model" {:custom-provider? true :default-model? true}}}
             config {}]
-        (is (= "my-model" (llm-api/default-model db config))))))
+        (is (= "my-provider/my-model" (llm-api/default-model db config))))))
 
   (testing "Ollama running model present"
     (with-redefs [config/get-env (constantly nil)]
@@ -26,28 +26,28 @@
     (with-redefs [config/get-env (constantly nil)]
       (let [db {:models {}}
             config {:anthropicApiKey "something"}]
-        (is (= "claude-sonnet-4-20250514" (llm-api/default-model db config))))))
+        (is (= "anthropic/claude-sonnet-4-20250514" (llm-api/default-model db config))))))
 
   (testing "Anthropic API key present in ENV"
     (with-redefs [config/get-env (fn [k] (when (= k "ANTHROPIC_API_KEY") "env-anthropic"))]
       (let [db {:models {}}
             config {}]
-        (is (= "claude-sonnet-4-20250514" (llm-api/default-model db config))))))
+        (is (= "anthropic/claude-sonnet-4-20250514" (llm-api/default-model db config))))))
 
   (testing "OpenAI API key present in config"
     (with-redefs [config/get-env (constantly nil)]
       (let [db {:models {}}
             config {:openaiApiKey "yes!"}]
-        (is (= "gpt-5" (llm-api/default-model db config))))))
+        (is (= "openai/gpt-5" (llm-api/default-model db config))))))
 
   (testing "OpenAI API key present in ENV"
     (with-redefs [config/get-env (fn [k] (when (= k "OPENAI_API_KEY") "env-openai"))]
       (let [db {:models {}}
             config {}]
-        (is (= "gpt-5" (llm-api/default-model db config))))))
+        (is (= "openai/gpt-5" (llm-api/default-model db config))))))
 
   (testing "Fallback default (no keys anywhere)"
     (with-redefs [config/get-env (constantly nil)]
       (let [db {:models {}}
             config {}]
-        (is (= "claude-sonnet-4-20250514" (llm-api/default-model db config)))))))
+        (is (= "anthropic/claude-sonnet-4-20250514" (llm-api/default-model db config)))))))

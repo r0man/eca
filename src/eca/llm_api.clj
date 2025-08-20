@@ -204,9 +204,8 @@
           :extra-payload extra-payload}
          callbacks)
 
-        (contains? custom-models model)
-        (let [[provider model] (string/split model #"/" 2)
-              provider-config (get custom-providers (keyword provider))
+        (contains? custom-models (str provider "/" model))
+        (let [provider-config (get custom-providers (keyword provider))
               provider-fn (case (:api provider-config)
                             ("openai-responses"
                              "openai") llm-providers.openai/completion!
@@ -234,26 +233,3 @@
         (on-error-wrapper {:message (str "ECA Unsupported model: " model)}))
       (catch Exception e
         (on-error-wrapper {:exception e})))))
-
-(defn auth-start [{:keys [provider]}]
-  (try
-    (case provider
-      "github-copilot" (let [auth (llm-providers.copilot/auth-url)]
-                         {:auth-type :oauth/simple
-                          :url (:url auth)
-                          :device-code (:device-code auth)
-                          :user-code (:user-code auth)})
-      {:error-message (str "Unknown provider: " provider)})
-    (catch Exception e
-      {:error-message (format "Error log into provider %s: %s" provider (.getMessage e))})))
-
-(defn auth-continue [{:keys [provider db*]}]
-  (try
-    (case provider
-      "github-copilot" (let [{:keys [api-token expires-at]} (llm-providers.copilot/auth-exchange (get-in @db* [:auth provider :device-code]))]
-                         {:api-token api-token
-                          :expires-at expires-at})
-      {:error-message (str "Unknown provider: " provider)})
-    (catch Exception e
-      (logger/error logger-tag "Error on login: " e)
-      {:error-message (format "Error log into provider %s: %s" provider (.getMessage e))})))
