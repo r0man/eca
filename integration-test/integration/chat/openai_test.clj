@@ -21,13 +21,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "gpt-4.1"
+                                 :model "openai/gpt-4.1"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-4.1"
+              :model "openai/gpt-4.1"
               :status "success"}
              resp))
 
@@ -54,13 +54,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "gpt-4.1"
+                                 :model "openai/gpt-4.1"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-4.1"
+              :model "openai/gpt-4.1"
               :status "success"}
              resp))
 
@@ -87,13 +87,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "gpt-4.1"
+                                 :model "openai/gpt-4.1"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-4.1"
+              :model "openai/gpt-4.1"
               :status "success"}
              resp))
 

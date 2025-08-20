@@ -21,13 +21,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
@@ -54,13 +54,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
@@ -87,13 +87,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
@@ -130,13 +130,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "hello!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
@@ -167,13 +167,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
                                  :chat-id @chat-id*
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "how are you?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
@@ -215,13 +215,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "claude-sonnet-4-20250514"
+                                 :model "anthropic/claude-sonnet-4-20250514"
                                  :message "What files you see?"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "claude-sonnet-4-20250514"
+              :model "anthropic/claude-sonnet-4-20250514"
               :status "success"}
              resp))
 
