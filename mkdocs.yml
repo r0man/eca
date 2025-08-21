@@ -29,6 +29,9 @@ theme:
     - navigation.tabs
 
 extra:
+  analytics:
+    provider: google
+    property: G-VFJYDKR1MR
   social:
     - icon: fontawesome/brands/github-alt
       link: https://github.com/editor-code-assistant/eca
@@ -57,7 +60,3 @@ plugins:
   - search
   - awesome-pages
   - git-revision-date-localized
-
-google_analytics:
-  - G-VFJYDKR1MR
-  - auto
