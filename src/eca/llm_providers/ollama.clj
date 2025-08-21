@@ -92,7 +92,9 @@
             "tool_call_output" {:role "tool" :content (llm-util/stringfy-tool-result content)}
             "reason" {:role "assistant" :content (:text content)}
             {:role (:role msg)
-             :content (-> msg :content first :text)}))
+             :content (if (string? (:content msg))
+                        (:content msg)
+                        (-> msg :content first :text))}))
         past-messages))
 
 (defn completion! [{:keys [model user-messages reason? instructions api-url past-messages tools]}

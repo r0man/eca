@@ -44,7 +44,7 @@
         (is (match?
              {:model "qwen3"
               :messages [{:role "system" :content (m/pred string?)}
-                         {:role "user" :content [{:type "text" :text "Tell me a joke!"}]}]}
+                         {:role "user" :content "Tell me a joke!"}]}
              llm.mocks/*last-req-body*))))
 
     (testing "We reply"
@@ -96,11 +96,11 @@
         (is (match?
              {:model "qwen3"
               :messages [{:role "system" :content (m/pred string?)}
-                         {:role "user" :content [{:type "text" :text "Tell me a joke!"}]}
-                         {:role "assistant" :content [{:type "text" :text "Knock knock!"}]}
-                         {:role "user" :content [{:type "text" :text "Who's there?"}]}
-                         {:role "assistant" :content [{:type "text" :text "Foo"}]}
-                         {:role "user" :content [{:type "text" :text "What foo?"}]}]}
+                         {:role "user" :content "Tell me a joke!"}
+                         {:role "assistant" :content "Knock knock!"}
+                         {:role "user" :content "Who's there?"}
+                         {:role "assistant" :content "Foo"}
+                         {:role "user" :content "What foo?"}]}
              llm.mocks/*last-req-body*))))))
 
 (deftest reasoning-text
@@ -141,7 +141,7 @@
         (is (match?
              {:model "qwen3"
               :messages [{:role "system" :content (m/pred string?)}
-                         {:role "user" :content [{:type "text" :text "hello!"}]}]}
+                         {:role "user" :content "hello!"}]}
              llm.mocks/*last-req-body*))))
 
     (testing "We reply"
@@ -173,10 +173,10 @@
         (is (match?
              {:model "qwen3"
               :messages [{:role "system" :content (m/pred string?)}
-                         {:role "user" :content [{:type "text" :text "hello!"}]}
+                         {:role "user" :content "hello!"}
                          {:role "assistant" :content "I should say hello"}
-                         {:role "assistant" :content [{:type "text" :text "hello there!"}]}
-                         {:role "user" :content [{:type "text" :text "how are you?"}]}]}
+                         {:role "assistant" :content "hello there!"}
+                         {:role "user" :content "how are you?"}]}
              llm.mocks/*last-req-body*))))))
 
 (deftest tool-calling
@@ -236,8 +236,8 @@
         (match-content chat-id req-id "system" {:type "progress" :state "finished"})
         (is (match?
              {:model "qwen3"
-              :messages [{:role "user" :content [{:type "text" :text "What files you see?"}]}
-                         {:role "assistant" :content [{:type "text" :text "I will list files"}]}
+              :messages [{:role "user" :content "What files you see?"}
+                         {:role "assistant" :content "I will list files"}
                          {:role "assistant" :tool-calls [{:type "function"
                                                           :function {:id (m/pred string?)
                                                                      :name "eca_directory_tree"
