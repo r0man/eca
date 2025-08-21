@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Refactor config for better UX and understanding: 
+  - Move `models` to inside `providers`.
+
 ## 0.31.0
 
 - Update copilot models

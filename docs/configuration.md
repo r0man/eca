@@ -156,6 +156,9 @@ There are 3 possible ways to configure rules following this order of priority:
         providers: {[key: string]: {
             url?: string;
             key?: string; // when provider supports api key.
+            models: {[key: string]: {
+              extraPayload?: {[key: string]: any}
+            }};
         }};
         defaultModel?: string;
         rules: [{path: string;}];
@@ -186,9 +189,6 @@ There are 3 possible ways to configure rules following this order of priority:
             key?: string;
             keyEnv?: string;
         }};
-        models: {[key: string]: {
-          extraPayload: {[key: string]: any}
-        }};
         chat?: {
             welcomeMessage: string;
         };
@@ -211,7 +211,7 @@ There are 3 possible ways to configure rules following this order of priority:
     {
       "providers": {
           "openai": {"key": null,
-                    "url": "https://api.openai.com"},
+                     "url": "https://api.openai.com"},
           "anthropic": {"key": null,
                         "url": "https://api.anthropic.com"},
           "github-copilot": {"url": "https://api.githubcopilot.com"},
@@ -231,7 +231,6 @@ There are 3 possible ways to configure rules following this order of priority:
       "mcpTimeoutSeconds" : 60,
       "mcpServers" : {},
       "customProviders": {},
-      "models": {},
       "chat" : {
         "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
       },

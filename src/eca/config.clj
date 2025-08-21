@@ -20,10 +20,24 @@
 
 (def initial-config
   {:providers {"openai" {:key nil
-                         :url "https://api.openai.com"}
+                         :url "https://api.openai.com"
+                         :models {"gpt-5" {}
+                                  "gpt-5-mini" {}
+                                  "gpt-5-nano" {}
+                                  "gpt-4.1" {}
+                                  "o4-mini" {}
+                                  "o3" {}}}
                "anthropic" {:key nil
-                            :url "https://api.anthropic.com"}
-               "github-copilot" {:url "https://api.githubcopilot.com"}
+                            :url "https://api.anthropic.com"
+                            :models {"claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+                                     "claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+                                     "claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
+                                     "claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}}
+               "github-copilot" {:url "https://api.githubcopilot.com"
+                                 :models {"gpt-5" {}
+                                          "gpt-5-mini" {}
+                                          "gpt-4.1" {}
+                                          "claude-sonnet-4" {}}}
                "ollama" {:url "http://localhost:11434"}}
    :defaultModel nil
    :rules []
@@ -35,20 +49,6 @@
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}
-   :models {"openai/gpt-5" {}
-            "openai/gpt-5-mini" {}
-            "openai/gpt-5-nano" {}
-            "openai/gpt-4.1" {}
-            "openai/o4-mini" {}
-            "openai/o3" {}
-            "github-copilot/gpt-5" {}
-            "github-copilot/gpt-5-mini" {}
-            "github-copilot/gpt-4.1" {}
-            "github-copilot/claude-sonnet-4" {}
-            "anthropic/claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
-            "anthropic/claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :agentFileRelativePath "AGENT.md"
    :customProviders {}
@@ -116,9 +116,22 @@
 
 (def ollama-model-prefix "ollama/")
 
+(defn ^:private normalize-providers [providers]
+  (letfn [(norm-key [k]
+            (csk/->kebab-case (string/replace-first (str k) ":" "")))]
+    (reduce-kv (fn [m k v]
+                 (let [nk (norm-key k)]
+                   (if (contains? m nk)
+                     (update m nk #(deep-merge % v))
+                     (assoc m nk v))))
+               {}
+               providers)))
+
 (defn ^:private normalize-fields [config]
   (-> config
-      (update-in [:providers] update-keys #(csk/->kebab-case (string/replace-first (str %) ":" "")))))
+      (update-in [:providers] (fn [providers]
+                                (when providers
+                                  (normalize-providers providers))))))
 
 (defn all [db]
   (let [initialization-config @initialization-config*

@@ -1,5 +1,6 @@
 (ns eca.handlers
   (:require
+   [clojure.string :as string]
    [eca.config :as config]
    [eca.db :as db]
    [eca.features.chat :as f.chat]
@@ -8,15 +9,17 @@
    [eca.features.tools.mcp :as f.mcp]
    [eca.llm-api :as llm-api]
    [eca.logger :as logger]
-   [eca.models :as models]))
+   [eca.models :as models]
+   [eca.shared :as shared]))
 
 (set! *warn-on-reflection* true)
 
 (defn ^:private initialize-models! [db* config]
   (let [all-models (models/all)
         eca-models (filter
-                    (fn [[model _config]]
-                      (get-in config [:models model]))
+                    (fn [[full-model _config]]
+                      (let [[provider model] (string/split full-model #"/" 2)]
+                        (get-in config [:providers provider :models model])))
                     all-models)]
     (swap! db* update :models merge eca-models)
     (when-let [custom-providers (seq (:customProviders config))]
@@ -48,21 +51,24 @@
                   ollama-models)]
       (swap! db* update :models merge models))))
 
-(defn initialize [{:keys [db* config]} params]
+(defn initialize [{:keys [db*]} params]
   (logger/logging-task
    :eca/initialize
-   (swap! db* assoc
-          :client-info (:client-info params)
-          :workspace-folders (:workspace-folders params)
-          :client-capabilities (:capabilities params)
-          :chat-default-behavior (or (-> params :initialization-options :chat-behavior) (:chat-default-behavior @db*)))
-   (initialize-models! db* config)
-   (db/load-db-from-cache! db*)
-   {:models (sort (keys (:models @db*)))
-    :chat-default-model (f.chat/default-model @db* config)
-    :chat-behaviors (:chat-behaviors @db*)
-    :chat-default-behavior (:chat-default-behavior @db*)
-    :chat-welcome-message (:welcomeMessage (:chat config))}))
+   (reset! config/initialization-config* (shared/map->camel-cased-map (:initialization-options params)))
+   (let [config (config/all @db*)]
+     (logger/info "--->" config)
+     (swap! db* assoc
+            :client-info (:client-info params)
+            :workspace-folders (:workspace-folders params)
+            :client-capabilities (:capabilities params)
+            :chat-default-behavior (or (-> params :initialization-options :chat-behavior) (:chat-default-behavior @db*)))
+     (initialize-models! db* config)
+     (db/load-db-from-cache! db*)
+     {:models (sort (keys (:models @db*)))
+      :chat-default-model (f.chat/default-model @db* config)
+      :chat-behaviors (:chat-behaviors @db*)
+      :chat-default-behavior (:chat-default-behavior @db*)
+      :chat-welcome-message (:welcomeMessage (:chat config))})))
 
 (defn initialized [{:keys [db* messenger config]}]
   (future

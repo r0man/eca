@@ -58,8 +58,8 @@ Run with `bb integration-test`, it will use your `eca` binary project root to sp
 There are several ways of finding and fixing a bug or implementing a new feature:
 
 - Create a test for your bug/feature, then implement the code following the test (TDD).
-- Build a local `eca` JVM embedded binary using `bb debug-cli` (requires `babashka`), and test it manually in your client pointing to it. After started, you can connect to the nrepl port mentioned in eca stderr buffer, do you changes, evaluate and it will be affected on the running eca.
-  - Using a debug binary you can check eca's stderr buffer and look for a nrepl port, and connect to the REPL, make changes to the running eca process (really handy).
+- Build a local `eca` JVM embedded binary using `bb debug-cli` (requires `babashka`), and test it manually in your client pointing to it. After started, you can connect to the nrepl port `9990`, do you changes, evaluate and it will be affected on the running eca.
+  - Using a debug binary you can connect to the REPL, make changes to the running eca process (really handy).
 
 ## Supporting a new editor
 

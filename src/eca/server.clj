@@ -31,8 +31,7 @@
 (defmethod lsp.server/receive-request "initialize" [_ {:keys [server] :as components} params]
   (when-let [parent-process-id (:process-id params)]
     (liveness-probe/start! parent-process-id log-wrapper-fn #(exit server)))
-  (reset! config/initialization-config* (shared/map->camel-cased-map (:initialization-options params)))
-  (handlers/initialize (with-config components) params))
+  (handlers/initialize components params))
 
 (defmethod lsp.server/receive-notification "initialized" [_ components _params]
   (handlers/initialized (with-config components)))
