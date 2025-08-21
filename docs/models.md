@@ -105,12 +105,12 @@ When configuring custom providers, choose the appropriate API type:
 
 Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
 
-## Providers quick setup
+## Providers examples
 
 === "Github Copilot"
     
     1. Login to Github copilot via the chat command `/login github-copilot`.
-    2. Authenticate in Github with the given code.
+    2. Authenticate in Github in your browser with the given code.
     3. Type anything in the chat to continue and done!
     
     _Tip: check [Your Copilot plan](https://github.com/settings/copilot/features) to enable models to your account._
