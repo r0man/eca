@@ -40,16 +40,13 @@ Create a configuration file at `.eca/config.json` in your project root or at `~/
 
 #### Adding new models
 
-You can add new models or override existing ones in your configuration:
+You can add new models or merge with existing ones in your configuration:
 
 ```javascript
 {
   "providers": {
-      "openai": {"key": "your-openai-api-key-here"}
-  },
-  "models": {
-    "gpt-5": {},
-    "claude-3-5-sonnet-20241022": {}
+      "openai": {"key": "your-openai-api-key-here",
+                 "models": {"o1": {}}}
   }
 }
 ```
@@ -61,16 +58,16 @@ You can customize model parameters like temperature, reasoning effort, etc.:
 ```javascript
 {
   "providers": {
-      "openai": {"key": "your-openai-api-key-here"}
-  },
-  "models": {
-    "gpt-5": {
-      "extraPayload": {
-        "temperature": 0.7,
-        "reasoning_effort": "high",
-        "max_tokens": 4000
+      "openai": {
+          "key": "your-openai-api-key-here",
+          "gpt-5": {
+              "extraPayload": {
+                  "temperature": 0.7,
+                  "reasoning_effort": "high",
+                  "max_tokens": 4000
+              }
+          }
       }
-    }
   }
 }
 ```
