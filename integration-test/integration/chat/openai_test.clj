@@ -130,13 +130,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "gpt-5"
+                                 :model "openai/gpt-5"
                                  :message "hello!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "openai/gpt-5"
               :status "success"}
              resp))
 
@@ -167,13 +167,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
                                  :chat-id @chat-id*
-                                 :model "gpt-5"
+                                 :model "openai/gpt-5"
                                  :message "how are you?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "openai/gpt-5"
               :status "success"}
              resp))
 
@@ -215,13 +215,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "gpt-5"
+                                 :model "openai/gpt-5"
                                  :message "What files you see?"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "gpt-5"
+              :model "openai/gpt-5"
               :status "success"}
              resp))
 

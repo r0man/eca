@@ -34,3 +34,5 @@ result
 docs/README.md
 docs/CHANGELOG.md
 docs/images/
+
+integration-test/stderr.txt

@@ -16,7 +16,8 @@
    (start-server binary []))
   ([binary args]
    (p/process (into [(.getCanonicalPath (io/file binary)) "server" "--log-level" "debug"] args)
-              {:dir "integration-test/sample-test/"})))
+              {:err (io/file (.getParent (io/file *eca-binary-path*)) "integration-test" "stderr.txt")
+               :dir "integration-test/sample-test/"})))
 
 (defn start-process! []
   (let [server (start-server *eca-binary-path*)
