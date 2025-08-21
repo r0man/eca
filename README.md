@@ -70,8 +70,10 @@ To use ECA, you need to configure at least one model with your API key. See the 
 
 ```json
 {
-  "openaiApiKey": "your-openai-api-key-here",
-  "anthropicApiKey": "your-anthropic-api-key-here"
+  "providers": {
+      "openai": {"key": "your-openai-api-key-here"},
+      "anthropic": {"key": "your-anthropic-api-key-here"}
+  }
 }
 ```
 

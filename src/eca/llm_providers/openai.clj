@@ -13,8 +13,6 @@
 
 (def ^:private responses-path "/v1/responses")
 
-(def base-url "https://api.openai.com")
-
 (defn ^:private base-completion-request! [{:keys [rid body api-url url-relative-path api-key on-error on-response]}]
   (let [url (str api-url (or url-relative-path responses-path))]
     (llm-util/log-request logger-tag rid url body)

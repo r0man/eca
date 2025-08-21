@@ -16,7 +16,7 @@
   (is (match?
        {:models (m/embeds ["ollama/qwen3"])}
        (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:ollamaApiUrl (str fixture/base-llm-mock-url "/ollama")})
+                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -109,7 +109,7 @@
   (is (match?
        {:models (m/embeds ["ollama/qwen3"])}
        (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:ollamaApiUrl (str fixture/base-llm-mock-url "/ollama")})
+                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -185,7 +185,7 @@
   (is (match?
        {:models (m/embeds ["ollama/qwen3"])}
        (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:ollamaApiUrl (str fixture/base-llm-mock-url "/ollama")})
+                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]

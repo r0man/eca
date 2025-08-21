@@ -4,7 +4,6 @@
    [clojure.string :as string]
    [eca.config :as config]
    [eca.llm-providers.anthropic :as llm-providers.anthropic]
-   [eca.llm-providers.copilot :as llm-providers.copilot]
    [eca.llm-providers.ollama :as llm-providers.ollama]
    [eca.llm-providers.openai :as llm-providers.openai]
    [eca.llm-providers.openai-chat :as llm-providers.openai-chat]
@@ -32,36 +31,20 @@
           (string/join "\n" (subvec lines start end)))
         content))))
 
-(defn ^:private anthropic-api-key [config]
-  (or (:anthropicApiKey config)
-      (config/get-env "ANTHROPIC_API_KEY")))
+(defn ^:private provider-api-key [provider config]
+  (or (get-in config [:providers (name provider) :key])
+      (config/get-env (str (-> provider
+                               (string/replace "-" "_")
+                               string/upper-case) "_API_KEY"))))
 
-(defn ^:private anthropic-api-url [config]
-  (or (:anthropicApiUrl config)
-      (config/get-env "ANTHROPIC_API_URL")
-      llm-providers.anthropic/base-url))
-
-(defn ^:private openai-api-key [config]
-  (or (:openaiApiKey config)
-      (config/get-env "OPENAI_API_KEY")))
-
-(defn ^:private openai-api-url [config]
-  (or (:openaiApiUrl config)
-      (config/get-env "OPENAI_API_URL")
-      llm-providers.openai/base-url))
-
-(defn ^:private github-copilot-api-url [config]
-  (or (:githubCopilotApiUrl config)
-      (config/get-env "GITHUB_COPILOT_API_URL")
-      llm-providers.copilot/base-api-url))
-
-(defn ^:private ollama-api-url [config]
-  (or (:ollamaApiUrl config)
-      (config/get-env "OLLAMA_API_URL")
-      llm-providers.ollama/base-url))
+(defn ^:private provider-api-url [provider config]
+  (or (get-in config [:providers (name provider) :url])
+      (config/get-env (str (-> provider
+                               (string/replace "-" "_")
+                               string/upper-case) "_API_URL"))))
 
 (defn extra-models [config]
-  (let [ollama-api-url (ollama-api-url config)]
+  (let [ollama-api-url (provider-api-url "ollama" config)]
     (mapv
      (fn [{:keys [model] :as ollama-model}]
        (let [capabilities (llm-providers.ollama/model-capabilities {:api-url ollama-api-url :model model})]
@@ -86,9 +69,9 @@
                                                                       model))
                                                                   (:models db)))]
               [:custom-provider-default-model custom-provider-default-model])
-            (when (anthropic-api-key config)
+            (when (provider-api-key "anthropic" config)
               [:api-key-found "anthropic/claude-sonnet-4-20250514"])
-            (when (openai-api-key config)
+            (when (provider-api-key "openai" config)
               [:api-key-found "openai/gpt-5"])
             (when (get-in db [:auth "github-copilot" :api-key])
               [:api-key-found "github-copilot/gpt-4.1"])
@@ -133,6 +116,8 @@
                                      (map #(str (name k) "/" %) (:models v)))
                                    custom-providers))
         extra-payload (get-in config [:models (keyword model) :extraPayload])
+        provider-api-key (provider-api-key provider config)
+        provider-api-url (provider-api-url provider config)
         callbacks {:on-message-received on-message-received-wrapper
                    :on-error on-error-wrapper
                    :on-prepare-tool-call on-prepare-tool-call-wrapper
@@ -152,8 +137,8 @@
           :tools tools
           :web-search web-search
           :extra-payload extra-payload
-          :api-url (openai-api-url config)
-          :api-key (openai-api-key config)}
+          :api-url provider-api-url
+          :api-key provider-api-key}
          callbacks)
 
         (= "anthropic" provider)
@@ -167,8 +152,8 @@
           :tools tools
           :web-search web-search
           :extra-payload extra-payload
-          :api-url (anthropic-api-url config)
-          :api-key (anthropic-api-key config)}
+          :api-url provider-api-url
+          :api-key provider-api-key}
          callbacks)
 
         (= "github-copilot" provider)
@@ -181,7 +166,7 @@
           :past-messages past-messages
           :tools tools
           :extra-payload extra-payload
-          :api-url (github-copilot-api-url config)
+          :api-url provider-api-url
           :api-key (:api-token provider-auth)
           :extra-headers {"openai-intent" "conversation-panel"
                           "x-request-id" (str (random-uuid))
@@ -192,7 +177,7 @@
 
         (= "ollama" provider)
         (llm-providers.ollama/completion!
-         {:api-url (ollama-api-url config)
+         {:api-url provider-api-url
           :reason? (:reason? model-config)
           :model model
           :instructions instructions

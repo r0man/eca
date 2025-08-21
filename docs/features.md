@@ -79,8 +79,10 @@ Eca supports commands that usually are triggered via shash (`/`) in the chat, co
 The built-in commands are:
 
 `/init`: Create/update the AGENT.md file with details about the workspace for best LLM output quality.
+`/login`: Log into a provider. Ex: `/login github-copilot`
 `/costs`: Show costs about current session.
 `/resume`: Resume a chat from previous session of this workspace folder.
+`/config`: Show ECA config for troubleshooting.
 `/doctor`: Show information about ECA, useful for troubleshooting.
 `/repo-map-show`: Show the current repoMap context of the session.
 `/prompt-show`: Show the final prompt sent to LLM with all contexts and ECA details.

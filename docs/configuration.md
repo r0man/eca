@@ -153,11 +153,10 @@ There are 3 possible ways to configure rules following this order of priority:
 
     ```typescript
     interface Config {
-        openaiApiKey?: string;
-        openaiApiUrl?: string;
-        anthropicApiKey?: string;
-        anthropicApiUrl?: string;
-        ollamaApiUrl: string;
+        providers: {[key: string]: {
+            url?: string;
+            key?: string; // when provider supports api key.
+        }};
         rules: [{path: string;}];
         commands: [{path: string;}];
         systemPromptTemplateFile?: string;
@@ -210,11 +209,14 @@ There are 3 possible ways to configure rules following this order of priority:
 
     ```javascript
     {
-      "openaiApiKey" : null,
-      "openaiApiUrl" : null,
-      "anthropicApiKey" : null,
-      "anthropicApiUrl" : null,
-      "ollamaApiUrl": "http://localhost:11434"
+      "providers": {
+          "openai": {"key": null,
+                    "url": "https://api.openai.com"},
+          "anthropic": {"key": null,
+                        "url": "https://api.anthropic.com"},
+          "github-copilot": {"url": "https://api.githubcopilot.com"},
+          "ollama": {"url": "http://localhost:11434"}
+      },
       "rules" : [],
       "commands" : [],
       "nativeTools": {"filesystem": {"enabled": true},

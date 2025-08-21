@@ -4,8 +4,6 @@
    [eca.config :as config]
    [hato.client :as http]))
 
-(def base-api-url "https://api.githubcopilot.com")
-
 (def ^:private client-id "Iv1.b507a08c87ecfe98")
 
 (defn ^:private auth-headers []

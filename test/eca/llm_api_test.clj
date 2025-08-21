@@ -25,7 +25,7 @@
   (testing "Anthropic API key present in config"
     (with-redefs [config/get-env (constantly nil)]
       (let [db {:models {}}
-            config {:anthropicApiKey "something"}]
+            config {:providers {"anthropic" {:key "something"}}}]
         (is (= "anthropic/claude-sonnet-4-20250514" (llm-api/default-model db config))))))
 
   (testing "Anthropic API key present in ENV"
@@ -37,7 +37,7 @@
   (testing "OpenAI API key present in config"
     (with-redefs [config/get-env (constantly nil)]
       (let [db {:models {}}
-            config {:openaiApiKey "yes!"}]
+            config {:providers {"openai" {:key "yes!"}}}]
         (is (= "openai/gpt-5" (llm-api/default-model db config))))))
 
   (testing "OpenAI API key present in ENV"

@@ -14,8 +14,6 @@
 
 (def ^:private messages-path "/v1/messages")
 
-(def base-url "https://api.anthropic.com")
-
 (defn ^:private ->tools [tools web-search]
   (cond->
    (mapv (fn [tool]

@@ -27,8 +27,10 @@ Create a configuration file at `.eca/config.json` in your project root or at `~/
 
 ```javascript
 {
-  "openaiApiKey": "your-openai-api-key-here",
-  "anthropicApiKey": "your-anthropic-api-key-here"
+  "providers": {
+      "openai": {"key": "your-openai-api-key-here"},
+      "anthropic": {"key": "your-anthropic-api-key-here"}
+  }
 }
 ```
 
@@ -42,7 +44,9 @@ You can add new models or override existing ones in your configuration:
 
 ```javascript
 {
-  "openaiApiKey": "your-openai-api-key-here",
+  "providers": {
+      "openai": {"key": "your-openai-api-key-here"}
+  },
   "models": {
     "gpt-5": {},
     "claude-3-5-sonnet-20241022": {}
@@ -56,7 +60,9 @@ You can customize model parameters like temperature, reasoning effort, etc.:
 
 ```javascript
 {
-  "openaiApiKey": "your-openai-api-key-here",
+  "providers": {
+      "openai": {"key": "your-openai-api-key-here"}
+  },
   "models": {
     "gpt-5": {
       "extraPayload": {

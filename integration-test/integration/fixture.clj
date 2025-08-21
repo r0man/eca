@@ -8,12 +8,12 @@
   (str "http://localhost:" llm-mock.server/port))
 
 (def default-init-options {:pureConfig true
-                           :openaiApiUrl (str base-llm-mock-url "/openai")
-                           :openaiApiKey "foo"
-                           :anthropicApiUrl (str base-llm-mock-url "/anthropic")
-                           :anthropicApiKey "foo"
-                           :githubCopilotApiUrl (str base-llm-mock-url "/github-copilot")
-                           :githubCopilotApiKey "foo"})
+                           :providers {"openai" {:url (str base-llm-mock-url "/openai")
+                                                 :key "foo-key"}
+                                       "anthropic" {:url (str base-llm-mock-url "/anthropic")
+                                                    :key "foo-key"}
+                                       "github-copilot" {:url (str base-llm-mock-url "/github-copilot")
+                                                         :key "foo-key"}}})
 
 (defn initialize-request
   ([]

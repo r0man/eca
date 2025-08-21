@@ -2,6 +2,7 @@
   (:require
    [babashka.fs :as fs]
    [clojure.java.io :as io]
+   [clojure.pprint :as pprint]
    [clojure.string :as string]
    [eca.config :as config]
    [eca.features.index :as f.index]
@@ -88,6 +89,10 @@
                        :type :native
                        :description "Resume the chats from this session workspaces."
                        :arguments []}
+                      {:name "config"
+                       :type :native
+                       :description "Show ECA config for troubleshooting."
+                       :arguments []}
                       {:name "doctor"
                        :type :native
                        :description "Check ECA details for troubleshooting."
@@ -173,6 +178,8 @@
                                     (str "Total cost: $" (shared/tokens->cost total-input-tokens total-input-cache-creation-tokens total-input-cache-read-tokens total-output-tokens full-model db)))]
                 {:type :chat-messages
                  :chats {chat-id [{:role "system" :content [{:type :text :text text}]}]}})
+      "config" {:type :chat-messages
+                :chats {chat-id [{:role "system" :content [{:type :text :text (with-out-str (pprint/pprint config))}]}]}}
       "doctor" {:type :chat-messages
                 :chats {chat-id [{:role "system" :content [{:type :text :text (doctor-msg db config)}]}]}}
       "repo-map-show" {:type :chat-messages

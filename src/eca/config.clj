@@ -6,6 +6,7 @@
   3. local config-file: searching from a local `.eca/config.json` file.
   4. `initializatonOptions` sent in `initialize` request."
   (:require
+   [camel-snake-kebab.core :as csk]
    [cheshire.core :as json]
    [cheshire.factory :as json.factory]
    [clojure.core.memoize :as memoize]
@@ -18,12 +19,12 @@
 (set! *warn-on-reflection* true)
 
 (def initial-config
-  {:openaiApiKey nil
-   :anthropicApiKey nil
-   :openaiApiUrl nil
-   :anthropicApiUrl nil
-   :githubCopilotApiUrl nil
-   :ollamaApiUrl nil
+  {:providers {"openai" {:key nil
+                         :url "https://api.openai.com"}
+               "anthropic" {:key nil
+                            :url "https://api.anthropic.com"}
+               "github-copilot" {:url "https://api.githubcopilot.com"}
+               "ollama" {:url "http://localhost:11434"}}
    :rules []
    :commands []
    :nativeTools {:filesystem {:enabled true}
@@ -114,11 +115,16 @@
 
 (def ollama-model-prefix "ollama/")
 
+(defn ^:private normalize-fields [config]
+  (-> config
+      (update-in [:providers] update-keys #(csk/->kebab-case (string/replace-first (str %) ":" "")))))
+
 (defn all [db]
   (let [initialization-config @initialization-config*
         pure-config? (:pureConfig initialization-config)]
-    (deep-merge initial-config
-                initialization-config
-                (when-not pure-config? (config-from-envvar))
-                (when-not pure-config? (config-from-global-file))
-                (when-not pure-config? (config-from-local-file (:workspace-folders db))))))
+    (normalize-fields
+     (deep-merge initial-config
+                 initialization-config
+                 (when-not pure-config? (config-from-envvar))
+                 (when-not pure-config? (config-from-global-file))
+                 (when-not pure-config? (config-from-local-file (:workspace-folders db)))))))

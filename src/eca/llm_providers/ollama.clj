@@ -14,8 +14,6 @@
 (def ^:private list-models-url "%s/api/tags")
 (def ^:private show-model-url "%s/api/show")
 
-(def base-url "http://localhost:11434")
-
 (defn list-models [{:keys [api-url]}]
   (try
     (let [rid (llm-util/gen-rid)

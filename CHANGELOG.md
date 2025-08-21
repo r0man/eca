@@ -4,6 +4,8 @@
 
 - Update copilot models
 - Drop uneeded `ollama useTools` and `ollama think` configs.
+- Refactor configs for config providers unification.
+  - `<provider>ApiKey` and `<providerApiUrl>` now live in `:providers "<provider>" :key`.
 
 ## 0.30.0
 
