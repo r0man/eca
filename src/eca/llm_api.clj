@@ -66,10 +66,8 @@
      (fn [{:keys [model] :as ollama-model}]
        (let [capabilities (llm-providers.ollama/model-capabilities {:api-url ollama-api-url :model model})]
          (assoc ollama-model
-                :tools (and (get-in config [:ollama :useTools] true)
-                            (boolean (some #(= % "tools") capabilities)))
-                :reason? (and (get-in config [:ollama :think] true)
-                              (boolean (some #(= % "thinking") capabilities))))))
+                :tools (boolean (some #(= % "tools") capabilities))
+                :reason? (boolean (some #(= % "thinking") capabilities)))))
      (llm-providers.ollama/list-models {:api-url ollama-api-url}))))
 
 (defn default-model

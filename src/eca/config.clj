@@ -47,8 +47,6 @@
             "anthropic/claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "anthropic/claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "anthropic/claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}
-   :ollama {:useTools true
-            :think true}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :agentFileRelativePath "AGENT.md"
    :customProviders {}

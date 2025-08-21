@@ -190,10 +190,6 @@ There are 3 possible ways to configure rules following this order of priority:
         models: {[key: string]: {
           extraPayload: {[key: string]: any}
         }};
-        ollama?: {
-            useTools: boolean;
-            think: boolean;
-        };
         chat?: {
             welcomeMessage: string;
         };
@@ -233,10 +229,6 @@ There are 3 possible ways to configure rules following this order of priority:
       "mcpServers" : {},
       "customProviders": {},
       "models": {},
-      "ollama" : {
-        "useTools": true,
-        "think": true
-      },
       "chat" : {
         "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
       },

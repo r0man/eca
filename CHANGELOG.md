@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Update copilot models
+- Drop uneeded `ollama useTools` and `ollama think` configs.
 
 ## 0.30.0
 
