@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Update copilot models
+
 ## 0.30.0
 
 - Add `/login` command to login to providers
