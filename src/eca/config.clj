@@ -39,11 +39,10 @@
             "openai/gpt-4.1" {}
             "openai/o4-mini" {}
             "openai/o3" {}
+            "github-copilot/gpt-5" {}
             "github-copilot/gpt-5-mini" {}
             "github-copilot/gpt-4.1" {}
-            "github-copilot/gpt-4o" {}
-            "github-copilot/claude-3.5-sonnet" {}
-            "github-copilot/gemini-2.0-flash-001" {}
+            "github-copilot/claude-sonnet-4" {}
             "anthropic/claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "anthropic/claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
             "anthropic/claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}

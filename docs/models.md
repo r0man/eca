@@ -141,7 +141,8 @@ After configuring custom providers, the models will be available as `provider/mo
     1. Login to Github copilot via the chat command `/login github-copilot`.
     2. Authenticate in Github with the given code.
     3. Type anything in the chat to continue and done!
-
+    
+    _Tip: check [Your Copilot plan](https://github.com/settings/copilot/features) to enable models to your account._
 
 === "LiteLLM"
 

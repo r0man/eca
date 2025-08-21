@@ -21,13 +21,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "github-copilot/gpt-4o"
+                                 :model "github-copilot/gpt-5"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "github-copilot/gpt-4o"
+              :model "github-copilot/gpt-5"
               :status "success"}
              resp))
 
@@ -48,13 +48,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "github-copilot/gpt-4o"
+                                 :model "github-copilot/gpt-5"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "github-copilot/gpt-4o"
+              :model "github-copilot/gpt-5"
               :status "success"}
              resp))
 
@@ -76,13 +76,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "github-copilot/gpt-4o"
+                                 :model "github-copilot/gpt-5"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "github-copilot/gpt-4o"
+              :model "github-copilot/gpt-5"
               :status "success"}
              resp))
 
@@ -115,13 +115,13 @@
         (let [req-id 0
               resp (eca/request! (fixture/chat-prompt-request
                                   {:request-id req-id
-                                   :model "github-copilot/gpt-4o"
+                                   :model "github-copilot/gpt-5"
                                    :message "hello!"}))
               chat-id (reset! chat-id* (:chatId resp))]
 
           (is (match?
                {:chatId (m/pred string?)
-                :model "github-copilot/gpt-4o"
+                :model "github-copilot/gpt-5"
                 :status "success"}
                resp))
 
@@ -152,13 +152,13 @@
               resp (eca/request! (fixture/chat-prompt-request
                                   {:request-id req-id
                                    :chat-id @chat-id*
-                                   :model "github-copilot/gpt-4o"
+                                   :model "github-copilot/gpt-5"
                                    :message "how are you?"}))
               chat-id @chat-id*]
 
           (is (match?
                {:chatId (m/pred string?)
-                :model "github-copilot/gpt-4o"
+                :model "github-copilot/gpt-5"
                 :status "success"}
                resp))
 
@@ -202,13 +202,13 @@
         (let [req-id 0
               resp (eca/request! (fixture/chat-prompt-request
                                   {:request-id req-id
-                                   :model "github-copilot/gpt-4o"
+                                   :model "github-copilot/gpt-5"
                                    :message "What files you see?"}))
               chat-id (reset! chat-id* (:chatId resp))]
 
           (is (match?
                {:chatId (m/pred string?)
-                :model "github-copilot/gpt-4o"
+                :model "github-copilot/gpt-5"
                 :status "success"}
                resp))
 
