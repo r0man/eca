@@ -115,8 +115,7 @@ Example:
        "api": "openai-chat",
        "urlEnv": "MY_COMPANY_API_URL", // or "url"
        "keyEnv": "MY_COMPANY_API_KEY", // or "key"
-       "models": ["gpt-5", "deepseek-r1"],
-       "defaultModel": "deepseek-r1"
+       "models": ["gpt-5", "deepseek-r1"]
     }
   }
 }
@@ -132,7 +131,6 @@ Example:
 | `keyEnv` | string | Environment variable name containing the API key | Yes* |
 | `key` | string | Direct API key (use instead of `keyEnv`) | Yes* |
 | `models` | array | List of available model names | Yes |
-| `defaultModel` | string | Default model to use | No |
 | `completionUrlRelativePath` | string | Custom endpoint path for completions | No |
 
 _* Either the `url` or `urlEnv` option is required, and either the `key` or `keyEnv` option is required._
@@ -159,8 +157,7 @@ After configuring custom providers, the models will be available as `provider/mo
         "api": "openai-responses",
         "url": "https://litellm.my-company.com",
         "key": "your-api-key",
-        "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"],
-        "defaultModel": "gpt-5"
+        "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"]
         }
       }
     }
@@ -177,8 +174,7 @@ After configuring custom providers, the models will be available as `provider/mo
           "api": "openai-chat",
           "url": "https://openrouter.ai/api/v1",
           "keyEnv": "OPENROUTER_API_KEY",
-          "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"],
-          "defaultModel": "anthropic/claude-3.5-sonnet"
+          "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"]
         }
       }
     }
@@ -195,8 +191,7 @@ After configuring custom providers, the models will be available as `provider/mo
           "api": "openai-chat",
           "url": "https://api.deepseek.com",
           "keyEnv": "DEEPSEEK_API_KEY",
-          "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"],
-          "defaultModel": "deepseek-chat"
+          "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"]
         }
       }
     }
