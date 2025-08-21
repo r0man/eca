@@ -16,31 +16,29 @@
 
 (defn ^:private initialize-models! [db* config]
   (let [all-models (models/all)
-        eca-models (filter
-                    (fn [[full-model _config]]
-                      (let [[provider model] (string/split full-model #"/" 2)]
-                        (get-in config [:providers provider :models model])))
-                    all-models)]
-    (swap! db* update :models merge eca-models)
-    (when-let [custom-providers (seq (:customProviders config))]
-      (let [models (reduce
-                    (fn [models [custom-provider {provider-models :models}]]
-                      (reduce
-                       (fn [m model]
-                         (let [known-model (get all-models model)
-                               full-model (str (name custom-provider) "/" model)]
-                           (assoc m
-                                  full-model
-                                  {:tools (or (:tools known-model) true)
-                                   :reason? (or (:reason? known-model) true)
-                                   :web-search (or (:web-search known-model) true)
-                                   :max-output-tokens (:max-output-tokens known-model)
-                                   :custom-provider? true})))
-                       models
-                       provider-models))
+        eca-models (reduce
+                    (fn [p [provider provider-config]]
+                      (merge p
+                             (reduce
+                              (fn [m [model _model-config]]
+                                (let [model (string/replace-first (str model) ":" "")
+                                      full-model (str provider "/" model)
+                                      model-capabilities (merge
+                                                          (or (get all-models full-model)
+                                                              ;; we guess the capabilities from
+                                                              ;; the first model with same name
+                                                              (when-let [found-full-model (first (filter #(= model (second (string/split % #"/" 2)))
+                                                                                                         (keys all-models)))]
+                                                                (get all-models found-full-model))
+                                                              {:tools true
+                                                               :reason? true
+                                                               :web-search true}))]
+                                  (assoc m full-model model-capabilities)))
+                              {}
+                              (:models provider-config))))
                     {}
-                    custom-providers)]
-        (swap! db* update :models merge models))))
+                    (:providers config))]
+    (swap! db* update :models merge eca-models))
   (when-let [ollama-models (seq (llm-api/extra-models config))]
     (let [models (reduce
                   (fn [models {:keys [model] :as ollama-model}]
@@ -56,7 +54,7 @@
    :eca/initialize
    (reset! config/initialization-config* (shared/map->camel-cased-map (:initialization-options params)))
    (let [config (config/all @db*)]
-     (logger/info "--->" config)
+     (logger/debug "Considered config: " config)
      (swap! db* assoc
             :client-info (:client-info params)
             :workspace-folders (:workspace-folders params)

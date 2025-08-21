@@ -33,15 +33,11 @@
 
 (defn ^:private provider-api-key [provider config]
   (or (get-in config [:providers (name provider) :key])
-      (config/get-env (str (-> provider
-                               (string/replace "-" "_")
-                               string/upper-case) "_API_KEY"))))
+      (some-> (get-in config [:providers (name provider) :keyEnv]) config/get-env)))
 
 (defn ^:private provider-api-url [provider config]
   (or (get-in config [:providers (name provider) :url])
-      (config/get-env (str (-> provider
-                               (string/replace "-" "_")
-                               string/upper-case) "_API_URL"))))
+      (some-> (get-in config [:providers (name provider) :urlEnv]) config/get-env)))
 
 (defn extra-models [config]
   (let [ollama-api-url (provider-api-url "ollama" config)]
@@ -55,7 +51,7 @@
 
 (defn default-model
   "Returns the default LLM model checking this waterfall:
-  - Any custom provider with defaultModel set
+  - defaultModel set
   - Anthropic api key set
   - Openai api key set
   - Github copilot login done
@@ -82,7 +78,7 @@
          :type "function"))
 
 (defn complete!
-  [{:keys [provider model model-config instructions user-messages config on-first-response-received
+  [{:keys [provider model model-capabilities instructions user-messages config on-first-response-received
            on-message-received on-error on-prepare-tool-call on-tools-called on-reason on-usage-updated
            past-messages tools provider-auth]}]
   (let [first-response-received* (atom false)
@@ -103,15 +99,14 @@
                            (when-not (:silent? (ex-data exception))
                              (logger/error args)
                              (on-error args)))
-        tools (when (:tools model-config)
+        tools (when (:tools model-capabilities)
                 (mapv tool->llm-tool tools))
-        web-search (:web-search model-config)
-        max-output-tokens (:max-output-tokens model-config)
-        custom-providers (:customProviders config)
-        custom-models (set (mapcat (fn [[k v]]
-                                     (map #(str (name k) "/" %) (:models v)))
-                                   custom-providers))
-        extra-payload (get-in config [:models (keyword model) :extraPayload])
+        reason? (:reason? model-capabilities)
+        web-search (:web-search model-capabilities)
+        max-output-tokens (:max-output-tokens model-capabilities)
+        provider-config (get-in config [:providers provider])
+        model-config (get-in provider-config [:models model])
+        extra-payload (:extraPayload model-config)
         provider-api-key (provider-api-key provider config)
         provider-api-url (provider-api-url provider config)
         callbacks {:on-message-received on-message-received-wrapper
@@ -124,91 +119,88 @@
       (cond
         (= "openai" provider)
         (llm-providers.openai/completion!
-         {:model model
-          :instructions instructions
-          :user-messages user-messages
-          :max-output-tokens max-output-tokens
-          :reason? (:reason? model-config)
-          :past-messages past-messages
-          :tools tools
-          :web-search web-search
-          :extra-payload extra-payload
-          :api-url provider-api-url
-          :api-key provider-api-key}
-         callbacks)
+          {:model model
+           :instructions instructions
+           :user-messages user-messages
+           :max-output-tokens max-output-tokens
+           :reason? reason?
+           :past-messages past-messages
+           :tools tools
+           :web-search web-search
+           :extra-payload extra-payload
+           :api-url provider-api-url
+           :api-key provider-api-key}
+          callbacks)
 
         (= "anthropic" provider)
         (llm-providers.anthropic/completion!
-         {:model model
-          :instructions instructions
-          :user-messages user-messages
-          :max-output-tokens max-output-tokens
-          :reason? (:reason? model-config)
-          :past-messages past-messages
-          :tools tools
-          :web-search web-search
-          :extra-payload extra-payload
-          :api-url provider-api-url
-          :api-key provider-api-key}
-         callbacks)
+          {:model model
+           :instructions instructions
+           :user-messages user-messages
+           :max-output-tokens max-output-tokens
+           :reason? reason?
+           :past-messages past-messages
+           :tools tools
+           :web-search web-search
+           :extra-payload extra-payload
+           :api-url provider-api-url
+           :api-key provider-api-key}
+          callbacks)
 
         (= "github-copilot" provider)
         (llm-providers.openai-chat/completion!
-         {:model model
-          :instructions instructions
-          :user-messages user-messages
-          :max-output-tokens max-output-tokens
-          :reason? (:reason? model-config)
-          :past-messages past-messages
-          :tools tools
-          :extra-payload extra-payload
-          :api-url provider-api-url
-          :api-key (:api-token provider-auth)
-          :extra-headers {"openai-intent" "conversation-panel"
-                          "x-request-id" (str (random-uuid))
-                          "vscode-sessionid" ""
-                          "vscode-machineid" ""
-                          "copilot-integration-id" "vscode-chat"}}
-         callbacks)
+          {:model model
+           :instructions instructions
+           :user-messages user-messages
+           :max-output-tokens max-output-tokens
+           :reason? reason?
+           :past-messages past-messages
+           :tools tools
+           :extra-payload extra-payload
+           :api-url provider-api-url
+           :api-key (:api-token provider-auth)
+           :extra-headers {"openai-intent" "conversation-panel"
+                           "x-request-id" (str (random-uuid))
+                           "vscode-sessionid" ""
+                           "vscode-machineid" ""
+                           "copilot-integration-id" "vscode-chat"}}
+          callbacks)
 
         (= "ollama" provider)
         (llm-providers.ollama/completion!
-         {:api-url provider-api-url
-          :reason? (:reason? model-config)
-          :model model
-          :instructions instructions
-          :user-messages user-messages
-          :past-messages past-messages
-          :tools tools
-          :extra-payload extra-payload}
-         callbacks)
+          {:api-url provider-api-url
+           :reason? (:reason? model-capabilities)
+           :model model
+           :instructions instructions
+           :user-messages user-messages
+           :past-messages past-messages
+           :tools tools
+           :extra-payload extra-payload}
+          callbacks)
 
-        (contains? custom-models (str provider "/" model))
-        (let [provider-config (get custom-providers (keyword provider))
-              provider-fn (case (:api provider-config)
+        model-config
+        (let [provider-fn (case (:api provider-config)
                             ("openai-responses"
                              "openai") llm-providers.openai/completion!
                             "anthropic" llm-providers.anthropic/completion!
                             "openai-chat" llm-providers.openai-chat/completion!
-                            (on-error-wrapper {:message (format "Unknown custom model %s for provider %s" (:api provider-config) provider)}))
-              url (or (:url provider-config) (config/get-env (:urlEnv provider-config)))
-              key (or (:key provider-config) (config/get-env (:keyEnv provider-config)))
+                            (on-error-wrapper {:message (format "Unknown model %s for provider %s" (:api provider-config) provider)}))
               url-relative-path (:completionUrlRelativePath provider-config)]
           (provider-fn
-           {:model model
-            :instructions instructions
-            :user-messages user-messages
-            :max-output-tokens max-output-tokens
-            :reason? (:reason? model-config)
-            :past-messages past-messages
-            :tools tools
-            :extra-payload extra-payload
-            :api-url url
-            :url-relative-path url-relative-path
-            :api-key key}
-           callbacks))
+            {:model model
+             :instructions instructions
+             :user-messages user-messages
+             :max-output-tokens max-output-tokens
+             :reason? reason?
+             :past-messages past-messages
+             :tools tools
+             :extra-payload extra-payload
+             :url-relative-path url-relative-path
+             :api-url provider-api-url
+             :api-key provider-api-key}
+            callbacks))
 
         :else
-        (on-error-wrapper {:message (str "ECA Unsupported model: " model)}))
+        (on-error-wrapper {:message (format "ECA Unsupported model %s for provider %s" model provider)}))
       (catch Exception e
         (on-error-wrapper {:exception e})))))

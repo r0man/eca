@@ -14,9 +14,13 @@
   (eca/start-process!)
 
   (is (match?
-       {:models (m/embeds ["ollama/qwen3"])}
-       (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
+       {:chatDefaultModel "ollama/qwen3"
+        :models (m/embeds ["ollama/qwen3"])}
+       (eca/request! (fixture/initialize-request {:initializationOptions (h/deep-merge fixture/default-init-options
+                                                                                       {:providers {"anthropic" {:key nil}
+                                                                                                    "openai" {:key nil}
+                                                                                                    "github-copilot" {:key nil}
+                                                                                                    "ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -107,9 +111,13 @@
   (eca/start-process!)
 
   (is (match?
-       {:models (m/embeds ["ollama/qwen3"])}
-       (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
+       {:chatDefaultModel "ollama/qwen3"
+        :models (m/embeds ["ollama/qwen3"])}
+       (eca/request! (fixture/initialize-request {:initializationOptions (h/deep-merge fixture/default-init-options
+                                                                                       {:providers {"anthropic" {:key nil}
+                                                                                                    "openai" {:key nil}
+                                                                                                    "github-copilot" {:key nil}
+                                                                                                    "ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -183,9 +191,13 @@
   (eca/start-process!)
 
   (is (match?
-       {:models (m/embeds ["ollama/qwen3"])}
-       (eca/request! (fixture/initialize-request {:initializationOptions (merge fixture/default-init-options
-                                                                                {:providers {"ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
+       {:chatDefaultModel "ollama/qwen3"
+        :models (m/embeds ["ollama/qwen3"])}
+       (eca/request! (fixture/initialize-request {:initializationOptions (h/deep-merge fixture/default-init-options
+                                                                                       {:providers {"anthropic" {:key nil}
+                                                                                                    "openai" {:key nil}
+                                                                                                    "github-copilot" {:key nil}
+                                                                                                    "ollama" {:url (str fixture/base-llm-mock-url "/ollama")}}})
                                                   :capabilities {:codeAssistant {:chat {}}}}))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]

@@ -9,11 +9,14 @@
 
 (def default-init-options {:pureConfig true
                            :providers {"openai" {:url (str base-llm-mock-url "/openai")
-                                                 :key "foo-key"}
+                                                 :key "foo-key"
+                                                 :keyEnv "FOO"}
                                        "anthropic" {:url (str base-llm-mock-url "/anthropic")
-                                                    :key "foo-key"}
+                                                    :key "foo-key"
+                                                    :keyEnv "FOO"}
                                        "github-copilot" {:url (str base-llm-mock-url "/github-copilot")
-                                                         :key "foo-key"}}})
+                                                         :key "foo-key"
+                                                         :keyEnv "FOO"}}})
 
 (defn initialize-request
   ([]

@@ -130,7 +130,7 @@
     (llm-api/complete!
      {:model model
       :provider provider
-      :model-config (get-in db [:models full-model])
+      :model-capabilities (get-in db [:models full-model])
       :user-messages user-messages
       :instructions instructions
       :past-messages past-messages

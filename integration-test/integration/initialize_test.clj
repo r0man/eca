@@ -66,8 +66,8 @@
                    "github-copilot/gpt-4.1"
                    "github-copilot/gpt-5"
                    "github-copilot/gpt-5-mini"
-                   "myCustom/bar-2"
-                   "myCustom/foo-1"
+                   "my-custom/bar2"
+                   "my-custom/foo1"
                    "openai/gpt-4.1"
                    "openai/gpt-5"
                    "openai/gpt-5-mini"
@@ -81,8 +81,9 @@
          (eca/request! (fixture/initialize-request
                         {:initializationOptions (merge fixture/default-init-options
                                                        {:defaultModel "myCustom/bar-2"
-                                                        :customProviders
+                                                        :providers
                                                         {"myCustom" {:api "openai"
                                                                      :urlEnv "MY_CUSTOM_API_URL"
                                                                      :keyEnv "MY_CUSTOM_API_KEY"
-                                                                     :models ["foo-1" "bar-2"]}}})}))))))
+                                                                     :models {"foo1" {}
+                                                                              "bar2" {}}}}})}))))))

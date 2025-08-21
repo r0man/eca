@@ -48,9 +48,9 @@ There are multiples ways to configure ECA:
     ECA_CONFIG='{"myConfig": "my_value"}' eca server
     ```
 
-## Models
+## Providers / Models
 
-For models configuration check the [dedicated models section](./models.md#adding-and-configuring-models).
+For providers and models configuration check the [dedicated models section](./models.md#adding-and-configuring-models).
 
 ## MCP
 
@@ -154,8 +154,12 @@ There are 3 possible ways to configure rules following this order of priority:
     ```typescript
     interface Config {
         providers: {[key: string]: {
+            api?: 'openai-responses' | 'openai-chat' | 'anthropic';
             url?: string;
+            urlEnv?: string;
             key?: string; // when provider supports api key.
+            keyEnv?: string;
+            completionUrlRelativePath?: string;
             models: {[key: string]: {
               extraPayload?: {[key: string]: any}
             }};
@@ -179,15 +183,6 @@ There are 3 possible ways to configure rules following this order of priority:
             command: string;
             args?: string[];
             disabled?: boolean;
-        }};
-        customProviders: {[key: string]: {
-            api: 'openai-responses' | 'openai-chat' | 'anthropic';
-            models: string[];
-            url?: string;
-            urlEnv?: string;
-            completionUrlRelativePath?: string;
-            key?: string;
-            keyEnv?: string;
         }};
         chat?: {
             welcomeMessage: string;
@@ -230,7 +225,6 @@ There are 3 possible ways to configure rules following this order of priority:
       },
       "mcpTimeoutSeconds" : 60,
       "mcpServers" : {},
-      "customProviders": {},
       "chat" : {
         "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
       },

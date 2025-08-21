@@ -3,16 +3,16 @@
    [clojure.test :refer [deftest is testing]]
    [eca.config :as config]
    [eca.test-helper :as h]
-   [matcher-combinators.matchers :as m]
    [matcher-combinators.test :refer [match?]]))
 
 (h/reset-components-before-test)
 
 (deftest all-test
   (testing "Default config"
-    (reset! config/initialization-config* {})
+    (reset! config/initialization-config* {:pureConfig true})
     (is (match?
-         {:providers {"github-copilot" {:key m/absent
+         {:pureConfig true
+          :providers {"github-copilot" {:key nil
                                         :models {"gpt-5" {}}}}}
          (config/all {}))))
   (testing "deep merging initializationOptions with initial config"
@@ -22,6 +22,15 @@
          {:pureConfig true
           :providers {"github-copilot" {:key "123"
                                         :models {"gpt-5" {}}}}}
+         (config/all {}))))
+  (testing "providers and models are updated correctly"
+    (reset! config/initialization-config* {:pureConfig true
+                                           :providers {"customProvider" {:key "123"
+                                                                         :models {:gpt-5 {}}}}})
+    (is (match?
+         {:pureConfig true
+          :providers {"custom-provider" {:key "123"
+                                         :models {"gpt-5" {}}}}}
          (config/all {})))))
 
 (deftest deep-merge-test

@@ -16,18 +16,19 @@
 
   (testing "We use the default model from custom provider"
     (is (match?
-         {:models (m/embeds ["myProvider/foo-1"])
-          :chatDefaultModel "myProvider/foo-1"}
+         {:models (m/embeds ["my-provider/foo1"])
+          :chatDefaultModel "my-provider/foo1"}
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:defaultModel "myProvider/foo-1"
-                                 :customProviders
+                                {:defaultModel "my-provider/foo1"
+                                 :providers
                                  {"myProvider"
                                   {:api "openai-responses"
                                    :url (str "http://localhost:" llm-mock.server/port "/openai")
                                    :key "foobar"
-                                   :models ["foo-0" "foo-1"]}}})
+                                   :models {"foo0" {}
+                                            "foo1" {}}}}})
                          :capabilities {:codeAssistant {:chat {}}}})))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -36,13 +37,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "myProvider/foo-1"
+                                 :model "my-provider/foo1"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/foo-1"
+              :model "my-provider/foo1"
               :status "success"}
              resp))
 
@@ -69,13 +70,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "myProvider/foo-1"
+                                 :model "my-provider/foo1"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/foo-1"
+              :model "my-provider/foo1"
               :status "success"}
              resp))
 
@@ -102,13 +103,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "myProvider/foo-1"
+                                 :model "my-provider/foo1"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/foo-1"
+              :model "my-provider/foo1"
               :status "success"}
              resp))
 
@@ -139,18 +140,19 @@
 
   (testing "We use the default model from custom provider"
     (is (match?
-         {:models (m/embeds ["myProvider/deepseek-coder"])
-          :chatDefaultModel "myProvider/deepseek-coder"}
+         {:models (m/embeds ["my-provider/deepseekcoder"])
+          :chatDefaultModel "my-provider/deepseekcoder"}
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:defaultModel "myProvider/deepseek-coder"
-                                 :customProviders
+                                {:defaultModel "my-provider/deepseekcoder"
+                                 :providers
                                  {"myProvider"
                                   {:api "openai-chat"
                                    :url (str "http://localhost:" llm-mock.server/port "/openai-chat")
                                    :key "foobar"
-                                   :models ["deepseek-chat" "deepseek-coder"]}}})
+                                   :models {"deepseekchat" {}
+                                            "deepseekcoder" {}}}}})
                          :capabilities {:codeAssistant {:chat {}}}})))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -159,13 +161,13 @@
       (let [req-id 0
             resp (eca/request! (fixture/chat-prompt-request
                                 {:request-id req-id
-                                 :model "myProvider/deepseek-coder"
+                                 :model "my-provider/deepseekcoder"
                                  :message "Tell me a joke!"}))
             chat-id (reset! chat-id* (:chatId resp))]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/deepseek-coder"
+              :model "my-provider/deepseekcoder"
               :status "success"}
              resp))
 
@@ -186,13 +188,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "myProvider/deepseek-coder"
+                                 :model "my-provider/deepseekcoder"
                                  :message "Who's there?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/deepseek-coder"
+              :model "my-provider/deepseekcoder"
               :status "success"}
              resp))
 
@@ -213,13 +215,13 @@
             resp (eca/request! (fixture/chat-prompt-request
                                 {:chat-id @chat-id*
                                  :request-id req-id
-                                 :model "myProvider/deepseek-coder"
+                                 :model "my-provider/deepseekcoder"
                                  :message "What foo?"}))
             chat-id @chat-id*]
 
         (is (match?
              {:chatId (m/pred string?)
-              :model "myProvider/deepseek-coder"
+              :model "my-provider/deepseekcoder"
               :status "success"}
              resp))
 

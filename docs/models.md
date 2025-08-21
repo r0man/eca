@@ -1,6 +1,8 @@
 # Models
 
-The models capabilities and configurations are retrieved from [models.dev](https://models.dev) API.
+All providers and models are configured under `providers` config.
+
+Models capabilities and configurations are retrieved from [models.dev](https://models.dev) API.
 
 ## Built-in providers and capabilities
 
@@ -11,70 +13,40 @@ The models capabilities and configurations are retrieved from [models.dev](https
 | Github Copilot      | √           | √                    | √              | X          |
 | Ollama local models | √           | √                    | X              | X          |
 
-### Adding and Configuring Models
 
-#### Setting up your first model
+### Built-in providers config
 
-To start using ECA, you need to configure at least one model with your API key. Here's how to set up a model:
+Built-in providers have already base initial `providers` configs, so you can change to add models or set its key/url.
 
-1. **Choose your model**: Pick from [OpenAI](#openai), [Anthropic](#anthropic), or [Ollama](#ollama) models
-2. **Set your API key**: Create a configuration file with your credentials
-3. **Start using ECA**: The model will be available in your editor
+For more details, check the [config schema](./configuration.md#schema).
 
-#### Setting up API keys
+Example:
 
-Create a configuration file at `.eca/config.json` in your project root or at `~/.config/eca/config.json` globally:
-
+`~/.config/eca/config.json`
 ```javascript
 {
   "providers": {
-      "openai": {"key": "your-openai-api-key-here"},
-      "anthropic": {"key": "your-anthropic-api-key-here"}
+    "openai": {
+      "key": "your-openai-key-here", // configuring a key
+      "models": { 
+        "o1": {} // adding models to a built-in provider
+        "o3": {
+          "extraPayload": { // adding to the payload sent to LLM
+            "temperature": 0.5
+          }
+        }
+      }
+    } 
   }
 }
 ```
 
-**Environment Variables**: You can also set API keys using environment variables:
+**Environment Variables**: You can also set API keys using environment variables following `"<PROVIDER>_API_KEY"`, examples:
+
 - `OPENAI_API_KEY` for OpenAI
 - `ANTHROPIC_API_KEY` for Anthropic
 
-#### Adding new models
-
-You can add new models or merge with existing ones in your configuration:
-
-```javascript
-{
-  "providers": {
-      "openai": {"key": "your-openai-api-key-here",
-                 "models": {"o1": {}}}
-  }
-}
-```
-
-#### Customizing model behavior
-
-You can customize model parameters like temperature, reasoning effort, etc.:
-
-```javascript
-{
-  "providers": {
-      "openai": {
-          "key": "your-openai-api-key-here",
-          "gpt-5": {
-              "extraPayload": {
-                  "temperature": 0.7,
-                  "reasoning_effort": "high",
-                  "max_tokens": 4000
-              }
-          }
-      }
-  }
-}
-```
-
-This config will be merged with current default used by ECA.
-
-## Custom model providers
+## Custom providers
 
 ECA allows you to configure custom LLM providers that follow API schemas similar to OpenAI or Anthropic. This is useful when you want to use:
 
@@ -82,7 +54,40 @@ ECA allows you to configure custom LLM providers that follow API schemas similar
 - Custom company LLM endpoints
 - Additional cloud providers not natively supported
 
-### API Types for Custom Providers
+You just need to add your provider to `providers` and make sure add the required fields
+
+Schema:
+
+| Option                        | Type   | Description                                                                     | Required |
+|-------------------------------|--------|---------------------------------------------------------------------------------|----------|
+| `api`                         | string | The API schema to use (`"openai-responses"`, `"openai-chat"`, or `"anthropic"`) | Yes      |
+| `urlEnv`                      | string | Environment variable name containing the API URL                                | Yes*     |
+| `url`                         | string | Direct API URL (use instead of `urlEnv`)                                        | Yes*     |
+| `keyEnv`                      | string | Environment variable name containing the API key                                | Yes*     |
+| `key`                         | string | Direct API key (use instead of `keyEnv`)                                        | Yes*     |
+| `models`                      | map    | Key: model name, value: its config                                              | Yes      |
+| `models <model> extraPayload` | map    | Extra payload sent in body to LLM                                               | No       |
+
+Example:
+
+`~/.config/eca/config.json`
+```javascript
+{
+  "providers": {
+    "my-company": {
+      "api": "openai-chat",
+      "urlEnv": "MY_COMPANY_API_URL", // or "url"
+      "keyEnv": "MY_COMPANY_API_KEY", // or "key"
+      "models": {
+        "gpt-5": {},
+        "deepseek-r1": {}
+       }
+    }
+  }
+}
+```
+
+### API Types
 
 When configuring custom providers, choose the appropriate API type:
 
@@ -98,44 +103,7 @@ When configuring custom providers, choose the appropriate API type:
 
 Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
 
-### Setting up a custom provider
-
-It's possible to configure ECA to be aware of custom LLM providers if they follow a API schema similar to currently supported ones (openai-responses, openai-chat or anthropic), example for a custom hosted litellm server:
-
-Example:
-
-`~/.config/eca/config.json`
-```javascript
-{
-  "customProviders": {
-    "my-company": {
-       "api": "openai-chat",
-       "urlEnv": "MY_COMPANY_API_URL", // or "url"
-       "keyEnv": "MY_COMPANY_API_KEY", // or "key"
-       "models": ["gpt-5", "deepseek-r1"]
-    }
-  }
-}
-```
-
-### Custom provider configuration options
-
-| Option | Type | Description | Required |
-|--------|------|-------------|----------|
-| `api` | string | The API schema to use (`"openai-responses"`, `"openai-chat"`, or `"anthropic"`) | Yes |
-| `urlEnv` | string | Environment variable name containing the API URL | Yes* |
-| `url` | string | Direct API URL (use instead of `urlEnv`) | Yes* |
-| `keyEnv` | string | Environment variable name containing the API key | Yes* |
-| `key` | string | Direct API key (use instead of `keyEnv`) | Yes* |
-| `models` | array | List of available model names | Yes |
-| `completionUrlRelativePath` | string | Custom endpoint path for completions | No |
-
-_* Either the `url` or `urlEnv` option is required, and either the `key` or `keyEnv` option is required._
-
-
-After configuring custom providers, the models will be available as `provider/model` (e.g., `openrouter/anthropic/claude-3.5-sonnet`, `deepseek/deepseek-chat`).
-
-### Providers setup
+## Providers
 
 === "Github Copilot"
     
@@ -149,12 +117,15 @@ After configuring custom providers, the models will be available as `provider/mo
 
     ```javascript
     {
-      "customProviders": {
+      "providers": {
         "litellm": {
-        "api": "openai-responses",
-        "url": "https://litellm.my-company.com",
-        "key": "your-api-key",
-        "models": ["gpt-5", "claude-3-sonnet-20240229", "llama-3-70b"]
+          "api": "openai-responses",
+          "url": "https://litellm.my-company.com", // or "urlEnv"
+          "key": "your-api-key", // or "keyEnv"
+          "models": {
+            "gpt-5": {},
+            "deepseek-r1": {}
+           }
         }
       }
     }
@@ -163,15 +134,19 @@ After configuring custom providers, the models will be available as `provider/mo
 === "OpenRouter"
 
     [OpenRouter](https://openrouter.ai) provides access to many models through a unified API:
-
+    
     ```javascript
     {
-      "customProviders": {
+      "providers": {
         "openrouter": {
           "api": "openai-chat",
-          "url": "https://openrouter.ai/api/v1",
-          "keyEnv": "OPENROUTER_API_KEY",
-          "models": ["anthropic/claude-3.5-sonnet", "openai/gpt-4-turbo", "meta-llama/llama-3.1-405b"]
+          "url": "https://openrouter.ai/api/v1", // or "urlEnv"
+          "key": "your-api-key", // or "keyEnv"
+          "models": {
+            "anthropic/claude-3.5-sonnet": {},
+            "openai/gpt-4-turbo": {},
+            "meta-llama/llama-3.1-405b": {}
+           }
         }
       }
     }
@@ -180,15 +155,19 @@ After configuring custom providers, the models will be available as `provider/mo
 === "DeepSeek"
 
     [DeepSeek](https://deepseek.com) offers powerful reasoning and coding models:
-
+    
     ```javascript
     {
-      "customProviders": {
-        "deepseek": {
+      "providers": {
+        "openrouter": {
           "api": "openai-chat",
-          "url": "https://api.deepseek.com",
-          "keyEnv": "DEEPSEEK_API_KEY",
-          "models": ["deepseek-chat", "deepseek-coder", "deepseek-reasoner"]
+          "url": "https://api.deepseek.com", // or "urlEnv"
+          "key": "your-api-key", // or "keyEnv"
+          "models": {
+            "deepseek-chat": {},
+            "deepseek-coder": {},
+            "deepseek-reasoner": {}
+           }
         }
       }
     }

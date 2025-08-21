@@ -43,10 +43,17 @@
       (escape-uri uri)
       uri)))
 
+(defn deep-merge [& maps]
+  (apply merge-with (fn [& args]
+                      (if (every? #(or (map? %) (nil? %)) args)
+                        (apply deep-merge args)
+                        (last args)))
+         maps))
+
 (defn match-content [chat-id request-id role content]
   (is (match?
-       {:chatId chat-id
-        :requestId request-id
-        :role role
-        :content content}
-       (eca/client-awaits-server-notification :chat/contentReceived))))
+        {:chatId chat-id
+         :requestId request-id
+         :role role
+         :content content}
+        (eca/client-awaits-server-notification :chat/contentReceived))))

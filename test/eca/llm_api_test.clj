@@ -31,7 +31,7 @@
   (testing "Anthropic API key present in ENV"
     (with-redefs [config/get-env (fn [k] (when (= k "ANTHROPIC_API_KEY") "env-anthropic"))]
       (let [db {:models {}}
-            config {}]
+            config {:providers {"anthropic" {:keyEnv "ANTHROPIC_API_KEY"}}}]
         (is (= "anthropic/claude-sonnet-4-20250514" (llm-api/default-model db config))))))
 
   (testing "OpenAI API key present in config"
@@ -43,7 +43,7 @@
   (testing "OpenAI API key present in ENV"
     (with-redefs [config/get-env (fn [k] (when (= k "OPENAI_API_KEY") "env-openai"))]
       (let [db {:models {}}
-            config {}]
+            config {:providers {"openai" {:keyEnv "OPENAI_API_KEY"}}}]
         (is (= "openai/gpt-5" (llm-api/default-model db config))))))
 
   (testing "Fallback default (no keys anywhere)"

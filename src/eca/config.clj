@@ -19,26 +19,34 @@
 (set! *warn-on-reflection* true)
 
 (def initial-config
-  {:providers {"openai" {:key nil
+  {:providers {"openai" {:api "openai-responses"
                          :url "https://api.openai.com"
+                         :key nil
+                         :keyEnv "OPENAI_API_KEY"
                          :models {"gpt-5" {}
                                   "gpt-5-mini" {}
                                   "gpt-5-nano" {}
                                   "gpt-4.1" {}
                                   "o4-mini" {}
                                   "o3" {}}}
-               "anthropic" {:key nil
+               "anthropic" {:api "anthropic"
                             :url "https://api.anthropic.com"
+                            :key nil
+                            :keyEnv "ANTHROPIC_API_KEY"
                             :models {"claude-sonnet-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
                                      "claude-opus-4-1-20250805" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
                                      "claude-opus-4-20250514" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}
                                      "claude-3-5-haiku-20241022" {:extraPayload {:thinking {:type "enabled" :budget_tokens 2048}}}}}
-               "github-copilot" {:url "https://api.githubcopilot.com"
+               "github-copilot" {:api "openai-chat"
+                                 :url "https://api.githubcopilot.com"
+                                 :key nil ;; not supported, requires login auth
+                                 :keyEnv nil ;; not supported, requires login auth
                                  :models {"gpt-5" {}
                                           "gpt-5-mini" {}
                                           "gpt-4.1" {}
                                           "claude-sonnet-4" {}}}
-               "ollama" {:url "http://localhost:11434"}}
+               "ollama" {:url "http://localhost:11434"
+                         :urlEnv "OLLAMA_API_URL"}}
    :defaultModel nil
    :rules []
    :commands []
@@ -51,7 +59,6 @@
    :mcpServers {}
    :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :agentFileRelativePath "AGENT.md"
-   :customProviders {}
    :index {:ignoreFiles [{:type :gitignore}]
            :repoMap {:maxTotalEntries 800
                      :maxEntriesPerDir 50}}})
@@ -127,11 +134,26 @@
                {}
                providers)))
 
+(defn ^:private normalize-provider-models [provider]
+  (let [models (or (:models provider)
+                   (get provider "models"))
+        models' (when models
+                  (into {}
+                        (map (fn [[k v]]
+                               [(if (or (keyword? k) (symbol? k)) (name k) (str k)) v])
+                             models)))
+        provider' (dissoc provider "models")]
+    (if models'
+      (assoc provider' :models models')
+      provider')))
+
 (defn ^:private normalize-fields [config]
   (-> config
-      (update-in [:providers] (fn [providers]
-                                (when providers
-                                  (normalize-providers providers))))))
+      (update-in [:providers]
+                 (fn [providers]
+                   (when providers
+                     (-> (normalize-providers providers)
+                         (update-vals normalize-provider-models)))))))
 
 (defn all [db]
   (let [initialization-config @initialization-config*

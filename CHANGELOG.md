@@ -4,6 +4,7 @@
 
 - Refactor config for better UX and understanding: 
   - Move `models` to inside `providers`.
+  - Make `customProviders` compatible with `providers`. models need to be a map now, not a list.
 
 ## 0.31.0
 
