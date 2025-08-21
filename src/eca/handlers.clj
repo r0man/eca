@@ -32,8 +32,7 @@
                                    :reason? (or (:reason? known-model) true)
                                    :web-search (or (:web-search known-model) true)
                                    :max-output-tokens (:max-output-tokens known-model)
-                                   :custom-provider? true
-                                   :default-model? (= full-model (:defaultModel config))})))
+                                   :custom-provider? true})))
                        models
                        provider-models))
                     {}

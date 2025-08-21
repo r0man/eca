@@ -8,7 +8,7 @@
 (h/reset-components-before-test)
 
 (deftest default-model-test
-  (testing "Custom provider default-model? present"
+  (testing "Custom provider defaultModel present"
     (with-redefs [config/get-env (constantly nil)]
       (let [db {}
             config {:defaultModel "my-provider/my-model"}]
