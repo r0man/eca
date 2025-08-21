@@ -105,7 +105,7 @@ When configuring custom providers, choose the appropriate API type:
 
 Most third-party providers use the `openai-chat` API for compatibility with existing tools and libraries.
 
-## Providers
+## Providers quick setup
 
 === "Github Copilot"
     
