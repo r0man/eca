@@ -91,7 +91,8 @@
                                                          :function content}]}
             "tool_call_output" {:role "tool" :content (llm-util/stringfy-tool-result content)}
             "reason" {:role "assistant" :content (:text content)}
-            msg))
+            {:role (:role msg)
+             :content (-> msg :content first :text)}))
         past-messages))
 
 (defn completion! [{:keys [model user-messages reason? instructions api-url past-messages tools]}

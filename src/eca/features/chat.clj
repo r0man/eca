@@ -113,12 +113,11 @@
         [provider model] (string/split full-model #"/" 2)
         past-messages (get-in db [:chats chat-id :messages] [])
         all-tools (f.tools/all-tools behavior @db* config)
-        provider-auth (get-in db [:auth provider])
         received-msgs* (atom "")
         received-thinking* (atom "")
         add-to-history! (fn [msg]
                           (swap! db* update-in [:chats chat-id :messages] (fnil conj []) msg))]
-    (when-let [expires-at (:expires-at provider-auth)]
+    (when-let [expires-at (get-in db [:auth provider :expires-at])]
       (when (<= (long expires-at) (quot (System/currentTimeMillis) 1000))
         (send-content! chat-ctx :system {:type :progress
                                          :state :running
@@ -137,7 +136,7 @@
       :past-messages past-messages
       :config config
       :tools all-tools
-      :provider-auth provider-auth
+      :provider-auth (get-in @db* [:auth provider])
       :on-first-response-received (fn [& _]
                                     (assert-chat-not-stopped! chat-ctx)
                                     (doseq [message user-messages]
