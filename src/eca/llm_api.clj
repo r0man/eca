@@ -192,11 +192,11 @@
                           "copilot-integration-id" "vscode-chat"}}
          callbacks)
 
-        (string/starts-with? model config/ollama-model-prefix)
+        (= "ollama" provider)
         (llm-providers.ollama/completion!
          {:api-url (ollama-api-url config)
           :reason? (:reason? model-config)
-          :model (string/replace-first model config/ollama-model-prefix "")
+          :model model
           :instructions instructions
           :user-messages user-messages
           :past-messages past-messages

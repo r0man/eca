@@ -67,7 +67,7 @@
        (try
          (if (not= 200 status)
            (let [body-str (slurp body)]
-             (logger/warn logger-tag "Unexpected response status: %s body: %s" status body-str)
+             (logger/warn logger-tag (format "Unexpected response status: %s body: %s" status body-str))
              (on-error {:message (format "Ollama response status: %s body: %s" status body-str)}))
            (with-open [rdr (io/reader body)]
              (doseq [[event data] (llm-util/event-data-seq rdr)]
