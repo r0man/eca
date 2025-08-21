@@ -24,15 +24,16 @@
                     (fn [models [custom-provider {provider-models :models}]]
                       (reduce
                        (fn [m model]
-                         (let [known-model (get all-models model)]
+                         (let [known-model (get all-models model)
+                               full-model (str (name custom-provider) "/" model)]
                            (assoc m
-                                  (str (name custom-provider) "/" model)
+                                  full-model
                                   {:tools (or (:tools known-model) true)
                                    :reason? (or (:reason? known-model) true)
                                    :web-search (or (:web-search known-model) true)
                                    :max-output-tokens (:max-output-tokens known-model)
                                    :custom-provider? true
-                                   :default-model? (= model (:defaultModel config))})))
+                                   :default-model? (= full-model (:defaultModel config))})))
                        models
                        provider-models))
                     {}

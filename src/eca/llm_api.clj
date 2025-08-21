@@ -63,12 +63,8 @@
   - Anthropic default model."
   [db config]
   (let [[decision model]
-        (or (when-let [custom-provider-default-model (first (keep (fn [[model config]]
-                                                                    (when (and (:custom-provider? config)
-                                                                               (:default-model? config))
-                                                                      model))
-                                                                  (:models db)))]
-              [:custom-provider-default-model custom-provider-default-model])
+        (or (when-let [config-default-model (:defaultModel config)]
+              [:config-default-model config-default-model])
             (when (provider-api-key "anthropic" config)
               [:api-key-found "anthropic/claude-sonnet-4-20250514"])
             (when (provider-api-key "openai" config)

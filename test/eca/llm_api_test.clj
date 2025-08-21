@@ -10,8 +10,8 @@
 (deftest default-model-test
   (testing "Custom provider default-model? present"
     (with-redefs [config/get-env (constantly nil)]
-      (let [db {:models {"my-provider/my-model" {:custom-provider? true :default-model? true}}}
-            config {}]
+      (let [db {}
+            config {:defaultModel "my-provider/my-model"}]
         (is (= "my-provider/my-model" (llm-api/default-model db config))))))
 
   (testing "Ollama running model present"

@@ -21,7 +21,7 @@
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:defaultModel "foo-1"
+                                {:defaultModel "myProvider/foo-1"
                                  :customProviders
                                  {"myProvider"
                                   {:api "openai-responses"
@@ -144,7 +144,7 @@
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:defaultModel "deepseek-coder"
+                                {:defaultModel "myProvider/deepseek-coder"
                                  :customProviders
                                  {"myProvider"
                                   {:api "openai-chat"
