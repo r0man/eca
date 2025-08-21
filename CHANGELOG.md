@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.30.0
+
 - Add `/login` command to login to providers
 - Add Github Copilot models support with login.
 
