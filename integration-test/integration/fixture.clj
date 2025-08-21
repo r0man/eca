@@ -11,7 +11,9 @@
                            :openaiApiUrl (str base-llm-mock-url "/openai")
                            :openaiApiKey "foo"
                            :anthropicApiUrl (str base-llm-mock-url "/anthropic")
-                           :anthropicApiKey "foo"})
+                           :anthropicApiKey "foo"
+                           :githubCopilotApiUrl (str base-llm-mock-url "/github-copilot")
+                           :githubCopilotApiKey "foo"})
 
 (defn initialize-request
   ([]
