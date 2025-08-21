@@ -157,6 +157,7 @@ There are 3 possible ways to configure rules following this order of priority:
             url?: string;
             key?: string; // when provider supports api key.
         }};
+        defaultModel?: string;
         rules: [{path: string;}];
         commands: [{path: string;}];
         systemPromptTemplateFile?: string;
@@ -179,7 +180,6 @@ There are 3 possible ways to configure rules following this order of priority:
         customProviders: {[key: string]: {
             api: 'openai-responses' | 'openai-chat' | 'anthropic';
             models: string[];
-            defaultModel?: string;
             url?: string;
             urlEnv?: string;
             completionUrlRelativePath?: string;
@@ -217,6 +217,7 @@ There are 3 possible ways to configure rules following this order of priority:
           "github-copilot": {"url": "https://api.githubcopilot.com"},
           "ollama": {"url": "http://localhost:11434"}
       },
+      "defaultModel": nil, // let ECA decides the default model.
       "rules" : [],
       "commands" : [],
       "nativeTools": {"filesystem": {"enabled": true},

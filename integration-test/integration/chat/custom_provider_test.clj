@@ -21,13 +21,13 @@
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:customProviders
+                                {:defaultModel "foo-1"
+                                 :customProviders
                                  {"myProvider"
                                   {:api "openai-responses"
                                    :url (str "http://localhost:" llm-mock.server/port "/openai")
                                    :key "foobar"
-                                   :models ["foo-0" "foo-1"]
-                                   :defaultModel "foo-1"}}})
+                                   :models ["foo-0" "foo-1"]}}})
                          :capabilities {:codeAssistant {:chat {}}}})))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]
@@ -144,13 +144,13 @@
          (eca/request! (fixture/initialize-request
                         {:initializationOptions
                          (merge fixture/default-init-options
-                                {:customProviders
+                                {:defaultModel "deepseek-coder"
+                                 :customProviders
                                  {"myProvider"
                                   {:api "openai-chat"
                                    :url (str "http://localhost:" llm-mock.server/port "/openai-chat")
                                    :key "foobar"
-                                   :models ["deepseek-chat" "deepseek-coder"]
-                                   :defaultModel "deepseek-coder"}}})
+                                   :models ["deepseek-chat" "deepseek-coder"]}}})
                          :capabilities {:codeAssistant {:chat {}}}})))))
   (eca/notify! (fixture/initialized-notification))
   (let [chat-id* (atom nil)]

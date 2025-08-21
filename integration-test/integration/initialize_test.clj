@@ -82,9 +82,9 @@
           :chatWelcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
          (eca/request! (fixture/initialize-request
                         {:initializationOptions (merge fixture/default-init-options
-                                                       {:customProviders
+                                                       {:defaultModel "bar-2"
+                                                        :customProviders
                                                         {"myCustom" {:api "openai"
                                                                      :urlEnv "MY_CUSTOM_API_URL"
                                                                      :keyEnv "MY_CUSTOM_API_KEY"
-                                                                     :models ["foo-1" "bar-2"]
-                                                                     :defaultModel "bar-2"}}})}))))))
+                                                                     :models ["foo-1" "bar-2"]}}})}))))))

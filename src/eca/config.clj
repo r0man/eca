@@ -25,6 +25,7 @@
                             :url "https://api.anthropic.com"}
                "github-copilot" {:url "https://api.githubcopilot.com"}
                "ollama" {:url "http://localhost:11434"}}
+   :defaultModel nil
    :rules []
    :commands []
    :nativeTools {:filesystem {:enabled true}

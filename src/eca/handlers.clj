@@ -21,7 +21,7 @@
     (swap! db* update :models merge eca-models)
     (when-let [custom-providers (seq (:customProviders config))]
       (let [models (reduce
-                    (fn [models [custom-provider {provider-models :models default-model :defaultModel}]]
+                    (fn [models [custom-provider {provider-models :models}]]
                       (reduce
                        (fn [m model]
                          (let [known-model (get all-models model)]
@@ -32,7 +32,7 @@
                                    :web-search (or (:web-search known-model) true)
                                    :max-output-tokens (:max-output-tokens known-model)
                                    :custom-provider? true
-                                   :default-model? (= model default-model)})))
+                                   :default-model? (= model (:defaultModel config))})))
                        models
                        provider-models))
                     {}
