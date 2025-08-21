@@ -14,7 +14,7 @@ Models capabilities and configurations are retrieved from [models.dev](https://m
 | Ollama local models | √           | √                    | X              | X          |
 
 
-### Built-in providers config
+### Config
 
 Built-in providers have already base initial `providers` configs, so you can change to add models or set its key/url.
 
@@ -61,12 +61,14 @@ Schema:
 | Option                        | Type   | Description                                                                     | Required |
 |-------------------------------|--------|---------------------------------------------------------------------------------|----------|
 | `api`                         | string | The API schema to use (`"openai-responses"`, `"openai-chat"`, or `"anthropic"`) | Yes      |
-| `urlEnv`                      | string | Environment variable name containing the API URL                                | Yes*     |
-| `url`                         | string | Direct API URL (use instead of `urlEnv`)                                        | Yes*     |
-| `keyEnv`                      | string | Environment variable name containing the API key                                | Yes*     |
-| `key`                         | string | Direct API key (use instead of `keyEnv`)                                        | Yes*     |
+| `urlEnv`                      | string | Environment variable name containing the API URL                                | No*      |
+| `url`                         | string | Direct API URL (use instead of `urlEnv`)                                        | No*      |
+| `keyEnv`                      | string | Environment variable name containing the API key                                | No*      |
+| `key`                         | string | Direct API key (use instead of `keyEnv`)                                        | No*      |
 | `models`                      | map    | Key: model name, value: its config                                              | Yes      |
 | `models <model> extraPayload` | map    | Extra payload sent in body to LLM                                               | No       |
+
+_* url and key will be search as env `<provider>_API_URL` / `<provider>_API_KEY`, but require config or to be found to work._
 
 Example:
 
