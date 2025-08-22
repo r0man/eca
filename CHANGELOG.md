@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Disable `eca_plan_edit_file` in plan behavior until better idea on what plan behavior should do.
+
 ## 0.32.3
 
 - Consider `AGENTS.md` instead of `AGENT.md`, following the https://agents.md standard.

@@ -294,7 +294,8 @@
                                                   :description "Whether to replace all occurences of the file or just the first one (default)"}}
                   :required ["path" "original_content" "new_content"]}
     :handler #'plan-edit-file
-    :enabled-fn (fn [{:keys [behavior]}] (= "plan" behavior))
+    ;; TODO improve plan behavior providing better tool for exit plan and present to user.
+    :enabled-fn (constantly false) #_(fn [{:keys [behavior]}] (= "plan" behavior))
     :summary-fn (constantly "Planning edit")}
    "eca_move_file"
    {:description (str "Move or rename files and directories. Can move files between directories "

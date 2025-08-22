@@ -33,7 +33,7 @@
     (is (match?
          (m/embeds [(m/mismatch {:name "eca_directory_tree"})])
          (f.tools/all-tools "agent" {} {:nativeTools {:filesystem {:enabled false}}}))))
-  (testing "Do not include edit tool if plan behavior"
+  #_(testing "Do not include edit tool if plan behavior"
     (is (match?
          (m/embeds [{:name "eca_plan_edit_file"}
                     (m/mismatch {:name "eca_edit_file"})])
