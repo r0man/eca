@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix support for models with `/` in the name like Openrouter ones.
+
 ## 0.32.0
 
 - Refactor config for better UX and understanding: 
