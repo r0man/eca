@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Consider `AGENTS.md` instead of `AGENT.md`, following the https://agents.md standard.
+
 ## 0.32.2
 
 - Fix option to set default chat behavior from config via `chat defaultBehavior`. #71

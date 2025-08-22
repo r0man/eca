@@ -64,9 +64,9 @@ Here are the current supported contexts types:
 - `repoMap`: a summary view of workspaces files and folders, server will calculate this and pass to LLM. Currently, the repo-map includes only the file paths in git.
 - `mcpResource`: resources provided by running MCPs servers.
 
-#### AGENT.md automatic context
+#### AGENTS.md automatic context
 
-ECA will always include if found the `AGENT.md` file (configurable via `agentFileRelativePath` config) as context, searching for both `/project-root/AGENT.md` and `~/.config/eca/AGENT.md`.
+ECA will always include if found the `AGENTS.md` file (configurable via `agentFileRelativePath` config) as context, searching for both `/project-root/AGENT.md` and `~/.config/eca/AGENT.md`.
 
 You can ask ECA to create/update this file via `/init` command.
 
@@ -78,7 +78,7 @@ Eca supports commands that usually are triggered via shash (`/`) in the chat, co
 
 The built-in commands are:
 
-`/init`: Create/update the AGENT.md file with details about the workspace for best LLM output quality.
+`/init`: Create/update the AGENTS.md file with details about the workspace for best LLM output quality.
 `/login`: Log into a provider. Ex: `/login github-copilot`
 `/costs`: Show costs about current session.
 `/resume`: Resume a chat from previous session of this workspace folder.

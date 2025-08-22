@@ -83,7 +83,7 @@ To use ECA, you need to configure at least one model with your API key. See the 
 
 Once your model is configured, you can start using ECA's chat interface in your editor to ask questions, review code, and work together on your project.
 
-Type `/init` to ask ECA to create a AGENT.md file which will help ECA on next iterations have good context about your project standards.
+Type `/init` to ask ECA to create a [AGENTS.md](http://agents.md) file which will help ECA on next iterations have good context about your project standards.
 
 ## How it works
 

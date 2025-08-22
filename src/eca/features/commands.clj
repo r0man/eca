@@ -75,7 +75,7 @@
                                     (dissoc :server))))
         eca-commands [{:name "init"
                        :type :native
-                       :description "Create/update the AGENT.md file teaching LLM about the project"
+                       :description "Create/update the AGENTS.md file teaching LLM about the project"
                        :arguments []}
                       {:name "login"
                        :type :native

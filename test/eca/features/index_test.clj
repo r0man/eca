@@ -56,7 +56,7 @@
 
 (deftest repo-map-truncation-test
   (testing "per-directory truncation shows indicator and global truncated line"
-    (with-redefs [f.index/git-ls-files (constantly ["AGENT.md"
+    (with-redefs [f.index/git-ls-files (constantly ["AGENTS.md"
                                                     "src/a.clj"
                                                     "src/b.clj"
                                                     "src/c.clj"
@@ -79,7 +79,7 @@
         ;; A final global truncated line should also be present
         (is (string/includes? out "\n... truncated output (")))))
   (testing "global truncation appends final truncated line"
-    (with-redefs [f.index/git-ls-files (constantly ["AGENT.md"
+    (with-redefs [f.index/git-ls-files (constantly ["AGENTS.md"
                                                     "CHANGELOG.md"
                                                     "LICENSE"
                                                     "src/a.clj"

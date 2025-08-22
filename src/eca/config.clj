@@ -59,7 +59,7 @@
    :mcpServers {}
    :chat {:defaultBehavior "agent"
           :welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
-   :agentFileRelativePath "AGENT.md"
+   :agentFileRelativePath "AGENTS.md"
    :index {:ignoreFiles [{:type :gitignore}]
            :repoMap {:maxTotalEntries 800
                      :maxEntriesPerDir 50}}})

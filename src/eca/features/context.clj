@@ -14,7 +14,7 @@
 (def ^:private logger-tag "[CONTEXT]")
 
 (defn ^:private agents-file-contexts
-  "Search for AGENT.md file both in workspaceRoot and global config dir."
+  "Search for AGENTS.md file both in workspaceRoot and global config dir."
   [db config]
   (let [local-agent-files (keep (fn [{:keys [uri]}]
                                   (let [agent-file (fs/path (shared/uri->filename uri) (:agentFileRelativePath config))]
