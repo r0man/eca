@@ -104,7 +104,7 @@ Prompts can use variables like `$ARGS`, `$ARG1`, `ARG2`, to replace in the promp
 ## Rules
 
 Rules are contexts that are passed to the LLM during a prompt and are useful to tune prompts or LLM behavior.
-Rules are text files (typically `.md` or `.mdc`, but any format works) with the following
+Rules are text files (typically `.md`, but any format works) with the following
 optional metadata:
 
 - `description`: a description used by LLM to decide whether to include this rule in context, absent means always include this rule.
@@ -129,7 +129,7 @@ There are 3 possible ways to configure rules following this order of priority:
 
     A `$XDG_CONFIG_HOME/eca/rules` or `~/.config/eca/rules` folder containing `.md` files with the rules.
 
-    `~/.config/eca/rules/talk_funny.mdc`
+    `~/.config/eca/rules/talk_funny.md`
     ```markdown
     --- 
     description: Use when responding anything
