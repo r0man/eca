@@ -47,7 +47,9 @@
 (defn config! [config]
   (swap! components* update :config shared/deep-merge config))
 
-(defn reset-components! [] (reset! components* (make-components)))
+(defn reset-components! []
+  (reset! config/initialization-config* {})
+  (reset! components* (make-components)))
 (defn reset-components-before-test []
   (use-fixtures :each (fn [f] (reset-components!) (f))))
 (defn reset-messenger! [] (swap! components* assoc :messenger (:messenger (make-components))))

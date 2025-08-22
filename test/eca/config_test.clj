@@ -26,11 +26,13 @@
   (testing "providers and models are updated correctly"
     (reset! config/initialization-config* {:pureConfig true
                                            :providers {"customProvider" {:key "123"
-                                                                         :models {:gpt-5 {}}}}})
+                                                                         :models {:gpt-5 {}}}
+                                                       "openrouter" {:models {"openai/o4-mini" {}}}}})
     (is (match?
          {:pureConfig true
           :providers {"custom-provider" {:key "123"
-                                         :models {"gpt-5" {}}}}}
+                                         :models {"gpt-5" {}}}
+                      "openrouter" {:models {"openai/o4-mini" {}}}}}
          (config/all {})))))
 
 (deftest deep-merge-test
@@ -69,3 +71,23 @@
          (#'config/deep-merge {:providers {"github-copilot" {:models {"gpt-5" {}}}}}
                               {:pureConfig true
                                :providers {"github-copilot" {:key "123"}}})))))
+
+(deftest normalize-fields-test
+  (is (match?
+       {:pureConfig true
+        :providers {"custom-provider" {:key "123"
+                                       :models {"gpt-5" {}}}
+                    "openrouter" {:models {"openai/o4-mini" {}}}}}
+       (#'config/normalize-fields {:pureConfig true
+                                   :providers {"custom-provider" {:key "123"
+                                                                  :models {"gpt-5" {}}}
+                                               "openrouter" {:models {"openai/o4-mini" {}}}}})))
+  (is (match?
+       {:pureConfig true
+        :providers {"custom-provider" {:key "123"
+                                       :models {"gpt-5" {}}}
+                    "openrouter" {:models {"openai/o4-mini" {}}}}}
+       (#'config/normalize-fields {:pureConfig true
+                                   :providers {:customProvider {:key "123"
+                                                                :models {"gpt-5" {}}}
+                                               :openrouter {:models {:openai/o4-mini {}}}}}))))

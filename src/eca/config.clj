@@ -140,7 +140,10 @@
         models' (when models
                   (into {}
                         (map (fn [[k v]]
-                               [(if (or (keyword? k) (symbol? k)) (name k) (str k)) v])
+                               [(if (or (keyword? k) (symbol? k))
+                                  (string/replace-first (str k) ":" "")
+                                  (str k))
+                                v])
                              models)))
         provider' (dissoc provider "models")]
     (if models'
