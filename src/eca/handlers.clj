@@ -58,14 +58,13 @@
      (swap! db* assoc
             :client-info (:client-info params)
             :workspace-folders (:workspace-folders params)
-            :client-capabilities (:capabilities params)
-            :chat-default-behavior (or (-> params :initialization-options :chat-behavior) (:chat-default-behavior @db*)))
+            :client-capabilities (:capabilities params))
      (initialize-models! db* config)
      (db/load-db-from-cache! db*)
      {:models (sort (keys (:models @db*)))
       :chat-default-model (f.chat/default-model @db* config)
       :chat-behaviors (:chat-behaviors @db*)
-      :chat-default-behavior (:chat-default-behavior @db*)
+      :chat-default-behavior (:defaultBehavior (:chat config))
       :chat-welcome-message (:welcomeMessage (:chat config))})))
 
 (defn initialized [{:keys [db* messenger config]}]

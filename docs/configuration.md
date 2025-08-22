@@ -13,7 +13,9 @@ There are multiples ways to configure ECA:
     `~/.config/eca/config.json`
     ```javascript
     {
-      "chatBehavior": "agent"
+      "chat" : {
+        "defaultBehavior": "plan"
+      }
     }
     ```
   
@@ -24,7 +26,9 @@ There are multiples ways to configure ECA:
     `.eca/config.json`
     ```javascript
     {
-      "chatBehavior": "agent"
+      "chat" : {
+        "defaultBehavior": "plan"
+      }
     }
     ```
     
@@ -36,7 +40,9 @@ There are multiples ways to configure ECA:
 
     ```javascript
     "initializationOptions": {
-      "chatBehavior": "agent"
+      "chat" : {
+        "defaultBehavior": "plan"
+      }
     }
     ```
 
@@ -185,7 +191,8 @@ There are 3 possible ways to configure rules following this order of priority:
             disabled?: boolean;
         }};
         chat?: {
-            welcomeMessage: string;
+            defaultBehavior?: string;
+            welcomeMessage?: string;
         };
         agentFileRelativePath: string;
         index?: {
@@ -226,6 +233,7 @@ There are 3 possible ways to configure rules following this order of priority:
       "mcpTimeoutSeconds" : 60,
       "mcpServers" : {},
       "chat" : {
+        "defaultBehavior": "agent"
         "welcomeMessage" : "Welcome to ECA!\n\nType '/' for commands\n\n"
       },
       "agentFileRelativePath": "AGENT.md"

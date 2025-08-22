@@ -33,7 +33,7 @@
           :chatWelcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
          (eca/request! (fixture/initialize-request
                         {:initializationOptions (merge fixture/default-init-options
-                                                       {:chatBehavior "plan"})})))))
+                                                       {:chat {:defaultBehavior "plan"}})})))))
 
   (testing "initialized notification"
     (eca/notify! (fixture/initialized-notification)))

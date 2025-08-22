@@ -22,7 +22,6 @@
    :client-capabilities {}
    :chats {}
    :chat-behaviors ["agent" "plan"]
-   :chat-default-behavior "agent"
    :models {}
    :auth {}
    :mcp-clients {}})

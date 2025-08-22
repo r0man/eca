@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix option to set default chat behavior from config via `chat defaultBehavior`. #71
+
 ## 0.32.1
 
 - Fix support for models with `/` in the name like Openrouter ones.

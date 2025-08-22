@@ -57,7 +57,8 @@
    :disabledTools []
    :mcpTimeoutSeconds 60
    :mcpServers {}
-   :chat {:welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
+   :chat {:defaultBehavior "agent"
+          :welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
    :agentFileRelativePath "AGENT.md"
    :index {:ignoreFiles [{:type :gitignore}]
            :repoMap {:maxTotalEntries 800
