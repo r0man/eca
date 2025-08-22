@@ -25,8 +25,8 @@
                                       full-model (str provider "/" model)
                                       model-capabilities (merge
                                                           (or (get all-models full-model)
-                                                              ;; we guess the capabilities from
-                                                              ;; the first model with same name
+                                                                 ;; we guess the capabilities from
+                                                                 ;; the first model with same name
                                                               (when-let [found-full-model (first (filter #(= model (second (string/split % #"/" 2)))
                                                                                                          (keys all-models)))]
                                                                 (get all-models found-full-model))
