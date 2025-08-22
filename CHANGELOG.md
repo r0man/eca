@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.32.2
+
 - Fix option to set default chat behavior from config via `chat defaultBehavior`. #71
 
 ## 0.32.1
