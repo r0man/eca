@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.32.4
+
 - Disable `eca_plan_edit_file` in plan behavior until better idea on what plan behavior should do.
 
 ## 0.32.3
