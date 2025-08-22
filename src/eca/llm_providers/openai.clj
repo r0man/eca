@@ -126,6 +126,11 @@
                         :id (:item_id data)
                         :text (:delta data)})
 
+            "response.reasoning_summary_text.done"
+            (on-reason {:status :thinking
+                        :id (:item_id data)
+                        :text "\n"})
+
             "response.output_item.added"
             (case (-> data :item :type)
               "reasoning" (on-reason {:status :started
