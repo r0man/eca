@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.32.3
+
 - Consider `AGENTS.md` instead of `AGENT.md`, following the https://agents.md standard.
 
 ## 0.32.2
