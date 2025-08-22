@@ -214,29 +214,30 @@
                                             ;; Execute each tool call concurrently
                                           (future
                                             (if @approved?*
-                                              (let [result (f.tools/call-tool! name arguments @db* config messenger)]
+                                              (do
                                                 (assert-chat-not-stopped! chat-ctx)
-                                                (add-to-history! {:role "tool_call" :content (assoc tool-call
-                                                                                                    :details details
-                                                                                                    :summary summary
-                                                                                                    :origin origin)})
-                                                (add-to-history! {:role "tool_call_output" :content (assoc tool-call
-                                                                                                           :error (:error result)
-                                                                                                           :output result
-                                                                                                           :details details
-                                                                                                           :summary summary
-                                                                                                           :origin origin)})
-                                                (send-content! chat-ctx :assistant
-                                                               (assoc-some
-                                                                {:type :toolCalled
-                                                                 :origin origin
-                                                                 :name name
-                                                                 :arguments arguments
-                                                                 :error (:error result)
-                                                                 :id id
-                                                                 :outputs (:contents result)}
-                                                                :details details
-                                                                :summary summary)))
+                                                (let [result (f.tools/call-tool! name arguments @db* config messenger)]
+                                                  (add-to-history! {:role "tool_call" :content (assoc tool-call
+                                                                                                      :details details
+                                                                                                      :summary summary
+                                                                                                      :origin origin)})
+                                                  (add-to-history! {:role "tool_call_output" :content (assoc tool-call
+                                                                                                             :error (:error result)
+                                                                                                             :output result
+                                                                                                             :details details
+                                                                                                             :summary summary
+                                                                                                             :origin origin)})
+                                                  (send-content! chat-ctx :assistant
+                                                                 (assoc-some
+                                                                   {:type :toolCalled
+                                                                    :origin origin
+                                                                    :name name
+                                                                    :arguments arguments
+                                                                    :error (:error result)
+                                                                    :id id
+                                                                    :outputs (:contents result)}
+                                                                   :details details
+                                                                   :summary summary))))
                                               (do
                                                 (add-to-history! {:role "tool_call" :content tool-call})
                                                 (add-to-history! {:role "tool_call_output"
@@ -253,6 +254,7 @@
                                                                  :id id}
                                                                 :details details
                                                                 :summary summary))))))))]
+                           (assert-chat-not-stopped! chat-ctx)
                             ;; Wait all tool calls to complete before returning
                            (run! deref calls)
                            (send-content! chat-ctx :system {:type :progress :state :running :text "Generating"})
