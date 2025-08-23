@@ -3,6 +3,8 @@
 ## Unreleased
 
 - Fix reasoning titles in thoughts blocks for openai-responses.
+- Fix hanging LSP diagnostics requests
+- Add `lspTimeoutSeconds` to config
 
 ## 0.32.4
 
@@ -22,7 +24,7 @@
 
 ## 0.32.0
 
-- Refactor config for better UX and understanding: 
+- Refactor config for better UX and understanding:
   - Move `models` to inside `providers`.
   - Make `customProviders` compatible with `providers`. models need to be a map now, not a list.
 
@@ -32,7 +34,7 @@
 - Drop uneeded `ollama useTools` and `ollama think` configs.
 - Refactor configs for config providers unification.
   - `<provider>ApiKey` and `<providerApiUrl>` now live in `:providers "<provider>" :key`.
-  - Move `defaultModel` config from customProvider to root. 
+  - Move `defaultModel` config from customProvider to root.
 
 ## 0.30.0
 

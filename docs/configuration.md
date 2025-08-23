@@ -18,7 +18,7 @@ There are multiples ways to configure ECA:
       }
     }
     ```
-  
+
 === "Local Config file"
 
     Convenient for users
@@ -31,7 +31,7 @@ There are multiples ways to configure ECA:
       }
     }
     ```
-    
+
 === "InitializationOptions"
 
     Convenient for editors
@@ -124,7 +124,7 @@ There are 3 possible ways to configure rules following this order of priority:
 
     `.eca/rules/talk_funny.md`
     ```markdown
-    --- 
+    ---
     description: Use when responding anything
     ---
 
@@ -137,7 +137,7 @@ There are 3 possible ways to configure rules following this order of priority:
 
     `~/.config/eca/rules/talk_funny.md`
     ```markdown
-    --- 
+    ---
     description: Use when responding anything
     ---
 
@@ -186,6 +186,7 @@ There are 3 possible ways to configure rules following this order of priority:
           manualApproval?: boolean | string[], // manual approve all tools or the specified tools
         };
         mcpTimeoutSeconds: number;
+        lspTimeoutSeconds: number;
         mcpServers: {[key: string]: {
             command: string;
             args?: string[];
@@ -232,6 +233,7 @@ There are 3 possible ways to configure rules following this order of priority:
         "manualApproval": null,
       },
       "mcpTimeoutSeconds" : 60,
+      "lspTimeoutSeconds" : 30,
       "mcpServers" : {},
       "chat" : {
         "defaultBehavior": "agent"

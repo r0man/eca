@@ -7,30 +7,36 @@
    [eca.messenger :as messenger]
    [eca.shared :as shared]))
 
-(defn ^:private diagnostics [arguments {:keys [messenger]}]
+(defn ^:private diagnostics [arguments {:keys [messenger config]}]
   (or (tools.util/invalid-arguments arguments [["path" #(or (nil? %)
                                                             (string/blank? %)
                                                             (not (fs/directory? %))) "Path needs to be a file, not a directory."]])
-      (let [uri (some-> (get arguments "path") not-empty shared/filename->uri)]
+      (let [uri (some-> (get arguments "path") not-empty shared/filename->uri)
+            timeout-ms (* 1000 (get config :lspTimeoutSeconds 30))]
         (try
-          (let [diags (:diagnostics @(messenger/editor-diagnostics messenger uri))]
-            (if (seq diags)
-              {:error false
+          (let [response (deref (messenger/editor-diagnostics messenger uri) timeout-ms ::timeout)]
+            (if (= response ::timeout)
+              {:error true
                :contents [{:type :text
-                           :text (reduce
-                                  (fn [s {:keys [uri range severity code message]}]
-                                    (str s (format "%s:%s:%s: %s: %s%s"
-                                                   (shared/uri->filename uri)
-                                                   (-> range :start :line)
-                                                   (-> range :start :character)
-                                                   severity
-                                                   (if code (format "[%s] " code) "")
-                                                   message)))
-                                  ""
-                                  diags)}]}
-              {:error false
-               :contents [{:type :text
-                           :text "No diagnostics found"}]}))
+                           :text "Timeout waiting for editor diagnostics response"}]}
+              (let [diags (:diagnostics response)]
+                (if (seq diags)
+                  {:error false
+                   :contents [{:type :text
+                               :text (reduce
+                                      (fn [s {:keys [uri range severity code message]}]
+                                        (str s (format "%s:%s:%s: %s: %s%s"
+                                                       (shared/uri->filename uri)
+                                                       (-> range :start :line)
+                                                       (-> range :start :character)
+                                                       severity
+                                                       (if code (format "[%s] " code) "")
+                                                       message)))
+                                      ""
+                                      diags)}]}
+                  {:error false
+                   :contents [{:type :text
+                               :text "No diagnostics found"}]}))))
           (catch Exception e
             (logger/error (format "Error getting editor diagnostics for arguments %s: %s" arguments e))
             {:error true
