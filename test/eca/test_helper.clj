@@ -26,7 +26,7 @@
   (chat-content-received [_ data] (swap! messages* update :chat-content-received (fnil conj []) data))
   (tool-server-updated [_ data] (swap! messages* update :tool-server-update (fnil conj []) data))
   (showMessage [_ data] (swap! messages* update :show-message (fnil conj []) data))
-  (editor-diagnostics [_ _uri] (delay {:diagnostics @diagnostics*})))
+  (editor-diagnostics [_ _uri] (future {:diagnostics @diagnostics*})))
 
 (defn ^:private make-components []
   {:db* (atom db/initial-db)

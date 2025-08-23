@@ -56,6 +56,7 @@
                  :editor {:enabled true}}
    :disabledTools []
    :mcpTimeoutSeconds 60
+   :lspTimeoutSeconds 30
    :mcpServers {}
    :chat {:defaultBehavior "agent"
           :welcomeMessage "Welcome to ECA!\n\nType '/' for commands\n\n"}
